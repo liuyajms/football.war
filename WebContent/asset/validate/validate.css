@@ -1,0 +1,15 @@
+input.error { border: 1px solid red; }
+label.error {
+  background:url("img/error.png") no-repeat 0px 0px;
+
+  padding-left: 22px;
+
+  padding-bottom: 2px;
+
+  font-weight: bold;
+
+  color: red;
+}
+label.checked {
+  background:url("img/valid.png") no-repeat 0px 0px;
+}

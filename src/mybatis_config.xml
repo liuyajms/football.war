@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true" />
+	</settings>
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="org.postgresql.Driver" />
+				<property name="url" value="jdbc:postgresql://192.168.253.241:5432/child_211" />
+				<property name="username" value="postgres" />
+				<property name="password" value="1234" />
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<package name="cn.com.weixunyun.child.model.dao" />
+		<package name="cn.com.weixunyun.child.module.broadcast" />
+		<package name="cn.com.weixunyun.child.module.cook" />
+		<package name="cn.com.weixunyun.child.module.curriculum" />
+		<package name="cn.com.weixunyun.child.module.download" />
+		<package name="cn.com.weixunyun.child.module.elective" />
+		<package name="cn.com.weixunyun.child.module.homework" />
+		<package name="cn.com.weixunyun.child.module.news" />
+		<package name="cn.com.weixunyun.child.module.notice" />
+		<package name="cn.com.weixunyun.child.module.security" />
+		<package name="cn.com.weixunyun.child.module.star" />
+		<package name="cn.com.weixunyun.child.module.weibo" />
+		<package name="cn.com.weixunyun.child.module.course" />
+        <package name="cn.com.weixunyun.child.module.personal" />
+        <package name="cn.com.weixunyun.child.module.interfacememo" />
+        <package name="cn.com.weixunyun.child.module.point" />
+        <package name="cn.com.weixunyun.child.module.stats" />
+        <package name="cn.com.weixunyun.child.module.question" />
+	</mappers>
+</configuration>

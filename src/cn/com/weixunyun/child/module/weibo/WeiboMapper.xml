@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.weixunyun.child.module.weibo.WeiboMapper">
+    <resultMap id="getList" type="cn.com.weixunyun.child.module.weibo.UserWeibo" >
+        <id property="id" column="id" />
+        <result column="school_id" property="schoolId"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="description" property="description"/>
+        <result column="classes_id" property="classesId"/>
+        <result column="audit_teacher_id" property="auditTeacherId"/>
+        <result column="pic" property="pic"/>
+        <result column="comments_id" property="commentsId"/>
+        <result column="audit_time" property="auditTime"/>
+        <result column="position_x" property="positionX"/>
+        <result column="position_y" property="positionY"/>
+        <result column="position_name" property="positionName"/>
+        <result column="update_user_id" property="updateUserId"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="classes_name" property="classesName"/>
+        <result column="comment_count" property="commentCount"/>
+        <result column="create_user_name" property="createUserName"/>
+        <result column="create_user_type" property="createUserType"/>
+        <result column="create_user_update_time" property="createUserUpdateTime"/>
+        <result column="favorit" property="favorit"/>
+        <collection property="zanList" ofType="cn.com.weixunyun.child.module.weibo.WeiboZanVO"
+                    column="weibo_id">
+            <result column="weibo_id" property="weiboId"/>
+            <result column="user_id" property="userId"/>
+            <result column="time" property="time"/>
+            <result column="wz_user_name" property="userName"/>
+            <result column="wz_user_type" property="userType"/>
+            <result column="wz_user_update_time" property="userUpdateTime"/>
+        </collection>
+        <collection property="commentList" ofType="cn.com.weixunyun.child.module.weibo.UserWeiboComment"
+                    column="weibo_id">
+            <id column="wc_id" property="id"/>
+            <result column="wc_weibo_id" property="weiboId"/>
+            <result column="wc_description" property="description"/>
+            <result column="wc_create_time" property="createTime"/>
+            <result column="wc_create_user_id" property="createUserId"/>
+            <result column="wc_position_x" property="positionX"/>
+            <result column="wc_position_y" property="positionY"/>
+            <result column="wc_position_name" property="positionName"/>
+            <result column="wc_school_id" property="schoolId"/>
+            <result column="wc_user_id_to" property="userIdTo"/>
+            <result column="wc_create_user_name" property="createUserName"/>
+            <result column="wc_create_user_type" property="createUserType"/>
+            <result column="wc_create_user_update_time" property="createUserUpdateTime"/>
+            <result column="wc_user_name_to" property="userNameTo"/>
+            <result column="wc_user_type_to" property="userTypeTo"/>
+            <result column="wc_user_update_to" property="userUpdateTo"/>
+        </collection>
+    </resultMap>
+</mapper>
