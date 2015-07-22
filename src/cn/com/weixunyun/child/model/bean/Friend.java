@@ -8,7 +8,7 @@ public class Friend implements Serializable {
 
     private Long playerId;
 
-    private Long friendPlayerId;
+    private Long friendId;
 
     public Long getPlayerId() {
         return playerId;
@@ -18,11 +18,11 @@ public class Friend implements Serializable {
         this.playerId = playerId;
     }
 
-    public Long getFriendPlayerId() {
-        return friendPlayerId;
+    public Long getFriendId() {
+        return friendId;
     }
 
-    public void setFriendPlayerId(Long friendPlayerId) {
-        this.friendPlayerId = friendPlayerId;
+    public void setFriendId(Long friendId) {
+        this.friendId = friendId;
     }
 }

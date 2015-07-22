@@ -1,6 +1,7 @@
 package cn.com.weixunyun.child.control;
 
 import cn.com.weixunyun.child.Description;
+import cn.com.weixunyun.child.ResultEntity;
 import cn.com.weixunyun.child.UserType;
 import cn.com.weixunyun.child.model.bean.Player;
 import cn.com.weixunyun.child.model.service.PlayerService;
@@ -8,6 +9,8 @@ import cn.com.weixunyun.child.model.vo.PlayerVO;
 import cn.com.weixunyun.child.util.ImageUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpStatus;
 import org.apache.wink.common.annotations.Workspace;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,17 +43,6 @@ public class PlayerResource extends AbstractResource {
                 .getList(city, role, beginAge, endAge, keyword, rows, page * rows);
     }
 
-
-
-/*	@GET
-    @Path("inclasses")
-	@Description("教师所在班级列表")
-	public List<CourseClasses> selectClassesTeacher(@CookieParam("rsessionid") String rsessionid) {
-		Long schoolId = super.getAuthedSchoolId(rsessionid);
-		PlayerService service = super.getService(PlayerService.class);
-		return service.getClassesList(schoolId, super.getAuthedId(rsessionid));
-	}*/
-
     @GET
     @Path("{id}")
     @Description("详情")
@@ -58,6 +50,51 @@ public class PlayerResource extends AbstractResource {
         return super.getService(PlayerService.class).get(id);
     }
 
+
+    /**
+     * @param map 手机号/密码等信息必填
+     * @return
+     * @throws Exception
+     */
+    @POST
+    @Path("register")
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+    @Description("注册添加用户")
+    public ResultEntity register(MultivaluedMap<String, String> map) throws Exception {
+
+        Player player = super.buildBean(Player.class, map, null);
+
+        if (StringUtils.isBlank(player.getMobile())) {
+            return new ResultEntity(HttpStatus.SC_EXPECTATION_FAILED, "手机号为空");
+        }
+        if (StringUtils.isBlank(player.getPassword())) {
+            return new ResultEntity(HttpStatus.SC_EXPECTATION_FAILED, "密码为空");
+        }
+
+//        String verifyCode = map.getFirst("verifyCode");
+//        if (!VerifyResource.verify(player.getMobile(), verifyCode)) {
+//            return new ResultEntity(HttpStatus.SC_BAD_REQUEST, "验证码错误");
+//        }
+
+        if (StringUtils.isBlank(player.getName())) {
+            player.setName(player.getMobile());
+        }
+
+        player.setPassword(DigestUtils.md5Hex(map.getFirst("password")));
+        player.setEnabled(true);
+
+        PlayerService service = super.getService(PlayerService.class);
+
+        if (service.login(player.getMobile(), null) != null) {
+            return new ResultEntity(HttpStatus.SC_EXPECTATION_FAILED, "该手机号已被注册");
+        }
+
+        service.insert(player);
+
+        return new ResultEntity(HttpStatus.SC_OK, "注册成功!");
+    }
+
+    @Deprecated
     @POST
     @Consumes({MediaType.MULTIPART_FORM_DATA})
     @Description("添加")
@@ -65,14 +102,16 @@ public class PlayerResource extends AbstractResource {
             throws Exception {
         Map<String, PartField> map = super.partMulti(request);
 
-        //处理label
-        int role = 0;
-        String roleValue = map.get("role").getValue();
-        if (roleValue != null && !roleValue.equals("")) {
-            for (String str : roleValue.split(",")) {
-                role += Integer.parseInt(str);
+        Integer role = null;
+        if (map.containsKey("role")) {
+            String roleValue = map.get("role").getValue();
+            if (roleValue != null && !roleValue.equals("")) {
+                role = 0;
+                for (String str : roleValue.split(",")) {
+                    role += Integer.parseInt(str);
+                }
+                map.remove("role");
             }
-            map.remove("role");
         }
 
         Player player = super.buildBean(Player.class, map, null);
@@ -100,14 +139,17 @@ public class PlayerResource extends AbstractResource {
                        @CookieParam("rsessionid") String rsessionid) throws Exception {
         Map<String, PartField> map = super.partMulti(request);
 
-        //处理label
-        int role = 0;
-        String roleValue = map.get("role").getValue();
-        if (roleValue != null && !roleValue.equals("")) {
-            for (String str : roleValue.split(",")) {
-                role += Integer.parseInt(str);
+        //处理role场上位置
+        Integer role = null;
+        if (map.containsKey("role")) {
+            String roleValue = map.get("role").getValue();
+            if (roleValue != null && !roleValue.equals("")) {
+                role = 0;
+                for (String str : roleValue.split(",")) {
+                    role += Integer.parseInt(str);
+                }
+                map.remove("role");
             }
-            map.remove("role");
         }
 
         Player player = super.buildBean(Player.class, map, id);
@@ -194,7 +236,7 @@ public class PlayerResource extends AbstractResource {
     @Description("删除")
     public void delete(@PathParam("id") Long id, @CookieParam("rsessionid") String rsessionid) {
 
-        new PicResource().delete("/teacher/" + id + ".png");
+        new PicResource().delete("/player/" + id + ".png");
         super.getService(PlayerService.class).delete(id);
 
     }

@@ -3,6 +3,7 @@
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
     <file url="file://$PROJECT_DIR$/src/cn/com/weixunyun/child/control/PicResource.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/cn/com/weixunyun/child/control/RuleResource.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/cn/com/weixunyun/child/control/VerifyResource.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/cn/com/weixunyun/child/util/ExcelParser.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/cn/com/weixunyun/child/util/ImageUtils.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/cn/com/weixunyun/child/util/Rules.java" charset="UTF-8" />

@@ -13,6 +13,7 @@ import cn.com.weixunyun.child.util.ValidateImageUtil;
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.wink.common.annotations.Workspace;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,6 +72,10 @@ public class AuthResource extends AbstractResource {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+
+        if(StringUtils.isBlank(username) || StringUtils.isBlank(password)){
+            return null;
+        }
 
         PlayerVO playerVO = super.getService(PlayerService.class)
                 .login(username, DigestUtils.md5Hex(password));

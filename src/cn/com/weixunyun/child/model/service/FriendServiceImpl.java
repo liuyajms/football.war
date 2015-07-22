@@ -10,8 +10,8 @@ import java.util.List;
 
 public class FriendServiceImpl extends AbstractService implements FriendService {
     @Override
-    public void delete(Long playerId, Long friendPlayerId) {
-        super.getMapper(FriendMapper.class).delete(playerId, friendPlayerId);
+    public void delete(Long playerId, Long friendId) {
+        super.getMapper(FriendMapper.class).delete(playerId, friendId);
     }
 
     @Override
@@ -20,7 +20,8 @@ public class FriendServiceImpl extends AbstractService implements FriendService 
     }
 
     @Override
-    public List<FriendVO> getList(@Param("playerId") Long playerId, @Param("keyword") String keyword, @Param("rows") long rows, @Param("offset") long offset) {
+    public List<FriendVO> getList(@Param("playerId") Long playerId, @Param("keyword") String keyword,
+                                  @Param("rows") long rows, @Param("offset") long offset) {
         return super.getMapper(FriendMapper.class).getList(playerId, keyword, rows, offset);
     }
 }

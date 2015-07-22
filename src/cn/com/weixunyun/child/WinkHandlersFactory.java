@@ -2,10 +2,11 @@ package cn.com.weixunyun.child;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.HttpStatus;
 import org.apache.wink.server.handlers.*;
 import org.apache.wink.server.internal.handlers.SearchResult;
 
+import javax.ws.rs.core.MediaType;
 import java.util.*;
 
 public class WinkHandlersFactory extends HandlersFactory {
@@ -61,7 +62,7 @@ public class WinkHandlersFactory extends HandlersFactory {
                 if ("/auth".equals(resourcePath)) {
                     chain.doChain(context);
                 } else {
-                    String rsessionid = context.getHttpHeaders().getCookies().get("rsessionid").getValue();
+                    /*String rsessionid = context.getHttpHeaders().getCookies().get("rsessionid").getValue();
                     Map<String, Integer> authedPopedomMap = Session.getInstance(rsessionid).get("popedom");
 
                     String action = context.getHttpMethod();
@@ -93,7 +94,7 @@ public class WinkHandlersFactory extends HandlersFactory {
                         } else {
                             chain.doChain(context);
                         }
-                    }
+                    }*/
                 }
             }
 
@@ -109,17 +110,25 @@ public class WinkHandlersFactory extends HandlersFactory {
             @Override
             public void handleResponse(MessageContext context, HandlersChain chain) throws Throwable {
 
-                ResultEntity resultEntity = new ResultEntity(context.getResponseStatusCode(),
-                        "",
-                        context.getResponseEntity());
+                context.setResponseMediaType(MediaType.APPLICATION_JSON_TYPE);
 
-//                context.setResponseEntity(resultEntity);
-//                System.out.println("========>>>>resultEntity:"+resultEntity);
+                Object obj = context.getResponseEntity();
 
+                if (obj == null || obj.getClass() != ResultEntity.class) {
 
-                String str = JSON.toJSONString(resultEntity, SerializerFeature.WriteMapNullValue);
-                context.setResponseEntity(str);
-                System.out.println("========>>>>resultEntity:" + str);
+                    String msg = "";
+                    if(obj == null){
+                        context.setResponseStatusCode(HttpStatus.SC_OK);
+                        msg = "无数据";
+                    }
+                    ResultEntity resultEntity = new ResultEntity(context.getResponseStatusCode(), msg, obj);
+
+                    String str = JSON.toJSONString(resultEntity, SerializerFeature.WriteMapNullValue);
+
+                    context.setResponseEntity(str);
+                }
+
+                System.out.println("========>>>>resultEntity:"+context.getResponseEntity());
 
                 chain.doChain(context);
             }
@@ -133,6 +142,10 @@ public class WinkHandlersFactory extends HandlersFactory {
     }
 
 
+    /**
+     * 未找到请求资源时的错误处理
+     * @return
+     */
     @Override
     public List<? extends ResponseHandler> getErrorHandlers() {
         List<ResponseHandler> handlerList = new ArrayList<ResponseHandler>();
@@ -145,12 +158,9 @@ public class WinkHandlersFactory extends HandlersFactory {
                         "",
                         context.getResponseEntity());
 
-//                context.setResponseEntity(resultEntity);
-//                System.out.println("========>>>>resultEntity:"+resultEntity);
-
                 String str = JSON.toJSONString(resultEntity);
                 context.setResponseEntity(str);
-                System.out.println("========>>>>Error result:" + str);
+                context.setResponseMediaType(MediaType.APPLICATION_JSON_TYPE);
 
                 chain.doChain(context);
             }

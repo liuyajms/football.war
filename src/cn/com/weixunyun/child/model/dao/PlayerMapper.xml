@@ -2,27 +2,33 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.com.weixunyun.child.model.dao.PlayerMapper">
 
-    <select id="get" resultType="PlayerVO" parameterType="long">
-        select p.*, dv.name as leg_name
-        from player p
-        left join dictionary_value dv
-        on dv.dictionary_field_code = 'player'
-        and  dictionary_field_code = 'role'
-        where p.id = #{id,jdbcType=NUMERIC}
-    </select>
-
-    <select id="getList" resultType="PlayerVO" parameterType="map">
+    <sql id="BaseSelect">
         select p.*, dv.name as leg_name
         from player p
         left join dictionary_value dv
         on dv.dictionary_field_code = 'player'
         and  dictionary_field_code = 'leg'
+    </sql>
+
+    <select id="get" resultType="PlayerVO" parameterType="long">
+        <include refid="BaseSelect"/>
+        where p.id = #{id,jdbcType=NUMERIC}
+    </select>
+
+    <select id="getList" resultType="PlayerVO" parameterType="map">
+        <include refid="BaseSelect"/>
         <where>
             <if test="city !=null">
                 and p.address like '%'|| #{city}||'%'
             </if>
             <if test="beginAge !=0">
-
+                <![CDATA[
+                and birthday <=
+                ]]>
+                (current_date - (beginAge || ' year')::interval)
+            </if>
+            <if test="endAge !=0">
+                and birthday >= (current_date - (endAge || ' year')::interval)
             </if>
             <if test="role !=null">
                 <![CDATA[
@@ -36,12 +42,11 @@
     </select>
 
     <select id="login" parameterType="map" resultType="PlayerVO">
-        select p.*, dv.name as leg_name
-        from player p
-        left join dictionary_value dv
-        on dv.dictionary_field_code = 'player'
-        and  dictionary_field_code = 'leg'
-        where p.mobile=#{username} and p.password=#{password}
+        <include refid="BaseSelect"/>
+        where p.mobile=#{username}
+        <if test="password !=null">
+            and p.password=#{password}
+        </if>
     </select>
 
     <delete id="delete" parameterType="long">
@@ -64,24 +69,78 @@
       #{password,jdbcType=VARCHAR}, #{enabled,jdbcType=BIT}, #{type,jdbcType=INTEGER}
       )
   </insert>
-    <update id="update" parameterType="Player">
-    update player
-    set name = #{name,jdbcType=VARCHAR},
-      sex = #{sex,jdbcType=NUMERIC},
-      birthday = #{birthday,jdbcType=DATE},
-      height = #{height,jdbcType=NUMERIC},
-      weight = #{weight,jdbcType=NUMERIC},
-      role = #{role,jdbcType=INTEGER},
-      leg = #{leg,jdbcType=NUMERIC},
-      address = #{address,jdbcType=VARCHAR},
-      description = #{description,jdbcType=VARCHAR},
-      px = #{px,jdbcType=NUMERIC},
-      py = #{py,jdbcType=NUMERIC},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      type = #{type,jdbcType=INTEGER}
-    where id = #{id,jdbcType=NUMERIC}
-  </update>
 
+    <update id="update" parameterType="Player" >
+        update player
+        <set >
+            <if test="name != null" >
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null" >
+                sex = #{sex,jdbcType=NUMERIC},
+            </if>
+            <if test="birthday != null" >
+                birthday = #{birthday,jdbcType=DATE},
+            </if>
+            <if test="height != null" >
+                height = #{height,jdbcType=NUMERIC},
+            </if>
+            <if test="weight != null" >
+                weight = #{weight,jdbcType=NUMERIC},
+            </if>
+            <if test="role != null" >
+                role = #{role,jdbcType=INTEGER},
+            </if>
+            <if test="leg != null" >
+                leg = #{leg,jdbcType=NUMERIC},
+            </if>
+            <if test="address != null" >
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null" >
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="px != null" >
+                px = #{px,jdbcType=NUMERIC},
+            </if>
+            <if test="py != null" >
+                py = #{py,jdbcType=NUMERIC},
+            </if>
+            <if test="mobile != null" >
+                mobile = #{mobile,jdbcType=CHAR},
+            </if>
+            <if test="password != null" >
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="enabled != null" >
+                enabled = #{enabled,jdbcType=BIT},
+            </if>
+            <if test="type != null" >
+                type = #{type,jdbcType=INTEGER},
+            </if>
+            update_time=now()
+        </set>
+        where id = #{id,jdbcType=NUMERIC}
+    </update>
+    <!--
+    <update id="update" parameterType="Player">
+        update player
+        set name = #{name,jdbcType=VARCHAR},
+          sex = #{sex,jdbcType=NUMERIC},
+          birthday = #{birthday,jdbcType=DATE},
+          height = #{height,jdbcType=NUMERIC},
+          weight = #{weight,jdbcType=NUMERIC},
+          role = #{role,jdbcType=INTEGER},
+          leg = #{leg,jdbcType=NUMERIC},
+          address = #{address,jdbcType=VARCHAR},
+          description = #{description,jdbcType=VARCHAR},
+          px = #{px,jdbcType=NUMERIC},
+          py = #{py,jdbcType=NUMERIC},
+          update_time = #{updateTime,jdbcType=TIMESTAMP},
+          type = #{type,jdbcType=INTEGER}
+        where id = #{id,jdbcType=NUMERIC}
+  </update>
+-->
     <update id="updated" parameterType="long">
         update player set last_time=now() where id=#{id}
     </update>

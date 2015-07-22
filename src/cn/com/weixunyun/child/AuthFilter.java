@@ -2,6 +2,8 @@ package cn.com.weixunyun.child;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.Filter;
@@ -65,6 +67,9 @@ public class AuthFilter extends AbstractResource implements Filter {
 				return true;
 			}
 		}
+        if (path.equals("/player") && method.equals("POST")) {
+            return true;
+        }
 		return false;
 	}
 
@@ -73,6 +78,7 @@ public class AuthFilter extends AbstractResource implements Filter {
 		noFilterSet.add("/auth");
 		noFilterSet.add("/contact");
 		noFilterSet.add("/global");
+        noFilterSet.add("/player/register");
 	}
 
 }

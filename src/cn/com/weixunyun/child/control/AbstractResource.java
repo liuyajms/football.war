@@ -19,6 +19,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import cn.com.weixunyun.child.model.vo.PlayerVO;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -51,31 +52,11 @@ public abstract class AbstractResource {
 	}
 
 	protected Long getAuthedId(String rsessionid) {
-		Teacher teacher = getAuthedTeacher(rsessionid);
-		if (teacher == null) {
-			Parents parents = getAuthedParents(rsessionid);
-			return parents == null ? null : parents.getId();
-		} else {
-			return teacher.getId();
-		}
+		return getAuthedPlayer(rsessionid).getId();
 	}
 
-	protected String getAuthedName(String rsessionid) {
-		Teacher teacher = getAuthedTeacher(rsessionid);
-		if (teacher == null) {
-			Parents parents = getAuthedParents(rsessionid);
-			return parents == null ? null : parents.getName();
-		} else {
-			return teacher.getName();
-		}
-	}
-
-	protected Teacher getAuthedTeacher(String rsessionid) {
-		return Session.getInstance(rsessionid).get("teacher");
-	}
-
-	protected Parents getAuthedParents(String rsessionid) {
-		return Session.getInstance(rsessionid).get("parents");
+	protected PlayerVO getAuthedPlayer(String rsessionid) {
+		return Session.getInstance(rsessionid).get("player");
 	}
 
 	protected Map<String, PartField> part(MultivaluedMap<String, String> form) {
@@ -233,7 +214,7 @@ public abstract class AbstractResource {
 						}
 					} else if (type == Date.class) {
                         if ((str != null) && (!"".equals(str))) {
-                            method.invoke(t, str);
+                            method.invoke(t, Date.valueOf(str));
                         }
                     } else if (type == Integer.class) {
                         if ((str != null) && (!"".equals(str))) {

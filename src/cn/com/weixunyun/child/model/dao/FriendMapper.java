@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface FriendMapper {
-    void delete(@Param("playerId") Long playerId, @Param("friendPlayerId") Long friendPlayerId);
+    void delete(@Param("playerId") Long playerId, @Param("friendId") Long friendId);
 
     void insert(Friend friend);
 

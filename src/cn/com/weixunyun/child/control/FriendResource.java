@@ -1,9 +1,11 @@
 package cn.com.weixunyun.child.control;
 
 import cn.com.weixunyun.child.Description;
+import cn.com.weixunyun.child.ResultEntity;
 import cn.com.weixunyun.child.model.bean.Friend;
 import cn.com.weixunyun.child.model.service.FriendService;
 import cn.com.weixunyun.child.model.vo.FriendVO;
+import org.apache.http.HttpStatus;
 import org.apache.wink.common.annotations.Workspace;
 
 import javax.ws.rs.*;
@@ -29,23 +31,25 @@ public class FriendResource extends AbstractResource {
 
 
     @POST
-    @Consumes({MediaType.MULTIPART_FORM_DATA})
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     @Description("添加")
-    public void insert(@FormParam("friendPlayerId") Long friendPlayerId, @CookieParam("rsessionid") String rsessionid)
+    public ResultEntity insert(@FormParam("friendId") Long friendId, @CookieParam("rsessionid") String rsessionid)
             throws Exception {
         Friend friend = new Friend();
         friend.setPlayerId(super.getAuthedId(rsessionid));
-        friend.setFriendPlayerId(friendPlayerId);
+        friend.setFriendId(friendId);
 
         super.getService(FriendService.class).insert(friend);
+
+        return new ResultEntity(HttpStatus.SC_OK, "添加成功");
     }
 
 
     @DELETE
-    @Path("{friendPlayerId}")
+    @Path("{friendId}")
     @Description("删除")
-    public void delete(@PathParam("friendPlayerId") Long friendPlayerId, @CookieParam("rsessionid") String rsessionid) {
-        super.getService(FriendService.class).delete(super.getAuthedId(rsessionid), friendPlayerId);
+    public void delete(@PathParam("friendPlayerId") Long friendId, @CookieParam("rsessionid") String rsessionid) {
+        super.getService(FriendService.class).delete(super.getAuthedId(rsessionid), friendId);
     }
 
 

@@ -31,6 +31,14 @@ public class Session {
 		}
 	}
 
+    public static MemcachedClient getMemcachedClient() {
+        return memcachedClient;
+    }
+
+    public static void setMemcachedClient(MemcachedClient memcachedClient) {
+        Session.memcachedClient = memcachedClient;
+    }
+
 	public String getId() {
 		return id;
 	}

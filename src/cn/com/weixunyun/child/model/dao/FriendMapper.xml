@@ -3,10 +3,10 @@
 <mapper namespace="cn.com.weixunyun.child.model.dao.FriendMapper">
 
     <select id="getList" resultType="FriendVO" parameterType="map">
-        select f.*, p.name as friend_player_name
+        select f.*, p.name as friend_name
         from friend f
         left join player p
-        on p.id=f.friend_player_id
+        on p.id=f.friend_id
         where f.player_id=#{playerId}
         <if test="keyword !=null and keyword !=''">
             and p.name like '%'|| #{keyword}||'%'
@@ -19,12 +19,12 @@
 
     <delete id="delete" parameterType="map">
         delete from friend
-        where player_id=#{playerId} and friend_player_id=#{friendPlayerId}
+        where player_id=#{playerId} and friend_id=#{friendId}
      </delete>
 
     <insert id="insert" parameterType="Friend">
-        insert into friend (player_id, friend_player_id)
-        values (#{playerId}, #{friendPlayerId})
+        insert into friend (player_id, friend_id)
+        values (#{playerId}, #{friendId})
     </insert>
 
 </mapper>
