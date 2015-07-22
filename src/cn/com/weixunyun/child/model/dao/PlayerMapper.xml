@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.weixunyun.child.model.dao.PlayerMapper">
+
+    <select id="get" resultType="PlayerVO" parameterType="long">
+        select p.*, dv.name as leg_name
+        from player p
+        left join dictionary_value dv
+        on dv.dictionary_field_code = 'player'
+        and  dictionary_field_code = 'role'
+        where p.id = #{id,jdbcType=NUMERIC}
+    </select>
+
+    <select id="getList" resultType="PlayerVO" parameterType="map">
+        select p.*, dv.name as leg_name
+        from player p
+        left join dictionary_value dv
+        on dv.dictionary_field_code = 'player'
+        and  dictionary_field_code = 'leg'
+        <where>
+            <if test="city !=null">
+                and p.address like '%'|| #{city}||'%'
+            </if>
+            <if test="beginAge !=0">
+
+            </if>
+            <if test="role !=null">
+                <![CDATA[
+                and p.role & #{role} > 0
+                ]]>
+            </if>
+            <if test="keyword !=null and keyword !=''">
+                and ( p.name like '%'|| #{keyword}||'%' )
+            </if>
+        </where>
+    </select>
+
+    <select id="login" parameterType="map" resultType="PlayerVO">
+        select p.*, dv.name as leg_name
+        from player p
+        left join dictionary_value dv
+        on dv.dictionary_field_code = 'player'
+        and  dictionary_field_code = 'leg'
+        where p.mobile=#{username} and p.password=#{password}
+    </select>
+
+    <delete id="delete" parameterType="long">
+    delete from player
+    where id = #{id,jdbcType=NUMERIC}
+  </delete>
+    <insert id="insert" parameterType="Player">
+    insert into player (id, name, sex, 
+      birthday, height, weight, 
+      role, leg, address, 
+      description, px, py, 
+      create_time, update_time, last_time, mobile,
+      password, enabled, type
+      )
+    values (#{id,jdbcType=NUMERIC}, #{name,jdbcType=VARCHAR}, #{sex,jdbcType=NUMERIC}, 
+      #{birthday,jdbcType=DATE}, #{height,jdbcType=NUMERIC}, #{weight,jdbcType=NUMERIC}, 
+      #{role,jdbcType=INTEGER}, #{leg,jdbcType=NUMERIC}, #{address,jdbcType=VARCHAR}, 
+      #{description,jdbcType=VARCHAR}, #{px,jdbcType=NUMERIC}, #{py,jdbcType=NUMERIC}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime}, #{lastTime,jdbcType=TIMESTAMP}, #{mobile,jdbcType=CHAR},
+      #{password,jdbcType=VARCHAR}, #{enabled,jdbcType=BIT}, #{type,jdbcType=INTEGER}
+      )
+  </insert>
+    <update id="update" parameterType="Player">
+    update player
+    set name = #{name,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=NUMERIC},
+      birthday = #{birthday,jdbcType=DATE},
+      height = #{height,jdbcType=NUMERIC},
+      weight = #{weight,jdbcType=NUMERIC},
+      role = #{role,jdbcType=INTEGER},
+      leg = #{leg,jdbcType=NUMERIC},
+      address = #{address,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      px = #{px,jdbcType=NUMERIC},
+      py = #{py,jdbcType=NUMERIC},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      type = #{type,jdbcType=INTEGER}
+    where id = #{id,jdbcType=NUMERIC}
+  </update>
+
+    <update id="updated" parameterType="long">
+        update player set last_time=now() where id=#{id}
+    </update>
+    
+    <update id="updateInfo" parameterType="map">
+        update player
+        <set>
+            <if test="password !=null">
+                password=#{password}
+            </if>
+        </set>
+        update_time=now()
+        where id=#{id}
+    </update>
+</mapper>

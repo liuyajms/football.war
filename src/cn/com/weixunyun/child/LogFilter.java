@@ -11,6 +11,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import cn.com.weixunyun.child.model.bean.Player;
+import cn.com.weixunyun.child.model.vo.PlayerVO;
 import org.apache.commons.io.IOUtils;
 
 import cn.com.weixunyun.child.control.AbstractResource;
@@ -37,7 +39,6 @@ public class LogFilter extends AbstractResource implements Filter {
 			String url = request.getPathInfo();
 			String method = request.getMethod();
 
-			Long schoolId = null;
 			Long userId = null;
 
 			String rsessionid = null;
@@ -53,24 +54,15 @@ public class LogFilter extends AbstractResource implements Filter {
 			if (rsessionid != null) {
 				Session session = Session.getInstance(rsessionid);
 				if (session != null) {
-					School school = session.get("school");
-					if (school != null) {
-						schoolId = school.getId();
-					}
 
-					Teacher teacher = session.get("teacher");
-					if (teacher != null) {
-						userId = teacher.getId();
-					}
-					Parents parents = session.get("parents");
-					if (parents != null) {
-						userId = parents.getId();
+					PlayerVO player = session.get("player");
+					if (player != null) {
+						userId = player.getId();
 					}
 				}
 			}
 
 			Log log = new Log();
-			log.setSchoolId(schoolId);
 			log.setUserId(userId);
 			log.setUrl(url);
 			log.setMethod(method);

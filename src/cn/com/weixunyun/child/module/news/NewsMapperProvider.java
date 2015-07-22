@@ -1,8 +1,8 @@
 package cn.com.weixunyun.child.module.news;
 
-import java.util.Map;
-
 import cn.com.weixunyun.child.model.dao.AbstractMapperProvider;
+
+import java.util.Map;
 
 public class NewsMapperProvider extends AbstractMapperProvider {
 

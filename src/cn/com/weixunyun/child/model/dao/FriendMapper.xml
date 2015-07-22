@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.weixunyun.child.model.dao.FriendMapper">
+
+    <select id="getList" resultType="FriendVO" parameterType="map">
+        select f.*, p.name as friend_player_name
+        from friend f
+        left join player p
+        on p.id=f.friend_player_id
+        where f.player_id=#{playerId}
+        <if test="keyword !=null and keyword !=''">
+            and p.name like '%'|| #{keyword}||'%'
+        </if>
+        order by p.name
+        <if test="rows !=null and rows !=0">
+            limit #{rows} offset #{offset}
+        </if>
+    </select>
+
+    <delete id="delete" parameterType="map">
+        delete from friend
+        where player_id=#{playerId} and friend_player_id=#{friendPlayerId}
+     </delete>
+
+    <insert id="insert" parameterType="Friend">
+        insert into friend (player_id, friend_player_id)
+        values (#{playerId}, #{friendPlayerId})
+    </insert>
+
+</mapper>

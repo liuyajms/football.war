@@ -39,10 +39,8 @@ public class DictionaryValueResource extends AbstractResource {
 
 			DictionaryValueService service = super.getService(DictionaryValueService.class);
 
-			School school = super.getAuthedSchool(rsessionid);
-
-			int total = service.selectAllCount(school.getId(), code);
-			List<DictionaryValue> list = service.getDicValues(school.getId(), code, page * rows, rows);
+			int total = service.selectAllCount(code);
+			List<DictionaryValue> list = service.getDicValues(code, page * rows, rows);
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("total", total);
 			map.put("rows", list);
@@ -62,12 +60,11 @@ public class DictionaryValueResource extends AbstractResource {
 		System.out.println("---------------DictionaryValue------------");
 		System.out.println(keyword);
 		System.out.println();
-		School school = super.getAuthedSchool(rsessionid);
 		DictionaryValueService service = super.getService(DictionaryValueService.class);
 		try {
 			if (keyword != null && !"-1".equals(keyword) && keyword.contains(",")) {
 				String attr[] = keyword.split(",");
-				return service.getValueList(school.getId(), attr[0], attr[1]);
+				return service.getValueList(attr[0], attr[1]);
 			} else {
 				return null;
 			}
@@ -82,11 +79,10 @@ public class DictionaryValueResource extends AbstractResource {
 	@Description("数据字典-值总数")
 	public int selectClassesCount(@CookieParam("rsessionid") String rsessionid, @QueryParam("keyword") String keyword) {
 		DictionaryValueService service = super.getService(DictionaryValueService.class);
-		School school = super.getAuthedSchool(rsessionid);
 		try {
 			if (keyword != null && !"-1".equals(keyword) && keyword.contains(",")) {
 				String attr[] = keyword.split(",");
-				return service.getValueListCount(school.getId(), attr[0], attr[1]);
+				return service.getValueListCount(attr[0], attr[1]);
 			} else {
 				return 0;
 			}
@@ -100,8 +96,7 @@ public class DictionaryValueResource extends AbstractResource {
 	@Description("详情")
 	public DictionaryValue get(@QueryParam("tableCode") String tableCode, @QueryParam("fieldCode") String fieldCode, 
 			@QueryParam("code") String code, @CookieParam("rsessionid") String rsessionid) {
-		School school = super.getAuthedSchool(rsessionid);
-		return super.getService(DictionaryValueService.class).get(school.getId(), tableCode, fieldCode, code);
+		return super.getService(DictionaryValueService.class).get(tableCode, fieldCode, code);
 	}
 
 	@POST
@@ -112,8 +107,6 @@ public class DictionaryValueResource extends AbstractResource {
 		String attr[] = URLDecoder.decode(formData.getFirst("keyword"), "UTF-8").split(",");
 		
 		DictionaryValue dv = super.buildBean(DictionaryValue.class, formData, null);
-		School school = super.getAuthedSchool(rsessionid);
-		dv.setSchoolId(school.getId());
 		dv.setDictionaryTableCode(attr[0]);
 		dv.setDictionaryFieldCode(attr[1]);
 
@@ -134,18 +127,15 @@ public class DictionaryValueResource extends AbstractResource {
 			service.update(dv);
 		} else {
 			//先删除、再添加
-			School school = super.getAuthedSchool(rsessionid);
 			String attr[] = URLDecoder.decode(formData.getFirst("keyword"), "UTF-8").split(",");
 			
 			DictionaryValue d = new DictionaryValue();
 			d.setCode(formData.getFirst("oldCode"));
 			d.setDictionaryFieldCode(attr[1]);
 			d.setDictionaryTableCode(attr[0]);
-			d.setSchoolId(school.getId());
 			super.getService(DictionaryValueService.class).delete(d);
 			
 			DictionaryValue dv = super.buildBean(DictionaryValue.class, formData, null);
-			dv.setSchoolId(school.getId());
 			dv.setDictionaryTableCode(attr[0]);
 			dv.setDictionaryFieldCode(attr[1]);
 			super.getService(DictionaryValueService.class).insert(dv);
@@ -162,11 +152,9 @@ public class DictionaryValueResource extends AbstractResource {
 
 		DictionaryValue d = new DictionaryValue();
 
-		School school = super.getAuthedSchool(rsessionid);
 		d.setCode(code);
 		d.setDictionaryFieldCode(fieldCode);
 		d.setDictionaryTableCode(tableCode);
-		d.setSchoolId(school.getId());
 
 		super.getService(DictionaryValueService.class).delete(d);
 

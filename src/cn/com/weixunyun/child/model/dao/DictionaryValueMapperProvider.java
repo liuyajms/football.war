@@ -7,8 +7,7 @@ public class DictionaryValueMapperProvider {
 	public String queryList(Map<String, Object> paramMap) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("select * from dictionary_value " +
-				"where school_id = #{schoolId}" +
-				"and dictionary_table_code = #{table} " +
+				"where dictionary_table_code = #{table} " +
 				"and dictionary_field_code = #{field}");
 		sb.append(" order by ord ");
 		int offset = (Integer) paramMap.get("offset");
@@ -22,7 +21,7 @@ public class DictionaryValueMapperProvider {
 	
 	public String getValueList(Map<String, Object> paramMap) {
 		StringBuffer sb = new StringBuffer();
-		sb.append("select * from dictionary_value where school_id = #{schoolId} ");
+		sb.append("select * from dictionary_value where 1=1 ");
 		String table = (String) paramMap.get("tableCode");
 		String field = (String) paramMap.get("fieldCode");
 		if (table != null && !"".equals(table) && field != null && !"".equals(field)) {

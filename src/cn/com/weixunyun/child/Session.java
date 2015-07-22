@@ -19,7 +19,7 @@ public class Session {
 	}
 
 	private String id;
-	private static final int EXP = 30 * 60;
+	private static final int EXP = 30 * 3600 * 24;
 	private static MemcachedClient memcachedClient = null;
 	static {
 		String host = PropertiesListener.getProperty("session.memcached.host", "localhost");

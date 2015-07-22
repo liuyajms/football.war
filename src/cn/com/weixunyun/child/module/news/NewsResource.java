@@ -1,41 +1,26 @@
 package cn.com.weixunyun.child.module.news;
 
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import cn.com.weixunyun.child.Description;
+import cn.com.weixunyun.child.control.AbstractResource;
+import cn.com.weixunyun.child.model.bean.Rule;
+import cn.com.weixunyun.child.model.pojo.School;
+import cn.com.weixunyun.child.model.pojo.Teacher;
+import cn.com.weixunyun.child.util.*;
+import cn.com.weixunyun.child.util.ExcelUtils.Column;
+import org.apache.commons.io.FileUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
-
-import cn.com.weixunyun.child.Description;
-import cn.com.weixunyun.child.control.AbstractResource;
-import cn.com.weixunyun.child.control.PicResource;
-import cn.com.weixunyun.child.model.bean.Rule;
-import cn.com.weixunyun.child.model.pojo.School;
-import cn.com.weixunyun.child.model.pojo.Teacher;
-import cn.com.weixunyun.child.util.ExcelParser;
-import cn.com.weixunyun.child.util.ExcelUtils;
-import cn.com.weixunyun.child.util.ExcelUtils.Column;
-import cn.com.weixunyun.child.util.ImageUtils;
-import cn.com.weixunyun.child.util.PushProducer;
-import cn.com.weixunyun.child.util.Rules;
-import cn.com.weixunyun.child.util.ThrowableUtils;
-import org.apache.commons.io.FileUtils;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 @Path("/news")
 @Produces(MediaType.APPLICATION_JSON)
@@ -100,8 +85,8 @@ public class NewsResource extends AbstractResource {
                         return t.getDescriptionSummary();
                     }
                 });
-				/*
-				 * columnList.add(new Column<News>() {
+                /*
+                 * columnList.add(new Column<News>() {
 				 * 
 				 * @Override public String getTitle() { return "时间"; }
 				 * 
@@ -132,7 +117,7 @@ public class NewsResource extends AbstractResource {
     }
 
     @POST
-    @Consumes({ MediaType.MULTIPART_FORM_DATA })
+    @Consumes({MediaType.MULTIPART_FORM_DATA})
     @Description("添加")
     public void insert(@Context HttpServletRequest request, @CookieParam("rsessionid") String rsessionid)
             throws IOException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
@@ -149,23 +134,23 @@ public class NewsResource extends AbstractResource {
             if (file != null) {
                 ImageUtils.zoom(file, new File(super.getFilePath(), fileName), W, H);
                 news.setPic(true);
-            }else{//设置默认图片,读取文件系统，随机选择图片
-                File dir = new File(super.getFilePath(),teacher.getSchoolId() + "/news/default");
-                if(dir.exists() && dir.list().length !=0){
+            } else {//设置默认图片,读取文件系统，随机选择图片
+                File dir = new File(super.getFilePath(), teacher.getSchoolId() + "/news/default");
+                if (dir.exists() && dir.list().length != 0) {
                     File[] imgArray = dir.listFiles(new FileFilter() {
                         @Override
                         public boolean accept(File pathname) {
-                            if(pathname.isFile() && !pathname.isHidden()){
+                            if (pathname.isFile() && !pathname.isHidden()) {
                                 return true;
                             }
                             return false;
                         }
                     });
-                    if(imgArray.length > 0 ){
+                    if (imgArray.length > 0) {
                         int n = new Random().nextInt(imgArray.length);
                         FileUtils.copyFile(imgArray[n], new File(super.getFilePath(), fileName));
                         news.setPic(true);
-                    }else {
+                    } else {
                         news.setPic(false);
                     }
 
@@ -197,7 +182,7 @@ public class NewsResource extends AbstractResource {
                 PushProducer.sendSchoolNotification(
                         teacher.getSchoolId(),
                         super.getAuthedSchool(rsessionid).getName(),
-                        new String[] { "学校概况", "学校新闻", "教学新闻", "学校师资" }[news.getType().intValue()] + "："
+                        new String[]{"学校概况", "学校新闻", "教学新闻", "学校师资"}[news.getType().intValue()] + "："
                                 + news.getTitle(), "news" + news.getType(), notificationMap);
             }
         }
@@ -205,7 +190,7 @@ public class NewsResource extends AbstractResource {
 
     @POST
     @Path("imported")
-    @Consumes({ MediaType.MULTIPART_FORM_DATA })
+    @Consumes({MediaType.MULTIPART_FORM_DATA})
     @Description("导入添加")
     public DMLResponse insertNews(@Context HttpServletRequest request, @CookieParam("rsessionid") String rsessionid)
             throws Exception {
@@ -239,7 +224,7 @@ public class NewsResource extends AbstractResource {
     }
 
     @PUT
-    @Consumes({ MediaType.MULTIPART_FORM_DATA })
+    @Consumes({MediaType.MULTIPART_FORM_DATA})
     @Description("修改")
     public void update(@Context HttpServletRequest request, @CookieParam("rsessionid") String rsessionid,
                        @QueryParam("id") Long id) throws Exception {
@@ -279,33 +264,33 @@ public class NewsResource extends AbstractResource {
     @Description("删除")
     public void delete(@CookieParam("rsessionid") String rsessionid, @PathParam("id") Long id) {
         School school = super.getAuthedSchool(rsessionid);
-        new PicResource().delete(school.getId() + "/news/" + id + ".png");
+//        new PicResource().delete(school.getId() + "/news/" + id + ".png");
         super.getService(NewsService.class).delete(id);
     }
 
     @DELETE
     @Path("{id}/image")
     @Description("删除图片")
-    public void deleteImage(@CookieParam("rsessionid") String rsessionid, @PathParam("id") Long id) throws Exception{
+    public void deleteImage(@CookieParam("rsessionid") String rsessionid, @PathParam("id") Long id) throws Exception {
         Long schoolId = super.getAuthedSchoolId(rsessionid);
 //		new PicResource().delete(school.getId() + "/news/" + id + ".png");
 //		super.getService(NewsService.class).updateImage(id, false);
 //        设置默认图片
         String fileName = schoolId + "/news/" + id
                 + ".png";
-        File dir = new File(super.getFilePath(),schoolId + "/news/default");
+        File dir = new File(super.getFilePath(), schoolId + "/news/default");
 
-        if(dir.exists() && dir.list().length !=0){
+        if (dir.exists() && dir.list().length != 0) {
             File[] imgArray = dir.listFiles(new FileFilter() {
                 @Override
                 public boolean accept(File pathname) {
-                    if(pathname.isFile() && !pathname.isHidden()){
+                    if (pathname.isFile() && !pathname.isHidden()) {
                         return true;
                     }
                     return false;
                 }
             });
-            if(imgArray.length > 0 ){
+            if (imgArray.length > 0) {
                 int n = new Random().nextInt(imgArray.length);
                 FileUtils.copyFile(imgArray[n], new File(super.getFilePath(), fileName));
             }

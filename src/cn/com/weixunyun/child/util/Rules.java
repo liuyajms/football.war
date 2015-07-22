@@ -1,21 +1,10 @@
 package cn.com.weixunyun.child.util;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 import cn.com.weixunyun.child.model.bean.Rule;
-import cn.com.weixunyun.child.util.excel.BoolParser;
-import cn.com.weixunyun.child.util.excel.DateParser;
-import cn.com.weixunyun.child.util.excel.DateTimeParser;
-import cn.com.weixunyun.child.util.excel.DictionaryParser;
-import cn.com.weixunyun.child.util.excel.DoubleParser;
-import cn.com.weixunyun.child.util.excel.IntegerParser;
-import cn.com.weixunyun.child.util.excel.LongParser;
-import cn.com.weixunyun.child.util.excel.PhoneParser;
-import cn.com.weixunyun.child.util.excel.YmParser;
+import cn.com.weixunyun.child.util.excel.*;
+
+import java.util.*;
 
 public class Rules {
 
@@ -77,50 +66,9 @@ public class Rules {
         ExcelParserColumn excelParserColumn = new ExcelParserColumn();
         List<ColumnProperties> list = new ArrayList<ColumnProperties>();
         if ("student".equals(str)) {
+            //TODO
             list = excelParserColumn.getStudentParserList(schoolId);
-        } else if ("teacher".equals(str)) {
-            list = excelParserColumn.getTeacherParserList(schoolId);
-        } else if ("classes".equals(str)) {
-            list = excelParserColumn.getClassesParserList(schoolId);
-        } else if ("student_grow".equals(str)) {
-            list = excelParserColumn.getStudentGrowParserList(schoolId);
-        } else if ("course_score".equals(str)) {
-            list = excelParserColumn.getCourseScoreParserList(schoolId);
-        } else if ("course_knowledge".equals(str)) {
-            list = excelParserColumn.getCourseKnowledgeParserList(schoolId);
-        } else if ("course_classroom".equals(str)) {
-            list = excelParserColumn.getCourseClassroomParserList(schoolId);
-        } else if ("course_evaluation".equals(str)) {
-            list = excelParserColumn.getCourseEvaluationParserList(schoolId);
-        } else if ("download".equals(str)) {
-            list = excelParserColumn.getDownloadParserList(schoolId);
-        } else if ("news".equals(str)) {
-            list = excelParserColumn.getNewsParserList(schoolId);
-        } else if ("notice".equals(str)) {
-            list = excelParserColumn.getNoticeParserList(schoolId);
-        } else if ("broadcastGrade".equals(str)) {
-            list = excelParserColumn.getBroadcastGradeParserList(schoolId);
-        } else if ("broadcastClasses".equals(str)) {
-            list = excelParserColumn.getBroadcastClassesParserList(schoolId);
-        } else if ("elective".equals(str)) {
-            list = excelParserColumn.getElectiveParserList(schoolId);
-        } else if ("weiboClasses".equals(str)) {
-            list = excelParserColumn.getWeiboClassesParserList(schoolId);
-        } else if ("star".equals(str)) {
-            list = excelParserColumn.getStarParserList(schoolId);
-        } else if ("cook".equals(str)) {
-            list = excelParserColumn.getCookParserList(schoolId);
-        } else if ("course".equals(str)) {
-            list = excelParserColumn.getCourseParserList(schoolId);
-        } else if ("electiveStudent".equals(str)) {
-            list = excelParserColumn.getElectiveStudentParserList(schoolId);
-        } else if ("curriculum".equals(str)) {
-            list = excelParserColumn.getCurriculumParserList(schoolId);
-        } else if ("sensitive".equals(str)) {
-            list = excelParserColumn.getSensitiveParserList(schoolId);
-        } else if ("classesTeacher".equals(str)) {
-            list = excelParserColumn.getClassesTeacherParserList(schoolId);
-        } 
+        }
 
         Rule pair = null;
         for (ColumnProperties columnProperties : list) {

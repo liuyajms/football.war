@@ -23,7 +23,7 @@ public interface LogMapper {
 	// Long studentId,
 	// @Param(value = "keyword") String keyword);
 
-	@Insert("insert into log (school_id, user_id, time, url, method) values (#{schoolId}, #{userId}, #{time}, #{url}, #{method})")
+	@Insert("insert into log (user_id, time, url, method) values (#{userId}, #{time}, #{url}, #{method})")
 	public void insert(Log log);
 
 }

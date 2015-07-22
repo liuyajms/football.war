@@ -6,7 +6,6 @@ public class Global implements Serializable {
 	private String codeParent;
 	private String code;
 	private String value;
-	private Long schoolId;
 
 	public void setCodeParent(String codeParent) {
 		this.codeParent = codeParent;
@@ -30,14 +29,6 @@ public class Global implements Serializable {
 
 	public String getValue() {
 		return value;
-	}
-
-	public void setSchoolId(Long schoolId) {
-		this.schoolId = schoolId;
-	}
-
-	public Long getSchoolId() {
-		return schoolId;
 	}
 
 }

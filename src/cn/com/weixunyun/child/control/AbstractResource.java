@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -230,7 +231,15 @@ public abstract class AbstractResource {
 						if ((str != null) && (!"".equals(str))) {
 							method.invoke(t, Double.valueOf(str));
 						}
-					}
+					} else if (type == Date.class) {
+                        if ((str != null) && (!"".equals(str))) {
+                            method.invoke(t, str);
+                        }
+                    } else if (type == Integer.class) {
+                        if ((str != null) && (!"".equals(str))) {
+                            method.invoke(t, Integer.valueOf(str));
+                        }
+                    }
 				}
 			}
 			return t;
@@ -404,22 +413,9 @@ public abstract class AbstractResource {
 
 	protected String getCurrentTerm(Long schoolId) {
 		GlobalService globalService = getService(GlobalService.class);
-		return globalService.select(schoolId, "term", "default").getValue();
+		return globalService.select("term", "default").getValue();
 	}
 
-	/**
-	 * 
-	 * @param schoolId
-	 *            学校
-	 * @param grade
-	 *            年级，如2表示3年级
-	 * @return 班级入学年份，如2012年
-	 */
-	protected int getClassesYear(Long schoolId, int grade) {
-		GlobalService globalService = getService(GlobalService.class);
-		String currentTerm = globalService.select(schoolId, "term", "default").getValue();
-		return getClassesYear(currentTerm, grade);
-	}
 
 	/**
 	 * 
@@ -433,19 +429,6 @@ public abstract class AbstractResource {
 		return Integer.parseInt(currentTerm.substring(0, 4)) - grade;
 	}
 
-	/**
-	 * 
-	 * @param schoolId
-	 *            学校
-	 * @param classesYear
-	 *            班级入学年份，如2012年
-	 * @return 年级，如2表示3年级
-	 */
-	protected int getGrade(Long schoolId, int classesYear) {
-		GlobalService globalService = getService(GlobalService.class);
-		String currentTerm = globalService.select(schoolId, "term", "default").getValue();
-		return getGrade(currentTerm, classesYear);
-	}
 
 	/**
 	 * 

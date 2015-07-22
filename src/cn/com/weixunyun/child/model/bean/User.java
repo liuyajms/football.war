@@ -5,7 +5,8 @@ import java.sql.Timestamp;
 
 public class User implements Serializable {
 
-	private String username;
+    private static final long serialVersionUID = 3129407227371648939L;
+    private String username;
 	private String password;
 	private long schoolId;
 	private String schoolName;

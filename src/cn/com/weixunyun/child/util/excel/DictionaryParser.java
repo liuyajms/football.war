@@ -16,7 +16,7 @@ public class DictionaryParser extends AbstractParser<String> {
 	public String exception;
 
 	public DictionaryParser(Long schoolId, String tableName, String fieldName) {
-		List<DictionaryValue> list = ServiceFactory.getService(DictionaryValueService.class).getValueList(schoolId,
+		List<DictionaryValue> list = ServiceFactory.getService(DictionaryValueService.class).getValueList(
 				tableName, fieldName);
 		
 		this.map = new LinkedHashMap<String, String>();

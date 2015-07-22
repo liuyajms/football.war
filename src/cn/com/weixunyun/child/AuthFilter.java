@@ -65,9 +65,6 @@ public class AuthFilter extends AbstractResource implements Filter {
 				return true;
 			}
 		}
-		if (path.equals("/security/record") && method.equals("POST")) {
-			return true;
-		}
 		return false;
 	}
 

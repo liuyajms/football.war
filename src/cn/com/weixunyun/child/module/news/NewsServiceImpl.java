@@ -1,15 +1,12 @@
 package cn.com.weixunyun.child.module.news;
 
+import cn.com.weixunyun.child.model.dao.SequenceMapper;
+import cn.com.weixunyun.child.model.service.AbstractService;
+import org.apache.ibatis.annotations.Param;
+
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.ibatis.annotations.Param;
-
-import cn.com.weixunyun.child.model.dao.SequenceMapper;
-import cn.com.weixunyun.child.model.service.AbstractService;
-import cn.com.weixunyun.child.module.download.Download;
-import cn.com.weixunyun.child.module.download.DownloadMapper;
 
 public class NewsServiceImpl extends AbstractService implements NewsService {
 
