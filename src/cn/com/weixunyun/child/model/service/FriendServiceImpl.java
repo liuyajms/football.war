@@ -24,4 +24,9 @@ public class FriendServiceImpl extends AbstractService implements FriendService 
                                   @Param("rows") long rows, @Param("offset") long offset) {
         return super.getMapper(FriendMapper.class).getList(playerId, keyword, rows, offset);
     }
+
+    @Override
+    public int isFriend(@Param("playerId") Long playerId, @Param("friendId") Long friendId) {
+        return super.getMapper(FriendMapper.class).isFriend(playerId, friendId);
+    }
 }

@@ -10,6 +10,16 @@ public class PlayerVO extends Player {
 
     private String legName;
 
+    private boolean isFriend;
+
+    public boolean getIsFriend() {
+        return isFriend;
+    }
+
+    public void setIsFriend(boolean isFriend) {
+        this.isFriend = isFriend;
+    }
+
     public List<String> getRoleList() {
         return roleList;
     }

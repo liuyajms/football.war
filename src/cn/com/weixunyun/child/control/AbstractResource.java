@@ -1,6 +1,7 @@
 package cn.com.weixunyun.child.control;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -19,6 +20,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import cn.com.weixunyun.child.Autowired;
 import cn.com.weixunyun.child.model.vo.PlayerVO;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -38,6 +40,21 @@ import cn.com.weixunyun.child.model.service.SequenceService;
 import cn.com.weixunyun.child.model.service.ServiceFactory;
 
 public abstract class AbstractResource {
+
+    protected AbstractResource() {
+        System.out.println("===>>Call AbstractResource Constructor");
+        Field[] fields = this.getClass().getDeclaredFields();
+        for(Field field: fields){
+            field.setAccessible(true);
+            if(field.isAnnotationPresent(Autowired.class)){
+                try {
+                    field.set(this,ServiceFactory.getService(field.getType()));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
 	protected <T> T getService(Class<T> cls) {
 		return ServiceFactory.getService(cls);

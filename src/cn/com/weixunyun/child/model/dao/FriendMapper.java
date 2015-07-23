@@ -14,4 +14,5 @@ public interface FriendMapper {
     List<FriendVO> getList(@Param("playerId") Long playerId, @Param("keyword") String keyword,
                            @Param("rows") long rows, @Param("offset") long offset);
 
+    int isFriend(@Param("playerId") Long playerId, @Param("friendId") Long friendId);
 }

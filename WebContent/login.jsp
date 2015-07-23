@@ -53,9 +53,9 @@
 		$.cookie("rsessionid","<%=UUID.randomUUID().toString()%>");
         $.cookie("code", "eb45324a84d32182e74ac80c71d6f1dc");
 
-		var login = function(schoolId, username, password) {
-			restInsert("rest/auth/teacher", {
-				schoolId : schoolId,
+		var login = function(username, password) {
+			restInsert("rest/auth", {
+//				schoolId : schoolId,
 				username : username,
 				password : password
 			}, null, function(data) {
@@ -80,25 +80,10 @@
 			});
 		};
 		
-		var loginE = function(educationId, username, password) {
-			restInsert(EDUCATION_HOST+"/rest/auth/education", {
-				educationId : educationId,
-				username : username,
-				password : password
-			}, null, function(data) {
-				if (data == null || data == "") {
-					alert("登录失败！");
-				} else {
-					$.cookie("rsessionid", data.rsessionid,{path:'/education_spring'});
-					location.href = EDUCATION_HOST +"/index.jsp";
-				}
-			});
-		};
-		
-		
 
 		$("#button").click(function() {
-			restSelect("rest/auth", {
+            login($("#username").val(), $("#password").val());
+			/*restSelect("rest/auth", {
 				username : $("#username").val(),
 				password : $("#password").val(),
 				imgCode:$("#imgCode").val()
@@ -120,7 +105,7 @@
 				} else {
 					alert("登录失败！");
 				}
-			});
+			});*/
 		});
 		
 		$('#img').on('click',function(){

@@ -27,8 +27,8 @@ public class PlayerServiceImpl extends AbstractService implements PlayerService 
         PlayerVO player = super.getMapper(PlayerMapper.class).get(id);
 
         //查询数据字典
-        List<DictionaryValue> ruleList = super.getMapper(DictionaryValueMapper.class).getValueList("player", "role");
-        setRoleList(ruleList, player);
+        List<DictionaryValue> roleList = super.getMapper(DictionaryValueMapper.class).getValueList("player", "role");
+        setRoleList(roleList, player);
 
         return player;
     }
@@ -40,10 +40,10 @@ public class PlayerServiceImpl extends AbstractService implements PlayerService 
                 .getList(city, role, beginAge, endAge, keyword, rows, offset);
 
         //查询数据字典
-        List<DictionaryValue> ruleList = super.getMapper(DictionaryValueMapper.class).getValueList("player", "role");
+        List<DictionaryValue> roleList = super.getMapper(DictionaryValueMapper.class).getValueList("player", "role");
 
         for (PlayerVO player : playerVOList) {
-            setRoleList(ruleList, player);
+            setRoleList(roleList, player);
         }
         return playerVOList;
     }
@@ -51,7 +51,8 @@ public class PlayerServiceImpl extends AbstractService implements PlayerService 
     private PlayerVO setRoleList(List<DictionaryValue> roleList, PlayerVO playerVO) {
         List<String> nameList = new ArrayList<String>();
         for (DictionaryValue value : roleList) {
-            if ((Integer.parseInt(value.getCode()) & playerVO.getRole()) > 0) {
+            if (playerVO.getRole() != null
+                    && (Integer.parseInt(value.getCode()) & playerVO.getRole()) > 0) {
                 nameList.add(value.getName());
             }
         }

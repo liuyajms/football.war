@@ -1,9 +1,11 @@
 package cn.com.weixunyun.child.control;
 
+import cn.com.weixunyun.child.Autowired;
 import cn.com.weixunyun.child.Description;
 import cn.com.weixunyun.child.ResultEntity;
 import cn.com.weixunyun.child.UserType;
 import cn.com.weixunyun.child.model.bean.Player;
+import cn.com.weixunyun.child.model.service.FriendService;
 import cn.com.weixunyun.child.model.service.PlayerService;
 import cn.com.weixunyun.child.model.vo.PlayerVO;
 import cn.com.weixunyun.child.util.ImageUtils;
@@ -29,6 +31,8 @@ import java.util.Map;
 @Description("球员")
 public class PlayerResource extends AbstractResource {
 
+    @Autowired
+    private PlayerService service;
 
     @GET
     @Description("列表")
@@ -46,8 +50,16 @@ public class PlayerResource extends AbstractResource {
     @GET
     @Path("{id}")
     @Description("详情")
-    public PlayerVO select(@PathParam("id") long id) {
-        return super.getService(PlayerService.class).get(id);
+    public PlayerVO select(@CookieParam("rsessionid") String rsessionid, @PathParam("id") long id) {
+
+        PlayerVO playerVO = service.get(id);
+        //判断当前登录人是否与查询的球员为同一人
+        Long myId = super.getAuthedId(rsessionid);
+        if (myId != id) {
+            //判断是否为好友
+            playerVO.setIsFriend(super.getService(FriendService.class).isFriend(myId, id) > 0);
+        }
+        return playerVO;
     }
 
 

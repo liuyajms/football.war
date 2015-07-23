@@ -7,6 +7,7 @@ import org.apache.wink.server.handlers.*;
 import org.apache.wink.server.internal.handlers.SearchResult;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.*;
 
 public class WinkHandlersFactory extends HandlersFactory {
@@ -116,12 +117,20 @@ public class WinkHandlersFactory extends HandlersFactory {
 
                 if (obj == null || obj.getClass() != ResultEntity.class) {
 
-                    String msg = "";
-                    if(obj == null){
+                    if(!context.getHttpMethod().equals("GET")){
                         context.setResponseStatusCode(HttpStatus.SC_OK);
-                        msg = "无数据";
                     }
-                    ResultEntity resultEntity = new ResultEntity(context.getResponseStatusCode(), msg, obj);
+//                    if(context.getHttpMethod())
+//                    String msg = "";
+//                    if(obj == null){
+//                        context.setResponseStatusCode(HttpStatus.SC_OK);
+//                        msg = "无数据";
+//                    }
+
+                    int code = context.getResponseStatusCode();
+                    ResultEntity resultEntity = new ResultEntity(code,
+                            Response.Status.fromStatusCode(code).getReasonPhrase(),
+                            context.getResponseEntity());
 
                     String str = JSON.toJSONString(resultEntity, SerializerFeature.WriteMapNullValue);
 
@@ -154,8 +163,10 @@ public class WinkHandlersFactory extends HandlersFactory {
             @Override
             public void handleResponse(MessageContext context, HandlersChain chain) throws Throwable {
 
-                ResultEntity resultEntity = new ResultEntity(context.getResponseStatusCode(),
-                        "",
+                int code = context.getResponseStatusCode();
+
+                ResultEntity resultEntity = new ResultEntity(code,
+                        Response.Status.fromStatusCode(code).getReasonPhrase(),
                         context.getResponseEntity());
 
                 String str = JSON.toJSONString(resultEntity);

@@ -21,14 +21,14 @@
             <if test="city !=null">
                 and p.address like '%'|| #{city}||'%'
             </if>
-            <if test="beginAge !=0">
+            <if test="beginAge !=null">
                 <![CDATA[
                 and birthday <=
                 ]]>
-                (current_date - (beginAge || ' year')::interval)
+                (current_date - (#{beginAge} || ' year')::interval)
             </if>
-            <if test="endAge !=0">
-                and birthday >= (current_date - (endAge || ' year')::interval)
+            <if test="endAge !=null">
+                and birthday >= (current_date - (#{endAge} || ' year')::interval)
             </if>
             <if test="role !=null">
                 <![CDATA[
@@ -36,9 +36,13 @@
                 ]]>
             </if>
             <if test="keyword !=null and keyword !=''">
-                and ( p.name like '%'|| #{keyword}||'%' )
+                and ( p.name like '%'|| #{keyword}||'%' or p.mobile like '%'|| #{keyword}||'%')
             </if>
         </where>
+        order by p.id desc
+        <if test="rows !=null and rows !=0">
+            limit #{rows} offset #{offset}
+        </if>
     </select>
 
     <select id="login" parameterType="map" resultType="PlayerVO">

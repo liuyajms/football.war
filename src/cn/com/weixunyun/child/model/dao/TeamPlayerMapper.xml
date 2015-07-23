@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.weixunyun.child.model.dao.TeamPlayerMapper">
+
+    <select id="getList" resultType="TeamPlayerVO" parameterType="map">
+        SELECT
+          tp.*, P . NAME AS player_name,
+          T . NAME AS team_name
+        FROM
+          team_player tp
+        LEFT JOIN player P ON P . ID = tp.player_id
+        LEFT JOIN team T ON T . ID = tp.team_id
+        <where>
+            <if test="teamId !=null">
+                and tp.team_id=#{teamId}
+            </if>
+            <if test="playerId !=null">
+                and tp.player_id=#{playerId}
+            </if>
+            <if test="keyword !=null and keyword !=''">
+                and p.name like '%'|| #{keyword}||'%'
+            </if>
+        </where>
+        order by p.name
+    </select>
+
+    <delete id="delete" parameterType="map">
+        delete from friend
+        where player_id=#{playerId} and team_id=#{teamId}
+     </delete>
+
+    <insert id="insert" parameterType="Friend">
+        insert into team_player (player_id, team_id)
+        values (#{playerId}, #{teamId})
+    </insert>
+
+</mapper>

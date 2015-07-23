@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.weixunyun.child.model.dao.CourtMapper">
+
+    <select id="get" resultType="CourtVO" parameterType="long">
+        select c.* from court
+        where c.id = #{id,jdbcType=NUMERIC}
+    </select>
+
+    <select id="getList" resultType="CourtVO" parameterType="map">
+        select c.* from court
+        <where>
+            <if test="city !=null">
+                and c.address like '%'|| #{city}||'%'
+            </if>
+            <if test="rule !=null">
+                <![CDATA[
+                and c.rule & #{rule} > 0
+                ]]>
+            </if>
+            <if test="keyword !=null and keyword !=''">
+                and ( c.name like '%'|| #{keyword}||'%' or c.mobile like '%'|| #{keyword}||'%')
+            </if>
+        </where>
+        order by c.id desc
+        <if test="rows !=null and rows !=0">
+            limit #{rows} offset #{offset}
+        </if>
+    </select>
+
+    <delete id="delete" parameterType="long">
+        delete from court
+        where id = #{id,jdbcType=NUMERIC}
+    </delete>
+    <insert id="insert" parameterType="Court">
+        insert into court (id, name, rule,
+          mobile, address, px,
+          py, open_time, description,
+          tmp, create_time, create_player_id, update_time
+        )
+        values (#{id,jdbcType=NUMERIC}, #{name,jdbcType=VARCHAR}, #{rule,jdbcType=INTEGER},
+          #{mobile,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{px,jdbcType=NUMERIC},
+          #{py,jdbcType=NUMERIC}, #{openTime,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
+          #{tmp,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP}, #{createPlayerId,jdbcType=NUMERIC},
+          #{updateTime}
+    </insert>
+
+    <update id="update" parameterType="Court" >
+        update court
+        <set >
+            <if test="name != null" >
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="rule != null" >
+                rule = #{rule,jdbcType=INTEGER},
+            </if>
+            <if test="mobile != null" >
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null" >
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="px != null" >
+                px = #{px,jdbcType=NUMERIC},
+            </if>
+            <if test="py != null" >
+                py = #{py,jdbcType=NUMERIC},
+            </if>
+            <if test="openTime != null" >
+                open_time = #{openTime,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null" >
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="tmp != null" >
+                tmp = #{tmp,jdbcType=BIT},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createPlayerId != null" >
+                create_player_id = #{createPlayerId,jdbcType=NUMERIC},
+            </if>
+        </set>
+        where id = #{id,jdbcType=NUMERIC}
+    </update>
+    <update id="updated" parameterType="long">
+        update court set update_time=now() where id=#{id}
+    </update>
+</mapper>

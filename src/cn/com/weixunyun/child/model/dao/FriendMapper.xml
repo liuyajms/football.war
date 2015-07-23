@@ -2,6 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.com.weixunyun.child.model.dao.FriendMapper">
 
+    <select id="isFriend" parameterType="map" resultType="int">
+        select count(*) from friend where player_id=#{playerId} and friend_id=#{friendId}
+    </select>
+
     <select id="getList" resultType="FriendVO" parameterType="map">
         select f.*, p.name as friend_name
         from friend f

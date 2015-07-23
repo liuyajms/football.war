@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.weixunyun.child.model.dao.TeamMapper">
+
+    <sql id="BaseSelect">
+        select t.*, c.name as court_name
+        from team t
+        left join court c
+        on c.id = t.court_id
+    </sql>
+
+    <select id="get" resultType="TeamVO" parameterType="long">
+        select t.* , c.name as court_name,
+        (select count(*) from team_player tp where tp.team_id=t.id) as player_count,
+        (select avg(age) from player p join team_player tp
+        on p.id=tp.player_id
+        where tp.team_id=t.id) as avg_age
+        from team t
+        left join court c
+        on c.id = t.court_id
+        where t.id = #{id,jdbcType=NUMERIC}
+    </select>
+
+    <select id="getList" resultType="TeamVO" parameterType="map">
+        select t.*,
+        (select count(*) from team_player tp where tp.team_id=t.id) as player_count
+        from team t
+        <where>
+            <if test="city !=null">
+                and t.address like '%'|| #{city}||'%'
+            </if>
+            <if test="beginAge !=null">
+                <![CDATA[
+                and birthday <=
+                ]]>
+                (current_date - (beginAge || ' year')::interval)
+            </if>
+            <if test="endAge !=null">
+                and birthday >= (current_date - (endAge || ' year')::interval)
+            </if>
+            <if test="rule !=null">
+                <![CDATA[
+                and t.rule & #{rule} > 0
+                ]]>
+            </if>
+            <if test="keyword !=null and keyword !=''">
+                and ( t.name like '%'|| #{keyword}||'%' )
+            </if>
+            <choose>
+                <when test="sourceId !=null">
+                    and t.source_id=#{sourceId}
+                </when>
+                <otherwise>
+                    and t.source_id is null
+                </otherwise>
+            </choose>
+        </where>
+        order by t.id desc
+        <if test="rows !=null and rows !=0">
+            limit #{rows} offset #{offset}
+        </if>
+    </select>
+
+    <delete id="delete" parameterType="long">
+        delete from team
+        where id = #{id,jdbcType=NUMERIC}
+    </delete>
+
+    <insert id="insert" parameterType="Team" >
+    insert into team (id, name, rule,
+      color, court_id, address,
+      description, source_id, create_time,
+      create_player_id, update_time)
+    values (#{id,jdbcType=NUMERIC}, #{name,jdbcType=VARCHAR}, #{rule,jdbcType=INTEGER},
+      #{color,jdbcType=INTEGER}, #{courtId,jdbcType=NUMERIC}, #{address,jdbcType=VARCHAR},
+      #{description,jdbcType=VARCHAR}, #{sourceId}, #{createTime,jdbcType=TIMESTAMP},
+      #{createPlayerId,jdbcType=NUMERIC}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+
+    <update id="update" parameterType="Team" >
+        update team
+        <set >
+            <if test="name != null" >
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="rule != null" >
+                rule = #{rule,jdbcType=INTEGER},
+            </if>
+            <if test="color != null" >
+                color = #{color,jdbcType=INTEGER},
+            </if>
+            <if test="courtId != null" >
+                court_id = #{courtId,jdbcType=NUMERIC},
+            </if>
+            <if test="address != null" >
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null" >
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="createPlayerId != null" >
+                create_player_id = #{createPlayerId,jdbcType=NUMERIC},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=NUMERIC}
+    </update>
+
+    <update id="updated" parameterType="long">
+        update player set last_time=now() where id=#{id}
+    </update>
+    
+</mapper>

@@ -81,7 +81,7 @@ public class AuthResource extends AbstractResource {
                 .login(username, DigestUtils.md5Hex(password));
 
         if (playerVO == null || playerVO.getId() == null) {
-            return null;
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         } else {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("player", playerVO);

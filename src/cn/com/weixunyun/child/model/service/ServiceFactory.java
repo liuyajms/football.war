@@ -1,5 +1,6 @@
 package cn.com.weixunyun.child.model.service;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -7,6 +8,7 @@ import java.lang.reflect.Proxy;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import cn.com.weixunyun.child.Autowired;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -55,6 +57,19 @@ public class ServiceFactory {
 			try {
 				session = sessionFactory.openSession();
 				obj.getClass().getMethod("setSession", SqlSession.class).invoke(obj, session);
+
+                Field[] fields = obj.getClass().getDeclaredFields();
+                for(Field field: fields){
+                    field.setAccessible(true);
+                    if(field.isAnnotationPresent(Autowired.class)){
+                        try {
+                            field.set(obj,session.getMapper(field.getType()));
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
 				Object result = method.invoke(obj, args);
 				session.commit();
 				return result;
