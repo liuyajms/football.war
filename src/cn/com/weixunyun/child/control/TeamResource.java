@@ -68,21 +68,6 @@ public class TeamResource extends AbstractResource {
 
     }
 
-    private Integer getParamValue(Map<String, PartField> map, String field) {
-        Integer rule = null;
-        if (map.containsKey(field)) {
-            String roleValue = map.get(field).getValue();
-            if (roleValue != null && !roleValue.equals("")) {
-                rule = 0;
-                for (String str : roleValue.split(",")) {
-                    rule += Integer.parseInt(str);
-                }
-                map.remove(field);
-            }
-        }
-        return rule;
-    }
-
 
     @PUT
     @Path("{id}")
@@ -105,19 +90,6 @@ public class TeamResource extends AbstractResource {
         super.getService(TeamService.class).update(team);
     }
 
-    private void updateImage(Map<String, PartField> map, Long id) throws IOException {
-        PartField imageField = map.get("image");
-        if (imageField != null) {
-            File file = imageField.getFile();
-            if (file != null) {
-                FileUtils.copyFile(file, new File(super.getFilePath(), "team/" + id
-                        + "@l.png"));
-                ImageUtils.zoom(file, new File(super.getFilePath(), "team/" + id
-                        + ".png"));
-            }
-        }
-    }
-
 
     @PUT
     @Path("{id}/image")
@@ -135,6 +107,7 @@ public class TeamResource extends AbstractResource {
     public void delete(@PathParam("id") Long id, @CookieParam("rsessionid") String rsessionid) {
 
         new PicResource().delete("/team/" + id + ".png");
+
         super.getService(TeamService.class).delete(id);
 
     }

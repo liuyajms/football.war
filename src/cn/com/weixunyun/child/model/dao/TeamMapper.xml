@@ -10,15 +10,34 @@
     </sql>
 
     <select id="get" resultType="TeamVO" parameterType="long">
-        select t.* , c.name as court_name,
-        (select count(*) from team_player tp where tp.team_id=t.id) as player_count,
-        (select avg(age) from player p join team_player tp
-        on p.id=tp.player_id
-        where tp.team_id=t.id) as avg_age
-        from team t
-        left join court c
-        on c.id = t.court_id
-        where t.id = #{id,jdbcType=NUMERIC}
+        SELECT
+        T .*, C . NAME AS court_name,
+        (
+            SELECT
+                COUNT (*)
+            FROM
+                team_player tp
+            WHERE
+                tp.team_id = T . ID
+        ) AS player_count,
+        (
+            SELECT
+                EXTRACT (
+                    YEAR
+                    FROM
+                        AVG (age(now(), birthday))
+                )
+            FROM
+                player P
+            JOIN team_player tp ON P . ID = tp.player_id
+            WHERE
+                tp.team_id = T . ID
+        ) AS avg_age
+    FROM
+        team T
+    LEFT JOIN court C ON C . ID = T .court_id
+        WHERE
+            T . ID = #{id,jdbcType=NUMERIC}
     </select>
 
     <select id="getList" resultType="TeamVO" parameterType="map">

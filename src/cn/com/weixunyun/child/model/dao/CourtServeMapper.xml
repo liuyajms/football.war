@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.weixunyun.child.model.dao.CourtServeMapper">
+    
+    <select id="getList" resultType="CourtServeVO" parameterType="map">
+        select cs.*, s.name as serve_name
+        from court_serve cs
+        left join serve s
+        on 
+          s.id=cs.serve_id
+        <where>
+            <if test="keyword !=null and keyword !=''">
+                and s.name like '%'|| #{keyword}||'%'
+            </if>    
+        </where>
+        order by s.ord, s.name
+    </select>
+
+    <delete id="delete" parameterType="map">
+        delete from court_serve
+        where court_id=#{courtId}
+        <if test="serveId !=null">
+             and serve_id=#{serveId}
+        </if>
+     </delete>
+
+    <insert id="insert" parameterType="CourtServe">
+        insert into court_serve(court_id, serve_id)
+        values (#{courtId}, #{serveId})
+    </insert>
+
+</mapper>

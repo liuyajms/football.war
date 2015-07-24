@@ -18,7 +18,7 @@
                 and tp.player_id=#{playerId}
             </if>
             <if test="keyword !=null and keyword !=''">
-                and p.name like '%'|| #{keyword}||'%'
+                and (p.name like '%'|| #{keyword}||'%' or t.name like '%'|| #{keyword}||'%')
             </if>
         </where>
         order by p.name

@@ -166,7 +166,9 @@ public class WinkHandlersFactory extends HandlersFactory {
                 int code = context.getResponseStatusCode();
 
                 ResultEntity resultEntity = new ResultEntity(code,
-                        Response.Status.fromStatusCode(code).getReasonPhrase(),
+                        Response.Status.fromStatusCode(code) !=null
+                                ? Response.Status.fromStatusCode(code).getReasonPhrase():
+                                "请求错误",
                         context.getResponseEntity());
 
                 String str = JSON.toJSONString(resultEntity);

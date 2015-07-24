@@ -2,15 +2,11 @@ package cn.com.weixunyun.child.model.dao;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.SelectProvider;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import cn.com.weixunyun.child.model.pojo.DictionaryValue;
 
+@CacheNamespace
 public interface DictionaryValueMapper {
 	@SelectProvider(type = DictionaryValueMapperProvider.class, method = "queryList")
 	public List<DictionaryValue> getDicValues(@Param(value = "code") String code,@Param(value = "offset") int offset, @Param(value = "rows") int rows);

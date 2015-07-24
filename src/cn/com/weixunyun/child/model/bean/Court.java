@@ -27,7 +27,17 @@ public class Court implements Serializable{
 
     private Timestamp createTime;
 
+    private Timestamp updateTime;
+
     private Long createPlayerId;
+
+    public Timestamp getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Timestamp updateTime) {
+        this.updateTime = updateTime;
+    }
 
     public Long getId() {
         return id;

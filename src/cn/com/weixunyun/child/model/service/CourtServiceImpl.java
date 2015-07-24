@@ -3,6 +3,7 @@ package cn.com.weixunyun.child.model.service;
 import cn.com.weixunyun.child.Autowired;
 import cn.com.weixunyun.child.model.bean.Court;
 import cn.com.weixunyun.child.model.dao.CourtMapper;
+import cn.com.weixunyun.child.model.dao.CourtServeMapper;
 import cn.com.weixunyun.child.model.vo.CourtVO;
 
 import java.util.List;
@@ -14,6 +15,9 @@ public class CourtServiceImpl extends AbstractService implements CourtService {
 
     @Autowired
     private CourtMapper mapper;
+
+    @Autowired
+    private CourtServeMapper serveMapper;
 
     @Override
     public void delete(Long id) {
@@ -27,6 +31,11 @@ public class CourtServiceImpl extends AbstractService implements CourtService {
 
     @Override
     public CourtVO get(Long id) {
+        CourtVO courtVO = mapper.get(id);
+
+        courtVO.setRuleList(super.getDicValueList("team", "rule", courtVO.getRule()));
+        courtVO.setCourtServeList(super.getMapper(CourtServeMapper.class).getList(id, null));
+
         return mapper.get(id);
     }
 
@@ -43,5 +52,24 @@ public class CourtServiceImpl extends AbstractService implements CourtService {
     @Override
     public void updated(Long id) {
         mapper.updated(id);
+    }
+
+
+    @Override
+    public void insertServe(Court court, String[] serveIds) {
+        mapper.insert(court);
+        serveMapper.delete(court.getId(), null);
+        for (String serveId : serveIds) {
+            serveMapper.insert(court.getId(), Long.parseLong(serveId));
+        }
+    }
+
+    @Override
+    public void updateServe(Court court, String[] serveIds) {
+        mapper.update(court);
+        serveMapper.delete(court.getId(), null);
+        for (String serveId : serveIds) {
+            serveMapper.insert(court.getId(), Long.parseLong(serveId));
+        }
     }
 }

@@ -177,20 +177,6 @@ public class PlayerResource extends AbstractResource {
 
     }
 
-    private void updateImage(Map<String, PartField> map, Long id) throws IOException {
-        PartField imageField = map.get("image");
-        if (imageField != null) {
-            File file = imageField.getFile();
-            if (file != null) {
-                FileUtils.copyFile(file, new File(super.getFilePath(), "player/" + id
-                        + "@l.png"));
-                ImageUtils.zoom(file, new File(super.getFilePath(), "player/" + id
-                        + ".png"));
-            }
-        }
-    }
-
-
     @PUT
     @Path("{id}/image")
     @Consumes({MediaType.MULTIPART_FORM_DATA})

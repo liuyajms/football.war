@@ -3,12 +3,12 @@
 <mapper namespace="cn.com.weixunyun.child.model.dao.CourtMapper">
 
     <select id="get" resultType="CourtVO" parameterType="long">
-        select c.* from court
+        select c.* from court c
         where c.id = #{id,jdbcType=NUMERIC}
     </select>
 
     <select id="getList" resultType="CourtVO" parameterType="map">
-        select c.* from court
+        select c.* from court c
         <where>
             <if test="city !=null">
                 and c.address like '%'|| #{city}||'%'
@@ -42,7 +42,7 @@
           #{mobile,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{px,jdbcType=NUMERIC},
           #{py,jdbcType=NUMERIC}, #{openTime,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
           #{tmp,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP}, #{createPlayerId,jdbcType=NUMERIC},
-          #{updateTime}
+          #{updateTime})
     </insert>
 
     <update id="update" parameterType="Court" >

@@ -1,4 +1,4 @@
-package cn.com.weixunyun.child.module.files;
+package cn.com.weixunyun.child.module.marquee;
 
 public class Files {
     private Long id;

@@ -11,6 +11,16 @@ public class CourtVO extends Court {
 
     private List<String> ruleList;
 
+    private List<CourtServeVO> courtServeList;
+
+    public List<CourtServeVO> getCourtServeList() {
+        return courtServeList;
+    }
+
+    public void setCourtServeList(List<CourtServeVO> courtServeList) {
+        this.courtServeList = courtServeList;
+    }
+
     public List<String> getRuleList() {
         return ruleList;
     }

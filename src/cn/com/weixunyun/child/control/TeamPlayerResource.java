@@ -20,19 +20,32 @@ public class TeamPlayerResource extends AbstractResource {
 
     @GET
     @Description("查询自己参与的球队列表")
-    public List<TeamPlayerVO> getList(@CookieParam("rsessionid") String rsessionid,
-                                      @QueryParam("teamId") Long teamId,
-                                      @QueryParam("keyword") String keyword) {
+    public List<TeamPlayerVO> getTeamList(@CookieParam("rsessionid") String rsessionid,
+                                          @QueryParam("keyword") String keyword) {
 
         return super.getService(TeamPlayerService.class)
-                .getList(teamId, super.getAuthedId(rsessionid), keyword);
+                .getList(null, super.getAuthedId(rsessionid), keyword);
+    }
+
+    @GET
+    @Path("{teamId}")
+    @Description("查询球队的球员列表")
+    public List<TeamPlayerVO> getPlayerList(@CookieParam("rsessionid") String rsessionid,
+                                            @PathParam("teamId") Long teamId,
+                                            @QueryParam("keyword") String keyword) {
+
+        return super.getService(TeamPlayerService.class)
+                .getList(teamId, null, keyword);
     }
 
 
     @POST
+    @Path("{teamId}/{playerId}")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
-    @Description("添加")
-    public ResultEntity insert(@FormParam("teamId") Long teamId, @CookieParam("rsessionid") String rsessionid)
+    @Description("球员加入某个球队")
+    public ResultEntity insert(@PathParam("teamId") Long teamId,
+                               @PathParam("playerId") Long playerId,
+                               @CookieParam("rsessionid") String rsessionid)
             throws Exception {
         TeamPlayer teamPlayer = new TeamPlayer();
         teamPlayer.setPlayerId(super.getAuthedId(rsessionid));

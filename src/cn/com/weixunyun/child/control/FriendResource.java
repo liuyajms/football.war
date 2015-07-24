@@ -48,7 +48,7 @@ public class FriendResource extends AbstractResource {
     @DELETE
     @Path("{friendId}")
     @Description("删除")
-    public void delete(@PathParam("friendPlayerId") Long friendId, @CookieParam("rsessionid") String rsessionid) {
+    public void delete(@PathParam("friendId") Long friendId, @CookieParam("rsessionid") String rsessionid) {
         super.getService(FriendService.class).delete(super.getAuthedId(rsessionid), friendId);
     }
 

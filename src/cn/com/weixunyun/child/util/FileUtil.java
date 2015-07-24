@@ -1,4 +1,4 @@
-package cn.com.weixunyun.child.module.files.util;
+package cn.com.weixunyun.child.util;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
@@ -10,16 +10,41 @@ import java.util.Map;
 public class FileUtil {
 
     /**
+     * 删除参数path路径下的指定文件
+     *
+     * @param path     文件路径
+     * @param fileName 文件名
+     * @return
+     */
+    public static boolean deleteFiles(String path, String[] fileName) {
+        for (String name : fileName) {
+            path = path.endsWith("/") ? path : path + "/";
+            File f1 = new File(path + name);
+            if (f1.exists() && f1.isFile()) {
+                f1.delete();
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * 删除图片文件
      */
     public static boolean deleteImage(String path) {
-        String img;
 
-        img = path.contains("@l.") ? path.replace("@l.", ".") : path.replace(".", "@l.");
+        String img = path.contains("@l") ? path.replace("@l", "") : path.replace(".jpg", "@l.jpg");
 
-        new File(path).delete();
-
-        return new File(img).delete();
+        File f1 = new File(path);
+        File f2 = new File(img);
+        if (f1.exists()) {
+            f1.delete();
+        }
+        if (f2.exists()) {
+            f2.delete();
+        }
+        return true;
     }
 
     /**
@@ -30,8 +55,8 @@ public class FileUtil {
      * @return
      */
     public static boolean deleteImage(String path, Long id) {
-        File f1 = new File(path + id + ".png");
-        File f2 = new File(path + id + "@l.png");
+        File f1 = new File(path + id + ".jpg");
+        File f2 = new File(path + id + "@l.jpg");
         if (f1.exists()) {
             f1.delete();
         }
@@ -53,7 +78,7 @@ public class FileUtil {
 
         if (files != null) {
             for (String s : files.list()) {
-                if (s.startsWith(id + "_") || s.equals(id + ".png") || s.equals(id + "@l.png")) {
+                if (s.startsWith(id + "_") || s.startsWith(id + ".")) {
                     new File(path + "/" + s).delete();
                 }
             }
