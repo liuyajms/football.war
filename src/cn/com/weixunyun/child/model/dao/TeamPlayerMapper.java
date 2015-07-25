@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface TeamPlayerMapper {
-    void delete(@Param("teamId") Long teamId, @Param("playerId") Long playerId);
+    int delete(@Param("teamId") Long teamId, @Param("playerId") Long playerId);
 
     void insert(TeamPlayer teamPlayer);
 

@@ -6,6 +6,8 @@ import org.apache.http.HttpStatus;
 import org.apache.wink.server.handlers.*;
 import org.apache.wink.server.internal.handlers.SearchResult;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.*;
@@ -113,11 +115,16 @@ public class WinkHandlersFactory extends HandlersFactory {
 
                 context.setResponseMediaType(MediaType.APPLICATION_JSON_TYPE);
 
+                if(isWeb(context)){
+                    chain.doChain(context);
+                    return;
+                }
+
                 Object obj = context.getResponseEntity();
 
                 if (obj == null || obj.getClass() != ResultEntity.class) {
 
-                    if(!context.getHttpMethod().equals("GET")){
+                    if (!context.getHttpMethod().equals("GET")) {
                         context.setResponseStatusCode(HttpStatus.SC_OK);
                     }
 //                    if(context.getHttpMethod())
@@ -137,7 +144,7 @@ public class WinkHandlersFactory extends HandlersFactory {
                     context.setResponseEntity(str);
                 }
 
-                System.out.println("========>>>>resultEntity:"+context.getResponseEntity());
+                System.out.println("========>>>>resultEntity:" + context.getResponseEntity());
 
                 chain.doChain(context);
             }
@@ -150,9 +157,26 @@ public class WinkHandlersFactory extends HandlersFactory {
         return handlerList;
     }
 
+    private boolean isWeb(MessageContext context) {
+        boolean isWeb = false;
+        String WEB = "eb45324a84d32182e74ac80c71d6f1dc";
+
+        Cookie[] cookies = context.getAttribute(HttpServletRequest.class).getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("code".equals(cookie.getName()) && WEB.equals(cookie.getValue())) {
+                    isWeb = true;
+                    break;
+                }
+            }
+        }
+        return isWeb;
+    }
+
 
     /**
      * 未找到请求资源时的错误处理
+     *
      * @return
      */
     @Override
@@ -166,8 +190,8 @@ public class WinkHandlersFactory extends HandlersFactory {
                 int code = context.getResponseStatusCode();
 
                 ResultEntity resultEntity = new ResultEntity(code,
-                        Response.Status.fromStatusCode(code) !=null
-                                ? Response.Status.fromStatusCode(code).getReasonPhrase():
+                        Response.Status.fromStatusCode(code) != null
+                                ? Response.Status.fromStatusCode(code).getReasonPhrase() :
                                 "请求错误",
                         context.getResponseEntity());
 

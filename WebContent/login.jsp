@@ -51,7 +51,7 @@
 	$(document).ready(function() {
 
 		$.cookie("rsessionid","<%=UUID.randomUUID().toString()%>");
-        $.cookie("code", "eb45324a84d32182e74ac80c71d6f1dc");
+//        $.cookie("code", "eb45324a84d32182e74ac80c71d6f1dc");
 
 		var login = function(username, password) {
 			restInsert("rest/auth", {
@@ -62,20 +62,9 @@
 				if (data == null || data == "") {
 					alert("登录失败！");
 				} else {
-					var json = "[";
-					$.each(data.classes, function(i, n) {
-						if (i > 0) {
-							json += ",";
-						}
-						json += "{";
-						json += "\"id\":\"" + n.id + "\",";
-						json += "\"name\":\"" + n.name + "\"";
-						json += "}";
-					});
-					json += "]";
-					$.cookie("classes", json);
 					$.cookie("rsessionid", data.rsessionid);
-					location.href = "index.jsp";
+                    alert(1)
+//					location.href = "index.jsp";
 				}
 			});
 		};
@@ -115,7 +104,8 @@
         $('#img').click();
 
         $('#submit').on('click',function(){
-            	login($('#school_name').val(), $("#username").val(), $("#password").val());
+//            	login($('#school_name').val(), $("#username").val(), $("#password").val());
+            login($("#username").val(), $("#password").val());
         });
         
         $('#imgCode').add('#password').add('#username').keydown(function(e){

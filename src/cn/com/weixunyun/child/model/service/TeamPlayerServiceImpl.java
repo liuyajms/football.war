@@ -12,8 +12,8 @@ import java.util.List;
  */
 public class TeamPlayerServiceImpl extends AbstractService implements TeamPlayerService {
     @Override
-    public void delete(@Param("teamId") Long teamId, @Param("playerId") Long playerId) {
-        super.getMapper(TeamPlayerMapper.class).delete(teamId, playerId);
+    public int delete(@Param("teamId") Long teamId, @Param("playerId") Long playerId) {
+        return super.getMapper(TeamPlayerMapper.class).delete(teamId, playerId);
     }
 
     @Override

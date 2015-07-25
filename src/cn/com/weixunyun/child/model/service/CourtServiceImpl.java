@@ -36,12 +36,18 @@ public class CourtServiceImpl extends AbstractService implements CourtService {
         courtVO.setRuleList(super.getDicValueList("team", "rule", courtVO.getRule()));
         courtVO.setCourtServeList(super.getMapper(CourtServeMapper.class).getList(id, null));
 
-        return mapper.get(id);
+        return courtVO;
     }
 
     @Override
     public List<CourtVO> getList(String city, Integer rule, String keyword, long rows, long offset) {
-        return mapper.getList(city, rule, keyword, rows, offset);
+        List<CourtVO> list = mapper.getList(city, rule, keyword, rows, offset);
+
+        for (CourtVO courtVO : list) {
+            courtVO.setRuleList(super.getDicValueList("team", "rule", courtVO.getRule()));
+        }
+
+        return list;
     }
 
     @Override

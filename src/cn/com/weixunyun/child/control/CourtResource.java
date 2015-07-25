@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
 
@@ -42,9 +43,13 @@ public class CourtResource extends AbstractResource {
     @GET
     @Path("{id}")
     @Description("详情")
-    public CourtVO select(@CookieParam("rsessionid") String rsessionid, @PathParam("id") Long id) {
+    public CourtVO select(@PathParam("id") Long id) {
 
-        return service.get(id);
+        try {
+            return service.get(id);
+        }catch (Exception e){
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
     }
 
 

@@ -25,7 +25,7 @@
     </select>
 
     <delete id="delete" parameterType="map">
-        delete from friend
+        delete from team_player
         where player_id=#{playerId} and team_id=#{teamId}
      </delete>
 

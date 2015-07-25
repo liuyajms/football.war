@@ -1,9 +1,12 @@
 package cn.com.weixunyun.child.control;
 
+import cn.com.weixunyun.child.Autowired;
 import cn.com.weixunyun.child.Description;
 import cn.com.weixunyun.child.ResultEntity;
 import cn.com.weixunyun.child.model.bean.TeamPlayer;
+import cn.com.weixunyun.child.model.service.FriendService;
 import cn.com.weixunyun.child.model.service.TeamPlayerService;
+import cn.com.weixunyun.child.model.service.TeamService;
 import cn.com.weixunyun.child.model.vo.TeamPlayerVO;
 import org.apache.http.HttpStatus;
 import org.apache.wink.common.annotations.Workspace;
@@ -17,6 +20,9 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Description("球队成员")
 public class TeamPlayerResource extends AbstractResource {
+
+    @Autowired
+    private TeamPlayerService service;
 
     @GET
     @Description("查询自己参与的球队列表")
@@ -39,32 +45,67 @@ public class TeamPlayerResource extends AbstractResource {
     }
 
 
+    /**
+     * 如果该球员为当前登录者，则无须校验；
+     * 否则，判断该球员是否为当前登录人的好友，如果不是，则禁止加入该球队（待校验：当前登录者是否为该球队队长）
+     *
+     * @param teamId
+     * @param playerId
+     * @param rsessionid
+     * @return
+     * @throws Exception
+     */
     @POST
     @Path("{teamId}/{playerId}")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
-    @Description("球员加入某个球队")
+    @Description("球员加入某个球队（playerId为0则申请加入球队）")
     public ResultEntity insert(@PathParam("teamId") Long teamId,
                                @PathParam("playerId") Long playerId,
                                @CookieParam("rsessionid") String rsessionid)
             throws Exception {
         TeamPlayer teamPlayer = new TeamPlayer();
-        teamPlayer.setPlayerId(super.getAuthedId(rsessionid));
+        teamPlayer.setPlayerId(playerId == 0 ? super.getAuthedId(rsessionid) : playerId);
         teamPlayer.setTeamId(teamId);
 
+        if (super.getAuthedId(rsessionid) != playerId && playerId != 0) {
+            if (super.getService(FriendService.class).isFriend(super.getAuthedId(rsessionid), playerId) == 0) {
+                return new ResultEntity(HttpStatus.SC_FORBIDDEN, "请检查该球员是否为您的好友");
+            }
+        }
         super.getService(TeamPlayerService.class).insert(teamPlayer);
 
         return new ResultEntity(HttpStatus.SC_OK, "加入球队成功");
     }
 
 
+    /**
+     * 如果不是自己申请取消加入该球队，则校验当前操作者的身份，是否为该队队长
+     *
+     * @param teamId
+     * @param playerId
+     * @param rsessionid
+     * @return
+     */
     @DELETE
     @Path("{teamId}/{playerId}")
     @Description("删除(playerId为0则删除自身)")
-    public void delete(@PathParam("teamId") Long teamId,
-                       @PathParam("playerId") Long playerId,
-                       @CookieParam("rsessionid") String rsessionid) {
-        super.getService(TeamPlayerService.class)
-                .delete(playerId == 0 ? super.getAuthedId(rsessionid) : playerId, teamId);
+    public ResultEntity delete(@PathParam("teamId") Long teamId,
+                               @PathParam("playerId") Long playerId,
+                               @CookieParam("rsessionid") String rsessionid) {
+
+        Long authedId = super.getAuthedId(rsessionid);
+        playerId = playerId == 0 ? super.getAuthedId(rsessionid) : playerId;
+
+        if (authedId != playerId) {
+            if (super.getService(TeamService.class).get(teamId).getCreatePlayerId() != authedId) {
+                return new ResultEntity(HttpStatus.SC_FORBIDDEN, "您不是当前球队队长，无权删除该球员");
+            }
+        }
+
+        if (service.delete(teamId, playerId) > 0) {
+            return new ResultEntity(HttpStatus.SC_OK, "删除成功");
+        }
+        return new ResultEntity(HttpStatus.SC_NOT_FOUND, "未找到删除数据");
     }
 
 
