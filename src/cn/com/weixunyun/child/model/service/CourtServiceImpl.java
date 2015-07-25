@@ -2,10 +2,13 @@ package cn.com.weixunyun.child.model.service;
 
 import cn.com.weixunyun.child.Autowired;
 import cn.com.weixunyun.child.model.bean.Court;
+import cn.com.weixunyun.child.model.bean.Favorite;
 import cn.com.weixunyun.child.model.dao.CourtMapper;
 import cn.com.weixunyun.child.model.dao.CourtServeMapper;
+import cn.com.weixunyun.child.model.dao.FavoriteMapper;
 import cn.com.weixunyun.child.model.vo.CourtVO;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -19,6 +22,9 @@ public class CourtServiceImpl extends AbstractService implements CourtService {
     @Autowired
     private CourtServeMapper serveMapper;
 
+    @Autowired
+    private FavoriteMapper favoriteMapper;
+
     @Override
     public void delete(Long id) {
         mapper.delete(id);
@@ -27,6 +33,14 @@ public class CourtServiceImpl extends AbstractService implements CourtService {
     @Override
     public void insert(Court record) {
         mapper.insert(record);
+
+        //加入我的球队收藏
+        Favorite f = new Favorite();
+        f.setPlayerId(record.getCreatePlayerId());
+        f.setCourtId(record.getId());
+        f.setCreateTime(new Timestamp(System.currentTimeMillis()));
+
+        favoriteMapper.insert(f);
     }
 
     @Override
@@ -63,7 +77,7 @@ public class CourtServiceImpl extends AbstractService implements CourtService {
 
     @Override
     public void insertServe(Court court, String[] serveIds) {
-        mapper.insert(court);
+        this.insert(court);
         serveMapper.delete(court.getId(), null);
         for (String serveId : serveIds) {
             serveMapper.insert(court.getId(), Long.parseLong(serveId));
@@ -73,6 +87,7 @@ public class CourtServiceImpl extends AbstractService implements CourtService {
     @Override
     public void updateServe(Court court, String[] serveIds) {
         mapper.update(court);
+        //更新服务信息关联表
         serveMapper.delete(court.getId(), null);
         for (String serveId : serveIds) {
             serveMapper.insert(court.getId(), Long.parseLong(serveId));

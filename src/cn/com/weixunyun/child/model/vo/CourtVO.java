@@ -13,6 +13,16 @@ public class CourtVO extends Court {
 
     private List<CourtServeVO> courtServeList;
 
+    private Boolean isFavorite;
+
+    public Boolean getIsFavorite() {
+        return isFavorite;
+    }
+
+    public void setIsFavorite(Boolean isFavorite) {
+        this.isFavorite = isFavorite;
+    }
+
     public List<CourtServeVO> getCourtServeList() {
         return courtServeList;
     }

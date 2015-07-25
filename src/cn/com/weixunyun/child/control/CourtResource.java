@@ -6,6 +6,7 @@ import cn.com.weixunyun.child.ResultEntity;
 import cn.com.weixunyun.child.model.bean.Court;
 import cn.com.weixunyun.child.model.service.CourtServeService;
 import cn.com.weixunyun.child.model.service.CourtService;
+import cn.com.weixunyun.child.model.service.FavoriteService;
 import cn.com.weixunyun.child.model.vo.CourtVO;
 import org.apache.http.HttpStatus;
 import org.apache.wink.common.annotations.Workspace;
@@ -30,6 +31,9 @@ public class CourtResource extends AbstractResource {
     @Autowired
     private CourtServeService serveService;
 
+    @Autowired
+    private FavoriteService favoriteService;
+
     @GET
     @Description("列表")
     public List<CourtVO> getList(@CookieParam("rsessionid") String rsessionid,
@@ -43,11 +47,15 @@ public class CourtResource extends AbstractResource {
     @GET
     @Path("{id}")
     @Description("详情")
-    public CourtVO select(@PathParam("id") Long id) {
+    public CourtVO select(@CookieParam("rsessionid") String rsessionid, @PathParam("id") Long id) {
 
         try {
-            return service.get(id);
-        }catch (Exception e){
+            CourtVO courtVO = service.get(id);
+
+            courtVO.setIsFavorite(favoriteService.isFavorite(super.getAuthedId(rsessionid), id) > 0);
+
+            return courtVO;
+        } catch (NullPointerException e) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
     }
