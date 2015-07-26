@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.weixunyun.child.model.dao.MatchMapper">
+
+    <sql id="BaseSelect">
+        SELECT
+          M .*, dv. NAME AS rule_name,
+          C .address
+        FROM
+          MATCH M
+        LEFT JOIN dictionary_value dv ON dv.dictionary_table_code = 'team'
+        AND dictionary_field_code = 'rule'
+        AND M . RULE = dv.code :: INTEGER
+        LEFT JOIN court C ON C . ID = M .court_id
+    </sql>
+
+    <select id="get" resultType="MatchVO" parameterType="long">
+        <include refid="BaseSelect"/>
+        where m.id = #{id,jdbcType=NUMERIC}
+    </select>
+
+    <select id="getList" resultType="MatchVO" parameterType="map">
+        <include refid="BaseSelect"/>
+        <where>
+            <if test="city !=null">
+                and m.address like '%'|| #{city}||'%'
+            </if>
+            <if test="rule !=null">
+                <![CDATA[
+                    and m.rule & #{rule} > 0
+                    ]]>
+            </if>
+            <if test="beginDate !=null">
+                and m.begin_time > #{beginDate}
+            </if>
+            <if test="endDate !=null">
+                <![CDATA[
+                    and m.begin_time <= #{endDate}
+                    ]]>
+            </if>
+            <if test="keyword !=null and keyword !=''">
+                and ( m.name like '%'|| #{keyword}||'%' or m.mobile like '%'|| #{keyword}||'%')
+            </if>
+        </where>
+        order by m.begin_time desc
+        <if test="rows !=null and rows !=0">
+            limit #{rows} offset #{offset}
+        </if>
+    </select>
+
+<!--我的球赛-->
+    <select id="getPlayerMatchList" resultType="MatchVO" parameterType="map">
+        select m.*, c.name as court_name
+        from (
+            SELECT m.* from match m
+              join team t on t.id=m.team_id and t.tmp is true
+              join team_player tp on tp.team_id=t.id
+              where tp.player_id=#{playerId}
+            UNION ALL
+            SELECT m.* from match m
+              join team t on t.id=m.accept_team_id and t.tmp is true
+              join team_player tp on tp.team_id=t.id
+              where tp.player_id=#{playerId}
+        ) m
+        left join court c on c.id=m.court_id
+        <where>
+            <if test="beginDate !=null">
+                and m.begin_time > #{beginDate}
+            </if>
+            <if test="endDate !=null">
+                <![CDATA[
+                    and m.begin_time <= #{endDate}
+                    ]]>
+            </if>
+            <if test="keyword !=null and keyword !=''">
+                and ( m.name like '%'|| #{keyword}||'%' or c.name like '%'|| #{keyword}||'%')
+            </if>
+            <if test="type !=null">
+                and m.type=#{type}
+            </if>
+        </where>
+        order by m.begin_time desc
+        <if test="rows !=null and rows !=0">
+            limit #{rows} offset #{offset}
+        </if>
+    </select>
+
+    <delete id="delete" parameterType="long">
+        delete from match
+        where id = #{id,jdbcType=NUMERIC}
+    </delete>
+    <insert id="insert" parameterType="Match">
+        insert into match (id, name, rule,
+          fee, begin_time, end_time,
+          court_id, type, create_time,
+          create_player_id, update_time,
+          team_id, accept_team_id)
+        values (#{id,jdbcType=NUMERIC}, #{name,jdbcType=VARCHAR}, #{rule,jdbcType=INTEGER},
+          #{fee,jdbcType=VARCHAR}, #{beginTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP},
+          #{courtId,jdbcType=NUMERIC}, #{type,jdbcType=NUMERIC}, #{createTime,jdbcType=TIMESTAMP},
+          #{createPlayerId,jdbcType=NUMERIC}, #{updateTime,jdbcType=TIMESTAMP},
+          #{teamId}, #{acceptTeamId})
+    </insert>
+
+    <update id="update" parameterType="Match">
+        update match
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="rule != null">
+                rule = #{rule,jdbcType=INTEGER},
+            </if>
+            <if test="fee != null">
+                fee = #{fee,jdbcType=VARCHAR},
+            </if>
+            <if test="beginTime != null">
+                begin_time = #{beginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="courtId != null">
+                court_id = #{courtId,jdbcType=NUMERIC},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=NUMERIC},
+            </if>
+            <if test="createPlayerId != null">
+                create_player_id = #{createPlayerId,jdbcType=NUMERIC},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="acceptTeamId !=null ">
+                accept_team_id = #{acceptTeamId}
+            </if>
+        </set>
+        where id = #{id,jdbcType=NUMERIC}
+    </update>
+
+</mapper>

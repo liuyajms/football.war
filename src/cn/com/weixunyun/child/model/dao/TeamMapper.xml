@@ -2,16 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.com.weixunyun.child.model.dao.TeamMapper">
 
-    <sql id="BaseSelect">
-        select t.*, c.name as court_name
-        from team t
-        left join court c
-        on c.id = t.court_id
-    </sql>
+    <select id="select" resultType="Team" parameterType="long">
+        select * from team where id=#{id}
+    </select>
 
     <select id="get" resultType="TeamVO" parameterType="long">
         SELECT
         T .*, C . NAME AS court_name,
+        <!--
         (
             SELECT
                 COUNT (*)
@@ -20,6 +18,7 @@
             WHERE
                 tp.team_id = T . ID
         ) AS player_count,
+        -->
         (
             SELECT
                 EXTRACT (
@@ -44,36 +43,35 @@
         select t.*,
         (select count(*) from team_player tp where tp.team_id=t.id) as player_count
         from team t
-        <where>
-            <if test="city !=null">
-                and t.address like '%'|| #{city}||'%'
-            </if>
-            <if test="beginAge !=null">
-                <![CDATA[
+        where t.tmp is not true
+        <if test="city !=null">
+            and t.address like '%'|| #{city}||'%'
+        </if>
+        <if test="beginAge !=null">
+            <![CDATA[
                 and birthday <=
                 ]]>
-                (current_date - (beginAge || ' year')::interval)
-            </if>
-            <if test="endAge !=null">
-                and birthday >= (current_date - (endAge || ' year')::interval)
-            </if>
-            <if test="rule !=null">
-                <![CDATA[
+            (current_date - (beginAge || ' year')::interval)
+        </if>
+        <if test="endAge !=null">
+            and birthday >= (current_date - (endAge || ' year')::interval)
+        </if>
+        <if test="rule !=null">
+            <![CDATA[
                 and t.rule & #{rule} > 0
                 ]]>
-            </if>
-            <if test="keyword !=null and keyword !=''">
-                and ( t.name like '%'|| #{keyword}||'%' )
-            </if>
-            <choose>
-                <when test="sourceId !=null">
-                    and t.source_id=#{sourceId}
-                </when>
-                <otherwise>
-                    and t.source_id is null
-                </otherwise>
-            </choose>
-        </where>
+        </if>
+        <if test="keyword !=null and keyword !=''">
+            and ( t.name like '%'|| #{keyword}||'%' )
+        </if>
+        <choose>
+            <when test="srcTeamId !=null">
+                and t.src_team_id=#{srcTeamId}
+            </when>
+            <otherwise>
+                and t.src_team_id is null
+            </otherwise>
+        </choose>
         order by t.id desc
         <if test="rows !=null and rows !=0">
             limit #{rows} offset #{offset}
@@ -88,12 +86,12 @@
     <insert id="insert" parameterType="Team" >
     insert into team (id, name, rule,
       color, court_id, address,
-      description, source_id, create_time,
-      create_player_id, update_time)
+      description, src_team_id, create_time,
+      create_player_id, update_time, tmp)
     values (#{id,jdbcType=NUMERIC}, #{name,jdbcType=VARCHAR}, #{rule,jdbcType=INTEGER},
       #{color,jdbcType=INTEGER}, #{courtId,jdbcType=NUMERIC}, #{address,jdbcType=VARCHAR},
-      #{description,jdbcType=VARCHAR}, #{sourceId}, #{createTime,jdbcType=TIMESTAMP},
-      #{createPlayerId,jdbcType=NUMERIC}, #{updateTime,jdbcType=TIMESTAMP})
+      #{description,jdbcType=VARCHAR}, #{srcTeamId}, #{createTime,jdbcType=TIMESTAMP},
+      #{createPlayerId,jdbcType=NUMERIC}, #{updateTime,jdbcType=TIMESTAMP}, #{tmp})
   </insert>
 
     <update id="update" parameterType="Team" >

@@ -2,18 +2,15 @@ package cn.com.weixunyun.child.control;
 
 import cn.com.weixunyun.child.Description;
 import cn.com.weixunyun.child.model.bean.Team;
+import cn.com.weixunyun.child.model.bean.TeamPlayer;
 import cn.com.weixunyun.child.model.service.TeamService;
 import cn.com.weixunyun.child.model.vo.TeamVO;
-import cn.com.weixunyun.child.util.ImageUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.wink.common.annotations.Workspace;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -41,8 +38,15 @@ public class TeamResource extends AbstractResource {
     @GET
     @Path("{id}")
     @Description("详情")
-    public TeamVO select(@PathParam("id") long id) {
-        return super.getService(TeamService.class).get(id);
+    public TeamVO select(@PathParam("id") long id, @CookieParam("rsessionid") String rsessionid) {
+        TeamVO teamVO = super.getService(TeamService.class).get(id);
+        teamVO.setIsJoined(false);
+        for (TeamPlayer teamPlayer : teamVO.getTeamPlayerList()) {
+            if (teamPlayer.getPlayerId().equals(super.getAuthedId(rsessionid))) {
+                teamVO.setIsJoined(true);
+            }
+        }
+        return teamVO;
     }
 
 

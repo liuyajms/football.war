@@ -1,13 +1,10 @@
 package cn.com.weixunyun.child.model.service;
 
 import cn.com.weixunyun.child.model.bean.Player;
-import cn.com.weixunyun.child.model.dao.DictionaryValueMapper;
 import cn.com.weixunyun.child.model.dao.PlayerMapper;
-import cn.com.weixunyun.child.model.pojo.DictionaryValue;
 import cn.com.weixunyun.child.model.vo.PlayerVO;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerServiceImpl extends AbstractService implements PlayerService {
@@ -24,13 +21,15 @@ public class PlayerServiceImpl extends AbstractService implements PlayerService 
 
     @Override
     public PlayerVO get(Long id) {
-        PlayerVO player = super.getMapper(PlayerMapper.class).get(id);
+        PlayerVO playerVO = super.getMapper(PlayerMapper.class).get(id);
 
         //查询数据字典
-        List<DictionaryValue> roleList = super.getMapper(DictionaryValueMapper.class).getValueList("player", "role");
-        setRoleList(roleList, player);
+//        List<DictionaryValue> roleList = super.getMapper(DictionaryValueMapper.class).getValueList("player", "role");
+//        setRoleList(roleList, player);
 
-        return player;
+        playerVO.setRoleList(super.getDicValueList("player", "role", playerVO.getRole()));
+
+        return playerVO;
     }
 
     @Override
@@ -39,26 +38,18 @@ public class PlayerServiceImpl extends AbstractService implements PlayerService 
         List<PlayerVO> playerVOList = super.getMapper(PlayerMapper.class)
                 .getList(city, role, beginAge, endAge, keyword, rows, offset);
 
-        //查询数据字典
-        List<DictionaryValue> roleList = super.getMapper(DictionaryValueMapper.class).getValueList("player", "role");
-
-        for (PlayerVO player : playerVOList) {
-            setRoleList(roleList, player);
+        for (PlayerVO playerVO : playerVOList) {
+            playerVO.setRoleList(super.getDicValueList("player", "role", playerVO.getRole()));
         }
+        //查询数据字典
+//        List<DictionaryValue> roleList = super.getMapper(DictionaryValueMapper.class).getValueList("player", "role");
+//
+//        for (PlayerVO player : playerVOList) {
+//            setRoleList(roleList, player);
+//        }
         return playerVOList;
     }
 
-    private PlayerVO setRoleList(List<DictionaryValue> roleList, PlayerVO playerVO) {
-        List<String> nameList = new ArrayList<String>();
-        for (DictionaryValue value : roleList) {
-            if (playerVO.getRole() != null
-                    && (Integer.parseInt(value.getCode()) & playerVO.getRole()) > 0) {
-                nameList.add(value.getName());
-            }
-        }
-        playerVO.setRoleList(nameList);
-        return playerVO;
-    }
 
     @Override
     public void update(Player record) {

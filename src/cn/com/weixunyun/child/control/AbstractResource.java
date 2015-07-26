@@ -289,6 +289,10 @@ public abstract class AbstractResource {
                         if ((str != null) && (!"".equals(str))) {
                             method.invoke(t, Integer.valueOf(str));
                         }
+                    } else if (type == java.util.Date.class) {
+                        if ((str != null) && (!"".equals(str))) {
+                            method.invoke(t, new java.util.Date(Long.parseLong(str)));
+                        }
                     }
                 }
             }

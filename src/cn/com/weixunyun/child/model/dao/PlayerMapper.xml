@@ -6,8 +6,9 @@
         select p.*, dv.name as leg_name
         from player p
         left join dictionary_value dv
-        on dv.dictionary_field_code = 'player'
-        and  dictionary_field_code = 'leg'
+        on dv.dictionary_table_code = 'player'
+        and dictionary_field_code = 'leg'
+        and dv.code=p.leg
     </sql>
 
     <select id="get" resultType="PlayerVO" parameterType="long">

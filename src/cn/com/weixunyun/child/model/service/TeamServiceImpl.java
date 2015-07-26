@@ -1,6 +1,7 @@
 package cn.com.weixunyun.child.model.service;
 
 import cn.com.weixunyun.child.model.bean.Team;
+import cn.com.weixunyun.child.model.bean.TeamPlayer;
 import cn.com.weixunyun.child.model.dao.TeamMapper;
 import cn.com.weixunyun.child.model.dao.TeamPlayerMapper;
 import cn.com.weixunyun.child.model.vo.TeamPlayerVO;
@@ -17,7 +18,19 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
 
     @Override
     public void insert(Team record) {
+        //创建球队，并加入球员
         super.getMapper(TeamMapper.class).insert(record);
+
+        TeamPlayer teamPlayer = new TeamPlayer();
+        teamPlayer.setPlayerId(record.getCreatePlayerId());
+        teamPlayer.setTeamId(record.getId());
+
+        super.getMapper(TeamPlayerMapper.class).insert(teamPlayer);
+    }
+
+    @Override
+    public Team select(Long id) {
+        return super.getMapper(TeamMapper.class).select(id);
     }
 
     @Override
@@ -30,6 +43,7 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
         //查询球队成员
         List<TeamPlayerVO> teamPlayerList = super.getMapper(TeamPlayerMapper.class).getList(id, null, null);
         team.setTeamPlayerList(teamPlayerList);
+        team.setPlayerCount(teamPlayerList.size());
 
         return team;
     }

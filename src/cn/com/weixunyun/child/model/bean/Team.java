@@ -25,14 +25,24 @@ public class Team implements Serializable{
 
     private Long createPlayerId;
 
-    private Long sourceId;
+    private Long srcTeamId;
 
-    public Long getSourceId() {
-        return sourceId;
+    private Boolean tmp;
+
+    public Boolean getTmp() {
+        return tmp;
     }
 
-    public void setSourceId(Long sourceId) {
-        this.sourceId = sourceId;
+    public void setTmp(Boolean tmp) {
+        this.tmp = tmp;
+    }
+
+    public Long getSrcTeamId() {
+        return srcTeamId;
+    }
+
+    public void setSrcTeamId(Long srcTeamId) {
+        this.srcTeamId = srcTeamId;
     }
 
     public Timestamp getUpdateTime() {

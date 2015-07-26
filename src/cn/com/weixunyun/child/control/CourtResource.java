@@ -84,7 +84,7 @@ public class CourtResource extends AbstractResource {
             service.insert(court);
         }
 
-        return new ResultEntity(HttpStatus.SC_OK, "添加球场成功");
+        return new ResultEntity(HttpStatus.SC_OK, "添加球场成功", court);
 
     }
 

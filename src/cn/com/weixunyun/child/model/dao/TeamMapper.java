@@ -11,6 +11,8 @@ public interface TeamMapper {
 
     void insert(Team record);
 
+    Team select(Long id);
+
     TeamVO get(Long id);
 
     List<TeamVO> getList(@Param("city") String city, @Param("rule") Integer rule,
