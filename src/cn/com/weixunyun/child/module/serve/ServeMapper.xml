@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.weixunyun.child.module.serve.ServeMapper">
+
+    <select id="get" resultType="Serve" parameterType="long">
+        select * from serve
+        where id = #{id,jdbcType=NUMERIC}
+    </select>
+
+    <select id="getList" resultType="Serve" parameterType="map">
+        select s.* from serve s
+        <where>
+            <if test="keyword !=null and keyword !=''">
+                and ( s.name like '%'|| #{keyword}||'%')
+            </if>
+        </where>
+        order by s.ord, s.id
+        <if test="rows !=null and rows !=0">
+            limit #{rows} offset #{offset}
+        </if>
+    </select>
+
+    <delete id="delete" parameterType="long">
+        delete from serve
+        where id = #{id,jdbcType=NUMERIC}
+    </delete>
+    <insert id="insert" parameterType="Serve">
+        insert into serve (id, name, ord,
+          create_time, update_time)
+        values (#{id,jdbcType=NUMERIC}, #{name,jdbcType=VARCHAR}, #{ord,jdbcType=INTEGER},
+          #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="update" parameterType="Serve" >
+        update serve
+        <set >
+            <if test="name != null" >
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="ord != null" >
+                ord = #{ord,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=NUMERIC}
+    </update>
+    <update id="updated" parameterType="long">
+        update serve set update_time=now() where id=#{id}
+    </update>
+</mapper>
