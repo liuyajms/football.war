@@ -18,12 +18,13 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
 
     @Override
     public void insert(Team record) {
-        //创建球队，并加入球员
+        //创建球队，并将创建者加入该球队
         super.getMapper(TeamMapper.class).insert(record);
 
         TeamPlayer teamPlayer = new TeamPlayer();
         teamPlayer.setPlayerId(record.getCreatePlayerId());
         teamPlayer.setTeamId(record.getId());
+        teamPlayer.setAgreed(true);
 
         super.getMapper(TeamPlayerMapper.class).insert(teamPlayer);
     }

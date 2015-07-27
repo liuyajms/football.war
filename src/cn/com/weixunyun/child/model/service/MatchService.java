@@ -11,6 +11,6 @@ public interface MatchService extends MatchMapper {
     //创建球赛
     void insertMatch(Team team, Match match);
 
-    //加入球赛应战
-    void addMatch(Team team, Match match);
+    //接受挑战
+    void acceptMatch(Team team, Match match);
 }

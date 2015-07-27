@@ -90,7 +90,7 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
     }
 
     @Override
-    public void addMatch(Team team, Match match) {
+    public void acceptMatch(Team team, Match match) {
         teamService.insert(team);
         matchMapper.update(match);
 //        teamPlayerMapper.insert(teamPlayer);

@@ -29,9 +29,13 @@
         where player_id=#{playerId} and team_id=#{teamId}
      </delete>
 
-    <insert id="insert" parameterType="Friend">
-        insert into team_player (player_id, team_id)
-        values (#{playerId}, #{teamId})
+    <insert id="insert" parameterType="TeamPlayer">
+        insert into team_player (player_id, team_id, create_time, agreed)
+        values (#{playerId}, #{teamId}, now(), #{agreed})
     </insert>
+
+    <update id="agreed" parameterType="map">
+        update team_player set agreed=true where team_id=#{teamId} and player_id=#{playerId}
+    </update>
 
 </mapper>

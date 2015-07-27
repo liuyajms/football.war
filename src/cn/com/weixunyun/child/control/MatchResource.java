@@ -5,19 +5,24 @@ import cn.com.weixunyun.child.Description;
 import cn.com.weixunyun.child.ResultEntity;
 import cn.com.weixunyun.child.model.bean.Match;
 import cn.com.weixunyun.child.model.bean.Team;
+import cn.com.weixunyun.child.model.bean.TeamPlayer;
 import cn.com.weixunyun.child.model.service.MatchService;
+import cn.com.weixunyun.child.model.service.TeamPlayerService;
 import cn.com.weixunyun.child.model.service.TeamService;
 import cn.com.weixunyun.child.model.vo.MatchVO;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.wink.common.annotations.Workspace;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 
 @Workspace(workspaceTitle = "Workspace Title", collectionTitle = "Collection Title")
 @Path("/match")
@@ -30,6 +35,9 @@ public class MatchResource extends AbstractResource {
 
     @Autowired
     private TeamService teamService;
+
+    @Autowired
+    private TeamPlayerService teamPlayerService;
 
     public final static int MATCH_TRAIN = 1;//训练赛
     public final static int MATCH_FRIEND = 2;//友谊赛
@@ -83,12 +91,13 @@ public class MatchResource extends AbstractResource {
 
 
     @POST
-    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
-    @Description("添加球赛，（新建友谊赛时包含srcTeamId字段，新建训练赛时不需要该字段）")
-    public ResultEntity insert(MultivaluedMap<String, String> map, @CookieParam("rsessionid") String rsessionid) {
-
+    @Consumes({MediaType.MULTIPART_FORM_DATA})
+    @Description("新建球赛，（新建友谊赛时包含srcTeamId字段，新建训练赛时不需要该字段）")
+    public ResultEntity insert(@Context HttpServletRequest request, @CookieParam("rsessionid") String rsessionid)
+            throws IOException {
+        Map<String, PartField> map = super.partMulti(request);
         //字段校验
-        if (!map.containsKey("type") || StringUtils.isBlank(map.getFirst("type"))) {
+        if (!map.containsKey("type") || StringUtils.isBlank(map.get("type").getValue())) {
             return new ResultEntity(HttpStatus.SC_BAD_REQUEST, "球赛类型字段为空");
         }
 
@@ -106,38 +115,11 @@ public class MatchResource extends AbstractResource {
             team.setName(teamService.get(team.getSrcTeamId()).getName());
         }
 
+        updateImage(map, team.getId(), "team");
+
         service.insertMatch(team, match);
 
         return new ResultEntity(HttpStatus.SC_OK, "球赛创建成功");
-
-    }
-
-
-    @POST
-    @Path("{id}")
-    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
-    @Description("加入挑战赛，(我要应战)")
-    public ResultEntity addMatch(MultivaluedMap<String, String> map,
-                                 @PathParam("id") Long id,
-                                 @CookieParam("rsessionid") String rsessionid) {
-
-        //先创建临时球队
-        Team team = super.buildBean(Team.class, map, null);
-
-        //加入球赛应战方
-        Match match = service.get(id);
-        match.setAcceptTeamId(team.getId());
-        if (match.getType() != MATCH_FRIEND) {
-            return new ResultEntity(HttpStatus.SC_BAD_REQUEST, "错误请求");
-        }
-
-        team.setCreatePlayerId(super.getAuthedId(rsessionid));
-        team.setTmp(true);
-        team.setName(teamService.get(team.getSrcTeamId()).getName());
-
-        service.addMatch(team, match);
-
-        return new ResultEntity(HttpStatus.SC_OK, "成功接受挑战");
 
     }
 
@@ -146,15 +128,18 @@ public class MatchResource extends AbstractResource {
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     @Description("修改球赛")
-    public ResultEntity update(MultivaluedMap<String, String> map,
-                               @PathParam("id") Long id, @CookieParam("rsessionid") String rsessionid) {
+    public ResultEntity update(@Context HttpServletRequest request, @PathParam("id") Long id,
+                               @CookieParam("rsessionid") String rsessionid) throws IOException {
 
-        Long createId = service.get(id).getCreatePlayerId();
-        if (!super.getAuthedId(rsessionid).equals(createId)) {
+        Match matchVO = service.get(id);
+        if (!super.getAuthedId(rsessionid).equals(matchVO.getCreatePlayerId())) {
             return new ResultEntity(HttpStatus.SC_FORBIDDEN, "请检查是否有权限");
         }
 
+        Map<String, PartField> map = super.partMulti(request);
         Match match = super.buildBean(Match.class, map, id);
+
+        updateImage(map, match.getTeamId(), "team");
 
         service.update(match);
 
@@ -182,5 +167,98 @@ public class MatchResource extends AbstractResource {
         return new ResultEntity(HttpStatus.SC_NOT_FOUND, "未找到删除项");
     }
 
+    /**
+     * 以下为业务功能部分
+     *
+     * @param request
+     * @param id
+     * @param rsessionid
+     * @return
+     * @throws IOException
+     */
 
+    @POST
+    @Path("{id}")
+    @Consumes({MediaType.MULTIPART_FORM_DATA})
+    @Description("接受挑战赛，(我要应战,如果选择球队，则需要srcTeamId字段)")
+    public ResultEntity acceptMatch(@Context HttpServletRequest request,
+                                    @PathParam("id") Long id,
+                                    @CookieParam("rsessionid") String rsessionid) throws IOException {
+
+        //先创建临时球队
+        Map<String, PartField> map = super.partMulti(request);
+        Team team = super.buildBean(Team.class, map, null);
+
+        //加入球赛应战方
+        Match match = service.get(id);
+        match.setAcceptTeamId(team.getId());
+        if (match.getType() != MATCH_FRIEND) {
+            return new ResultEntity(HttpStatus.SC_BAD_REQUEST, "错误请求");
+        }
+
+        team.setCreatePlayerId(super.getAuthedId(rsessionid));
+        team.setTmp(true);
+        team.setName(teamService.get(team.getSrcTeamId()).getName());
+
+        updateImage(map, team.getId(), "team");
+
+        service.acceptMatch(team, match);
+
+        return new ResultEntity(HttpStatus.SC_OK, "成功接受挑战");
+
+    }
+
+
+    @POST
+    @Path("{id}/{teamId}/{playerId}")
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+    @Description("申请或邀请加入球赛，（加入球赛双方中的一队,playerId=0则为申请加入某场球赛）")
+    public ResultEntity addMatch(@PathParam("id") Long id,
+                                 @PathParam("teamId") Long teamId,
+                                 @PathParam("playerId") Long playerId,
+                                 @CookieParam("rsessionid") String rsessionid) {
+
+        TeamPlayer teamPlayer = new TeamPlayer();
+        teamPlayer.setTeamId(teamId);
+
+        if (playerId.equals(super.getAuthedId(rsessionid)) || playerId == 0) {//主动加入
+            teamPlayer.setAgreed(true);
+            teamPlayer.setPlayerId(super.getAuthedId(rsessionid));
+        } else {//队长邀请人参与
+            teamPlayer.setAgreed(false);
+            teamPlayer.setPlayerId(playerId);
+        }
+
+        teamPlayerService.insert(teamPlayer);
+
+        return new ResultEntity(HttpStatus.SC_OK, "加入球赛成功");
+
+    }
+
+
+    @PUT
+    @Path("{id}/{teamId}")
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+    @Description("同意加入球赛")
+    public ResultEntity agreedMatch(@PathParam("id") Long id, @PathParam("teamId") Long teamId,
+                                    @CookieParam("rsessionid") String rsessionid) {
+
+        teamPlayerService.agreed(teamId, super.getAuthedId(rsessionid));
+
+        return new ResultEntity(HttpStatus.SC_OK, "同意加入球赛");
+
+    }
+
+    @DELETE
+    @Path("{id}/{teamId}")
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+    @Description("拒绝加入球赛")
+    public ResultEntity refusedMatch(@PathParam("id") Long id, @PathParam("teamId") Long teamId,
+                                    @CookieParam("rsessionid") String rsessionid) {
+
+        teamPlayerService.delete(teamId, super.getAuthedId(rsessionid));
+
+        return new ResultEntity(HttpStatus.SC_OK, "拒绝加入球赛");
+
+    }
 }

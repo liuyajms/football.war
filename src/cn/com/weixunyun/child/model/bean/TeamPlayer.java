@@ -1,9 +1,33 @@
 package cn.com.weixunyun.child.model.bean;
 
-public class TeamPlayer {
+import java.io.Serializable;
+import java.sql.Timestamp;
+
+public class TeamPlayer implements Serializable {
+    private static final long serialVersionUID = 4637585629841766074L;
     private Long teamId;
 
     private Long playerId;
+
+    private Timestamp createTime;
+
+    private Boolean agreed;
+
+    public Timestamp getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
+    }
+
+    public Boolean getAgreed() {
+        return agreed;
+    }
+
+    public void setAgreed(Boolean agreed) {
+        this.agreed = agreed;
+    }
 
     public Long getTeamId() {
         return teamId;

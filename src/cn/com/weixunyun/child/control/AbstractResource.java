@@ -76,6 +76,11 @@ public abstract class AbstractResource {
         String cls = this.getClass().getSimpleName().replace("Resource", "");
         String dir = cls.substring(0, 1).toLowerCase() + cls.substring(1);
 
+        updateImage(map, id, dir);
+    }
+
+    protected void updateImage(Map<String, PartField> map, Long id, String dir) throws IOException {
+
         PartField imageField = map.get("image");
         if (imageField != null) {
             File file = imageField.getFile();

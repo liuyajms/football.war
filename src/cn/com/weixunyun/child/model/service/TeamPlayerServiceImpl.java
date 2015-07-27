@@ -25,4 +25,9 @@ public class TeamPlayerServiceImpl extends AbstractService implements TeamPlayer
     public List<TeamPlayerVO> getList(@Param("teamId") Long teamId, @Param("playerId") Long playerId, @Param("keyword") String keyword) {
         return super.getMapper(TeamPlayerMapper.class).getList(teamId, playerId, keyword);
     }
+
+    @Override
+    public void agreed(@Param("teamId") Long teamId, @Param("playerId") Long playerId) {
+        super.getMapper(TeamPlayerMapper.class).agreed(teamId, playerId);
+    }
 }

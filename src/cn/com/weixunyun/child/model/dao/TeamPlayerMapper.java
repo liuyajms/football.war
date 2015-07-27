@@ -1,7 +1,6 @@
 package cn.com.weixunyun.child.model.dao;
 
 import cn.com.weixunyun.child.model.bean.TeamPlayer;
-import cn.com.weixunyun.child.model.vo.FriendVO;
 import cn.com.weixunyun.child.model.vo.TeamPlayerVO;
 import org.apache.ibatis.annotations.Param;
 
@@ -13,6 +12,7 @@ public interface TeamPlayerMapper {
     void insert(TeamPlayer teamPlayer);
 
     List<TeamPlayerVO> getList(@Param("teamId") Long teamId, @Param("playerId") Long playerId,
-                           @Param("keyword") String keyword);
+                               @Param("keyword") String keyword);
 
+    void agreed(@Param("teamId") Long teamId, @Param("playerId") Long playerId);
 }
