@@ -81,6 +81,11 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
         return setTeamData(matchVOList);
     }
 
+    @Override
+    public Match select(Long id) {
+        return matchMapper.select(id);
+    }
+
 
     @Override
     public void insertMatch(Team team, Match match) {

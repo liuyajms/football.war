@@ -24,4 +24,5 @@ public interface MatchMapper {
                                      @Param("beginDate") Date beginDate, @Param("endDate") Date endDate,
                                      @Param("keyword") String keyword, @Param("rows") long rows, @Param("offset") long offset);
 
+    Match select(Long id);
 }

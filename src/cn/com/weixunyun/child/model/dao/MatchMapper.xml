@@ -19,6 +19,10 @@
         where m.id = #{id,jdbcType=NUMERIC}
     </select>
 
+    <select id="select" resultType="Match" parameterType="long">
+        select * from match where id=#{id}
+    </select>
+
     <select id="getList" resultType="MatchVO" parameterType="map">
         <include refid="BaseSelect"/>
         <where>

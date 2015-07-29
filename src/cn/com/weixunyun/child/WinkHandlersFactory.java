@@ -1,16 +1,19 @@
 package cn.com.weixunyun.child;
 
+import cn.com.weixunyun.child.util.ThrowableUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.apache.http.HttpStatus;
 import org.apache.wink.server.handlers.*;
-import org.apache.wink.server.internal.handlers.SearchResult;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 public class WinkHandlersFactory extends HandlersFactory {
 
@@ -20,85 +23,29 @@ public class WinkHandlersFactory extends HandlersFactory {
         handlerList.addAll(super.getRequestHandlers());
         handlerList.add(new RequestHandler() {
 
-            private Map<String, List<String>> popedomMap;
-            private static final int ACTIONS = 16;
 
             @Override
             public void init(Properties properties) {
-                popedomMap = new HashMap<String, List<String>>();
-
-				/*try {
-                    Method[] methods = new Method[ACTIONS];
-					for (int i = 0; i < ACTIONS; i++) {
-						methods[i] = Popedom.class.getMethod("getAction" + i);
-					}
-
-					PopedomService popedomService = ServiceFactory.getService(PopedomService.class);
-					for (Popedom popedom : popedomService.select()) {
-						List<String> actionList = new ArrayList<String>();
-
-						for (int i = 0; i < 16; i++) {
-							Object o = methods[i].invoke(popedom);
-							if (o != null) {
-								actionList.add(o.toString());
-							}
-						}
-						popedomMap.put(popedom.getCode(), actionList);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-*/
             }
 
             @Override
             public void handleRequest(MessageContext context, HandlersChain chain) throws Throwable {
 
-                if (true) {
+                try {
                     chain.doChain(context);
-                    return;
+
+                } catch (WebApplicationException e) {
+
+                    context.setResponseEntity(new ResultEntity(e.getResponse().getStatus(), e.getMessage()));
+
+                } catch (Exception e) {
+
+                    Throwable throwable = ThrowableUtils.getRootCause(e);
+                    context.setResponseEntity(new ResultEntity(HttpStatus.SC_INTERNAL_SERVER_ERROR,
+                            throwable.getMessage()));
+
                 }
-                System.out.println("+++++++++++++++++++++++");
-                SearchResult sr = context.getAttribute(SearchResult.class);
 
-                String resourcePath = sr.getResource().getRecord().getMetadata().getPath();
-                if ("/auth".equals(resourcePath)) {
-                    chain.doChain(context);
-                } else {
-                    /*String rsessionid = context.getHttpHeaders().getCookies().get("rsessionid").getValue();
-                    Map<String, Integer> authedPopedomMap = Session.getInstance(rsessionid).get("popedom");
-
-                    String action = context.getHttpMethod();
-
-                    String methodPath = sr.getMethod().getMetadata().getPath();
-                    if (methodPath != null) {
-                        action += " " + methodPath;
-                    }
-
-                    List<String> actionList = popedomMap.get(resourcePath);
-                    System.out.println(actionList);
-                    System.out.println(context.getHttpMethod() + " " + action);
-                    int actionIndex = -1;
-                    if (actionList != null) {
-                        actionIndex = actionList.indexOf(action);
-                    }
-                    System.out.println(actionIndex);
-                    if (actionIndex == -1) {
-                        context.setResponseStatusCode(HttpStatus.SC_UNAUTHORIZED);
-                    } else {
-                        Integer authedIndex = 0;
-                        if (authedPopedomMap.containsKey(resourcePath)) {
-                            authedIndex = authedPopedomMap.get(resourcePath);
-                        }
-                        actionIndex = 1 << actionIndex;
-                        System.out.println(authedIndex + " - " + actionIndex);
-                        if ((authedIndex & actionIndex) == 0) {
-                            context.setResponseStatusCode(HttpStatus.SC_UNAUTHORIZED);
-                        } else {
-                            chain.doChain(context);
-                        }
-                    }*/
-                }
             }
 
         });
@@ -113,9 +60,10 @@ public class WinkHandlersFactory extends HandlersFactory {
             @Override
             public void handleResponse(MessageContext context, HandlersChain chain) throws Throwable {
 
+                System.out.println("********** ResponseHandlers *********");
                 context.setResponseMediaType(MediaType.APPLICATION_JSON_TYPE);
 
-                if(isWeb(context)){
+                if (isWeb(context)) {
                     chain.doChain(context);
                     return;
                 }
@@ -127,12 +75,6 @@ public class WinkHandlersFactory extends HandlersFactory {
                     if (!context.getHttpMethod().equals("GET")) {
                         context.setResponseStatusCode(HttpStatus.SC_OK);
                     }
-//                    if(context.getHttpMethod())
-//                    String msg = "";
-//                    if(obj == null){
-//                        context.setResponseStatusCode(HttpStatus.SC_OK);
-//                        msg = "无数据";
-//                    }
 
                     int code = context.getResponseStatusCode();
                     ResultEntity resultEntity = new ResultEntity(code,
@@ -174,19 +116,14 @@ public class WinkHandlersFactory extends HandlersFactory {
     }
 
 
-    /**
-     * 未找到请求资源时的错误处理
-     *
-     * @return
-     */
-    @Override
+  /*  @Override
     public List<? extends ResponseHandler> getErrorHandlers() {
         List<ResponseHandler> handlerList = new ArrayList<ResponseHandler>();
 
         handlerList.add(new ResponseHandler() {
             @Override
             public void handleResponse(MessageContext context, HandlersChain chain) throws Throwable {
-
+                System.out.println("ERROR===");
                 int code = context.getResponseStatusCode();
 
                 ResultEntity resultEntity = new ResultEntity(code,
@@ -207,6 +144,6 @@ public class WinkHandlersFactory extends HandlersFactory {
 
             }
         });
-        return handlerList;
-    }
+        return new ArrayList<ResponseHandler>();
+    }*/
 }

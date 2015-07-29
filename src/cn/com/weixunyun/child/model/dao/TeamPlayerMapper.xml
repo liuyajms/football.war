@@ -21,7 +21,7 @@
                 and (p.name like '%'|| #{keyword}||'%' or t.name like '%'|| #{keyword}||'%')
             </if>
         </where>
-        order by p.name
+        order by tp.create_time
     </select>
 
     <delete id="delete" parameterType="map">

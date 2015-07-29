@@ -1,5 +1,7 @@
 package cn.com.weixunyun.child.model.bean;
 
+import cn.com.weixunyun.child.NotNull;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -9,12 +11,14 @@ public class Team implements Serializable{
 
     private String name;
 
+    @NotNull
     private Integer rule;
 
     private Integer color;
 
     private Long courtId;
 
+    @NotNull
     private String address;
 
     private String description;

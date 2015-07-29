@@ -1,5 +1,7 @@
 package cn.com.weixunyun.child.model.bean;
 
+import cn.com.weixunyun.child.NotNull;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -10,10 +12,12 @@ public class Match implements Serializable{
 
     private String name;
 
+    @NotNull
     private Integer rule;
 
     private String fee;
 
+    @NotNull
     private Date beginTime;
 
     private Date endTime;

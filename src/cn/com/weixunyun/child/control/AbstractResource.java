@@ -1,6 +1,7 @@
 package cn.com.weixunyun.child.control;
 
 import cn.com.weixunyun.child.Autowired;
+import cn.com.weixunyun.child.NotNull;
 import cn.com.weixunyun.child.PropertiesListener;
 import cn.com.weixunyun.child.Session;
 import cn.com.weixunyun.child.model.pojo.School;
@@ -13,12 +14,16 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpStatus;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URLDecoder;
@@ -29,7 +34,7 @@ import java.util.*;
 public abstract class AbstractResource {
 
     protected AbstractResource() {
-        System.out.println("===>>Call AbstractResource Constructor");
+        System.out.println("===>>Call AbstractResource Constructor: " + this.getClass().getSimpleName());
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);
@@ -301,10 +306,38 @@ public abstract class AbstractResource {
                     }
                 }
             }
+            if (flag) {//初次构建对象时，进行字段校验
+                validateField(t);
+            }
             return t;
-        } catch (Exception e) {
+        } catch (InvocationTargetException e) {
             e.printStackTrace();
             return null;
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 校验字段属性
+     *
+     * @param t
+     * @param <T>
+     */
+    private <T> void validateField(T t) throws IllegalAccessException {
+        Field[] fields = t.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            if (field.isAnnotationPresent(NotNull.class)) {
+                if(field.get(t) == null){
+                    throw new WebApplicationException(new IllegalArgumentException(field.getName() + "为必填参数"),
+                            HttpStatus.SC_BAD_REQUEST);
+                }
+            }
         }
     }
 
@@ -470,29 +503,5 @@ public abstract class AbstractResource {
 
     }
 
-    protected String getCurrentTerm(Long schoolId) {
-        GlobalService globalService = getService(GlobalService.class);
-        return globalService.select("term", "default").getValue();
-    }
-
-
-    /**
-     * @param currentTerm 当前学期，如20140代表2014年上学期，20141代表2014年下学期
-     * @param grade       年级，如2表示3年级
-     * @return 班级入学年份，如2012年
-     */
-    protected int getClassesYear(String currentTerm, int grade) {
-        return Integer.parseInt(currentTerm.substring(0, 4)) - grade;
-    }
-
-
-    /**
-     * @param currentTerm 当前学期，如20140代表2014年上学期，20141代表2014年下学期
-     * @param classesYear 班级入学年份，如2012年
-     * @return 年级，如2表示3年级
-     */
-    protected int getGrade(String currentTerm, int classesYear) {
-        return Integer.parseInt(currentTerm.substring(0, 4)) - classesYear;
-    }
 
 }

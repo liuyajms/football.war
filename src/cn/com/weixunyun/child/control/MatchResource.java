@@ -131,6 +131,8 @@ public class MatchResource extends AbstractResource {
     public ResultEntity update(@Context HttpServletRequest request, @PathParam("id") Long id,
                                @CookieParam("rsessionid") String rsessionid) throws IOException {
 
+        checkMatch(id, null);
+
         Match matchVO = service.get(id);
         if (!super.getAuthedId(rsessionid).equals(matchVO.getCreatePlayerId())) {
             return new ResultEntity(HttpStatus.SC_FORBIDDEN, "请检查是否有权限");
@@ -184,6 +186,7 @@ public class MatchResource extends AbstractResource {
     public ResultEntity acceptMatch(@Context HttpServletRequest request,
                                     @PathParam("id") Long id,
                                     @CookieParam("rsessionid") String rsessionid) throws IOException {
+        checkMatch(id, null);
 
         //先创建临时球队
         Map<String, PartField> map = super.partMulti(request);
@@ -218,6 +221,8 @@ public class MatchResource extends AbstractResource {
                                  @PathParam("playerId") Long playerId,
                                  @CookieParam("rsessionid") String rsessionid) {
 
+        checkMatch(id, teamId);
+
         TeamPlayer teamPlayer = new TeamPlayer();
         teamPlayer.setTeamId(teamId);
 
@@ -243,6 +248,7 @@ public class MatchResource extends AbstractResource {
     public ResultEntity agreedMatch(@PathParam("id") Long id, @PathParam("teamId") Long teamId,
                                     @CookieParam("rsessionid") String rsessionid) {
 
+        checkMatch(id, teamId);
         teamPlayerService.agreed(teamId, super.getAuthedId(rsessionid));
 
         return new ResultEntity(HttpStatus.SC_OK, "同意加入球赛");
@@ -252,13 +258,26 @@ public class MatchResource extends AbstractResource {
     @DELETE
     @Path("{id}/{teamId}")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
-    @Description("拒绝加入球赛")
+    @Description("拒绝或取消加入球赛")
     public ResultEntity refusedMatch(@PathParam("id") Long id, @PathParam("teamId") Long teamId,
-                                    @CookieParam("rsessionid") String rsessionid) {
+                                     @CookieParam("rsessionid") String rsessionid) {
 
+        checkMatch(id, teamId);
         teamPlayerService.delete(teamId, super.getAuthedId(rsessionid));
 
-        return new ResultEntity(HttpStatus.SC_OK, "拒绝加入球赛");
+        return new ResultEntity(HttpStatus.SC_OK, "操作成功");
 
+    }
+
+    private void checkMatch(Long id, Long teamId) {
+        Match match = service.select(id);
+        if (match == null ||
+                (teamId != null && !match.getTeamId().equals(teamId)
+                        && (match.getAcceptTeamId() == null || !match.getAcceptTeamId().equals(teamId)))) {
+            throw new WebApplicationException(new IllegalArgumentException("请求参数错误"), HttpStatus.SC_FORBIDDEN);
+        } else if (match.getBeginTime() != null &&
+                match.getBeginTime().getTime() < System.currentTimeMillis()) {
+            throw new WebApplicationException(new IllegalArgumentException("球赛已过期"), HttpStatus.SC_FORBIDDEN);
+        }
     }
 }
