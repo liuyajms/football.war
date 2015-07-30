@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.weixunyun.child.module.calendar.CalendarMapper">
+
+    <select id="getListByPlayerId" resultType="java.sql.Date" parameterType="map">
+        select free_time from calendar where player_id=#{playerId}
+        <if test="beginDate !=null">
+            and free_time between #{beginDate} and #{endDate}
+        </if>
+    </select>
+
+    <select id="getListByTeamId" resultType="map" parameterType="map">
+        SELECT
+            C .free_time as freeTime,
+            COUNT (free_time) as count
+        FROM
+            team_player tp
+        LEFT JOIN calendar C ON C .player_id = tp.player_id
+        WHERE
+            tp.team_id = #{teamId}
+        <if test="beginDate !=null">
+            <![CDATA[
+            and free_time between #{beginDate}::date and #{endDate}::date
+            ]]>
+        </if>
+        GROUP BY
+            C .free_time,
+            tp.team_id
+        ORDER BY
+            free_time
+    </select>
+
+    <delete id="delete" parameterType="map">
+        delete from calendar
+        where player_id=#{playerId} and free_time=#{freeTime}
+     </delete>
+
+    <insert id="insert" parameterType="map">
+        insert into calendar (player_id, free_time)
+        values (#{playerId}, #{freeTime})
+    </insert>
+
+</mapper>

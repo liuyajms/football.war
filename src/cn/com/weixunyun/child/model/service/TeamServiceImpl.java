@@ -6,8 +6,12 @@ import cn.com.weixunyun.child.model.dao.TeamMapper;
 import cn.com.weixunyun.child.model.dao.TeamPlayerMapper;
 import cn.com.weixunyun.child.model.vo.TeamPlayerVO;
 import cn.com.weixunyun.child.model.vo.TeamVO;
+import cn.com.weixunyun.child.module.calendar.CalendarMapper;
+import cn.com.weixunyun.child.util.DateUtil;
 
+import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 
 
 public class TeamServiceImpl extends AbstractService implements TeamService {
@@ -46,6 +50,13 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
         team.setTeamPlayerList(teamPlayerList);
         team.setPlayerCount(teamPlayerList.size());
 
+        //查询球队近两周的人员空闲情况
+        Date beginDate = DateUtil.getMondayOfThisWeek();
+        List<Map<Date, Integer>> freeTimeList = super.getMapper(CalendarMapper.class)
+                .getListByTeamId(id, beginDate, DateUtil.addDays(beginDate, 14));
+
+        team.setFreeTimeList(freeTimeList);
+
         return team;
     }
 
@@ -72,4 +83,19 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
         super.getMapper(TeamMapper.class).updated(id);
     }
 
+    @Override
+    public void insertPlayer(Team team, String[] playerIds) {
+        this.insert(team);
+
+        if(playerIds !=null){
+            for(String playerId : playerIds){
+                TeamPlayer teamPlayer = new TeamPlayer();
+                teamPlayer.setPlayerId(Long.parseLong(playerId));
+                teamPlayer.setTeamId(team.getId());
+                teamPlayer.setAgreed(true);
+
+                super.getMapper(TeamPlayerMapper.class).insert(teamPlayer);
+            }
+        }
+    }
 }

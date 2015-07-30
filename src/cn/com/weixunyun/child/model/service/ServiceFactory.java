@@ -62,9 +62,9 @@ public class ServiceFactory {
                     field.setAccessible(true);
                     if (field.isAnnotationPresent(Autowired.class)) {
                         try {
-                            if (field.getName().endsWith("Mapper")) {
+                            if (field.getType().getSimpleName().endsWith("Mapper")) {
                                 field.set(obj, session.getMapper(field.getType()));
-                            } else if (field.getName().endsWith("Service")) {
+                            } else if (field.getType().getSimpleName().endsWith("Service")) {
                                 field.set(obj, ServiceFactory.getService(field.getType()));
                             }
                         } catch (IllegalAccessException e) {

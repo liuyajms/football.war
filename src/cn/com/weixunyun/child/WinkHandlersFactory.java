@@ -36,7 +36,8 @@ public class WinkHandlersFactory extends HandlersFactory {
 
                 } catch (WebApplicationException e) {
 
-                    context.setResponseEntity(new ResultEntity(e.getResponse().getStatus(), e.getMessage()));
+                    context.setResponseEntity(new ResultEntity(e.getResponse().getStatus(),
+                            ThrowableUtils.getRootCause(e).getMessage()));
 
                 } catch (Exception e) {
 

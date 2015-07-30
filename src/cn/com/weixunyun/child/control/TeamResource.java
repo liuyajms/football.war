@@ -5,6 +5,7 @@ import cn.com.weixunyun.child.model.bean.Team;
 import cn.com.weixunyun.child.model.bean.TeamPlayer;
 import cn.com.weixunyun.child.model.service.TeamService;
 import cn.com.weixunyun.child.model.vo.TeamVO;
+import org.apache.commons.lang.StringUtils;
 import org.apache.wink.common.annotations.Workspace;
 
 import javax.servlet.http.HttpServletRequest;
@@ -68,7 +69,15 @@ public class TeamResource extends AbstractResource {
 
         updateImage(map, team.getId());
 
-        super.getService(TeamService.class).insert(team);
+        //判断是否有预制球员
+        String[] playerIds = null;
+        if(map.containsKey("playerIds") && StringUtils.isNotBlank(map.get("playerIds").getValue().toString())){
+
+            playerIds = map.get("playerIds").getValue().split(",");
+
+        }
+//        super.getService(TeamService.class).insert(team);
+        super.getService(TeamService.class).insertPlayer(team, playerIds);
 
     }
 

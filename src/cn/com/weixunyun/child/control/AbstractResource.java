@@ -64,7 +64,7 @@ public abstract class AbstractResource {
                 for (String str : roleValue.split(",")) {
                     rule += Integer.parseInt(str);
                 }
-                map.remove(field);
+//                map.remove(field);
             }
         }
         return rule;

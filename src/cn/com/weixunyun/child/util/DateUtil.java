@@ -2,6 +2,7 @@ package cn.com.weixunyun.child.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
@@ -106,5 +107,29 @@ public class DateUtil {
      */
     public static int getDateMinus(java.sql.Date beginDate, java.sql.Date endDate) {
         return getDateMinus(beginDate, endDate, DAY_TYPE);
+    }
+
+    /**
+     * 得到本周周一
+     *
+     * @return yyyy-MM-dd
+     */
+    public static java.sql.Date getMondayOfThisWeek() {
+        Calendar c = Calendar.getInstance();
+        int day_of_week = c.get(Calendar.DAY_OF_WEEK) - 1;
+        if (day_of_week == 0)
+            day_of_week = 7;
+        c.add(Calendar.DATE, -day_of_week + 1);
+        return new java.sql.Date(c.getTime().getTime());
+    }
+
+    /**
+     * 获取days天后的日期
+     * @param date
+     * @param days
+     * @return
+     */
+    public static java.sql.Date addDays(java.sql.Date date, int days) {
+        return new java.sql.Date(date.getTime() + days * 24 * 3600 * 1000);
     }
 }

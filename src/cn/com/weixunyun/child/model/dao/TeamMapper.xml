@@ -50,11 +50,11 @@
         <if test="beginAge !=null">
             <![CDATA[
                 and birthday <=
-                ]]>
-            (current_date - (beginAge || ' year')::interval)
+            ]]>
+            (current_date - (#{beginAge} || ' year')::interval)
         </if>
         <if test="endAge !=null">
-            and birthday >= (current_date - (endAge || ' year')::interval)
+            and birthday >= (current_date - (#{endAge} || ' year')::interval)
         </if>
         <if test="rule !=null">
             <![CDATA[

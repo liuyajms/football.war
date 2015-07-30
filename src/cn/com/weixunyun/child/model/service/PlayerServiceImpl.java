@@ -3,8 +3,11 @@ package cn.com.weixunyun.child.model.service;
 import cn.com.weixunyun.child.model.bean.Player;
 import cn.com.weixunyun.child.model.dao.PlayerMapper;
 import cn.com.weixunyun.child.model.vo.PlayerVO;
+import cn.com.weixunyun.child.module.calendar.CalendarMapper;
+import cn.com.weixunyun.child.util.DateUtil;
 import org.apache.ibatis.annotations.Param;
 
+import java.sql.Date;
 import java.util.List;
 
 public class PlayerServiceImpl extends AbstractService implements PlayerService {
@@ -23,11 +26,11 @@ public class PlayerServiceImpl extends AbstractService implements PlayerService 
     public PlayerVO get(Long id) {
         PlayerVO playerVO = super.getMapper(PlayerMapper.class).get(id);
 
-        //查询数据字典
-//        List<DictionaryValue> roleList = super.getMapper(DictionaryValueMapper.class).getValueList("player", "role");
-//        setRoleList(roleList, player);
-
         playerVO.setRoleList(super.getDicValueList("player", "role", playerVO.getRole()));
+
+        Date beginDate = DateUtil.getMondayOfThisWeek();
+        playerVO.setFreeTimeList(super.getMapper(CalendarMapper.class)
+                .getListByPlayerId(id, beginDate, DateUtil.addDays(beginDate, 14)));
 
         return playerVO;
     }
