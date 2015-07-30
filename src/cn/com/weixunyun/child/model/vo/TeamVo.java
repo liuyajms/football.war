@@ -3,7 +3,9 @@ package cn.com.weixunyun.child.model.vo;
 
 import cn.com.weixunyun.child.model.bean.Team;
 
+import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 
 public class TeamVO extends Team {
     private Integer avgAge;
@@ -16,9 +18,20 @@ public class TeamVO extends Team {
 
     private List<TeamPlayerVO> teamPlayerList;
 
+    private List<Map<Date, Integer>> freeTimeList;//球队每天的空闲数
+
     private int PlayerCount;
 
     private Boolean isJoined;
+
+
+    public List<Map<Date, Integer>> getFreeTimeList() {
+        return freeTimeList;
+    }
+
+    public void setFreeTimeList(List<Map<Date, Integer>> freeTimeList) {
+        this.freeTimeList = freeTimeList;
+    }
 
     public Boolean getIsJoined() {
         return isJoined;
