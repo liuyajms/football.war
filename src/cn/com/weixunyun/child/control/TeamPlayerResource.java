@@ -64,20 +64,24 @@ public class TeamPlayerResource extends AbstractResource {
                                @CookieParam("rsessionid") String rsessionid)
             throws Exception {
 
-        if (super.getAuthedId(rsessionid) != playerId && playerId != 0) {
+        TeamPlayer teamPlayer = new TeamPlayer();
+        teamPlayer.setTeamId(teamId);
+
+        if (super.getAuthedId(rsessionid).equals(playerId) || playerId == 0) {//主动加入
+            teamPlayer.setAgreed(false);
+            teamPlayer.setPlayerId(super.getAuthedId(rsessionid));
+        } else {//邀请加入，无需审核，但需要检查是否为好友
             if (super.getService(FriendService.class).isFriend(super.getAuthedId(rsessionid), playerId) == 0) {
                 return new ResultEntity(HttpStatus.SC_FORBIDDEN, "请检查该球员是否为您的好友");
             }
+            teamPlayer.setAgreed(true);
+            teamPlayer.setPlayerId(playerId);
         }
 
-        TeamPlayer teamPlayer = new TeamPlayer();
-        teamPlayer.setPlayerId(playerId == 0 ? super.getAuthedId(rsessionid) : playerId);
-        teamPlayer.setTeamId(teamId);
-        teamPlayer.setAgreed(true);
 
         super.getService(TeamPlayerService.class).insert(teamPlayer);
 
-        return new ResultEntity(HttpStatus.SC_OK, "加入球队成功");
+        return new ResultEntity(HttpStatus.SC_OK, "加入球队申请成功");
     }
 
 

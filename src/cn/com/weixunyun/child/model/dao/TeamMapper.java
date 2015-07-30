@@ -17,7 +17,7 @@ public interface TeamMapper {
 
     List<TeamVO> getList(@Param("city") String city, @Param("rule") Integer rule,
                          @Param("beginAge") Integer beginAge, @Param("endAge") Integer endAge,
-                         @Param("keyword") String keyword, @Param("sourceId") Long sourceId,
+                         @Param("keyword") String keyword, @Param("srcTeamId") Long srcTeamId,
                          @Param("rows") long rows, @Param("offset") long offset);
 
     void update(Team record);

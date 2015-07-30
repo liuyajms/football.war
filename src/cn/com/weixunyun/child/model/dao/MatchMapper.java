@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface MatchMapper {
     int delete(Long id);
@@ -25,4 +26,27 @@ public interface MatchMapper {
                                      @Param("keyword") String keyword, @Param("rows") long rows, @Param("offset") long offset);
 
     Match select(Long id);
+
+    /**
+     * 用于查询球员近两周参与的球赛数
+     *
+     * @param playerId
+     * @param beginDate
+     * @param endDate
+     * @return
+     */
+    List<Map<Date, Integer>> getListByPlayerId(@Param("playerId") Long playerId,
+                                               @Param("beginDate") Date beginDate, @Param("endDate") Date endDate);
+
+
+    /**
+     * 用于查询球队近两周参与的球赛数
+     *
+     * @param teamId
+     * @param beginDate
+     * @param endDate
+     * @return
+     */
+    List<Map<Date, Integer>> getListByTeamId(@Param("teamId") Long teamId,
+                               @Param("beginDate") Date beginDate, @Param("endDate") Date endDate);
 }

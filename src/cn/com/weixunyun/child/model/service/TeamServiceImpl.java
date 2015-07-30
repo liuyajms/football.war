@@ -2,6 +2,7 @@ package cn.com.weixunyun.child.model.service;
 
 import cn.com.weixunyun.child.model.bean.Team;
 import cn.com.weixunyun.child.model.bean.TeamPlayer;
+import cn.com.weixunyun.child.model.dao.MatchMapper;
 import cn.com.weixunyun.child.model.dao.TeamMapper;
 import cn.com.weixunyun.child.model.dao.TeamPlayerMapper;
 import cn.com.weixunyun.child.model.vo.TeamPlayerVO;
@@ -11,7 +12,6 @@ import cn.com.weixunyun.child.util.DateUtil;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.Map;
 
 
 public class TeamServiceImpl extends AbstractService implements TeamService {
@@ -52,10 +52,12 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
 
         //查询球队近两周的人员空闲情况
         Date beginDate = DateUtil.getMondayOfThisWeek();
-        List<Map<Date, Integer>> freeTimeList = super.getMapper(CalendarMapper.class)
-                .getListByTeamId(id, beginDate, DateUtil.addDays(beginDate, 14));
+        Date endDate = DateUtil.addDays(beginDate, 14);
 
-        team.setFreeTimeList(freeTimeList);
+        team.setFreeTimeList(super.getMapper(CalendarMapper.class).getListByTeamId(id, beginDate, endDate));
+
+        team.setMatchList(super.getMapper(MatchMapper.class).getListByTeamId(id, beginDate, endDate));
+
 
         return team;
     }
@@ -87,8 +89,8 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
     public void insertPlayer(Team team, String[] playerIds) {
         this.insert(team);
 
-        if(playerIds !=null){
-            for(String playerId : playerIds){
+        if (playerIds != null) {
+            for (String playerId : playerIds) {
                 TeamPlayer teamPlayer = new TeamPlayer();
                 teamPlayer.setPlayerId(Long.parseLong(playerId));
                 teamPlayer.setTeamId(team.getId());

@@ -1,6 +1,7 @@
 package cn.com.weixunyun.child.model.service;
 
 import cn.com.weixunyun.child.model.bean.Player;
+import cn.com.weixunyun.child.model.dao.MatchMapper;
 import cn.com.weixunyun.child.model.dao.PlayerMapper;
 import cn.com.weixunyun.child.model.vo.PlayerVO;
 import cn.com.weixunyun.child.module.calendar.CalendarMapper;
@@ -29,8 +30,11 @@ public class PlayerServiceImpl extends AbstractService implements PlayerService 
         playerVO.setRoleList(super.getDicValueList("player", "role", playerVO.getRole()));
 
         Date beginDate = DateUtil.getMondayOfThisWeek();
-        playerVO.setFreeTimeList(super.getMapper(CalendarMapper.class)
-                .getListByPlayerId(id, beginDate, DateUtil.addDays(beginDate, 14)));
+        Date endDate = DateUtil.addDays(beginDate, 14);
+
+        playerVO.setFreeTimeList(super.getMapper(CalendarMapper.class).getListByPlayerId(id, beginDate, endDate));
+
+        playerVO.setMatchList(super.getMapper(MatchMapper.class).getListByPlayerId(id, beginDate, endDate));
 
         return playerVO;
     }

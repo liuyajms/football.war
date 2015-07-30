@@ -57,13 +57,13 @@
         select m.*, c.name as court_name
         from (
             SELECT m.* from match m
-              join team t on t.id=m.team_id and t.tmp is true
-              join team_player tp on tp.team_id=t.id
+              /*join team t on t.id=m.team_id and t.tmp is true*/
+              join team_player tp on tp.team_id=m.team_id
               where tp.player_id=#{playerId}
             UNION ALL
             SELECT m.* from match m
-              join team t on t.id=m.accept_team_id and t.tmp is true
-              join team_player tp on tp.team_id=t.id
+              /*join team t on t.id=m.accept_team_id and t.tmp is true*/
+              join team_player tp on tp.team_id=m.accept_team_id
               where tp.player_id=#{playerId}
         ) m
         left join court c on c.id=m.court_id
@@ -87,6 +87,60 @@
         <if test="rows !=null and rows !=0">
             limit #{rows} offset #{offset}
         </if>
+    </select>
+
+    <sql id="MatchSelect">
+        SELECT
+            begin_time :: DATE AS date,
+            COUNT (*) AS COUNT
+        FROM
+            (
+                SELECT
+                    M .begin_time,
+                    tp.team_id,
+                    tp.player_id
+                FROM
+                    MATCH M
+                JOIN team_player tp ON tp.team_id = M .team_id
+                UNION ALL
+                    SELECT
+                        M .begin_time,
+                        tp.team_id,
+                        tp.player_id
+                    FROM
+                        MATCH M
+                    JOIN team_player tp ON tp.team_id = M .accept_team_id
+            ) M
+    </sql>
+
+    <select id="getListByPlayerId" resultType="map" parameterType="map">
+        <include refid="MatchSelect"/>
+        WHERE
+            player_id = #{playerId}
+        <if test="beginDate !=null">
+            <![CDATA[
+            and begin_time between #{beginDate}::date and #{endDate}::date
+            ]]>
+        </if>
+        GROUP BY
+          begin_time::date
+        /*ORDER BY
+        begin_time::date*/
+    </select>
+
+    <select id="getListByTeamId" resultType="map" parameterType="map">
+        <include refid="MatchSelect"/>
+        WHERE
+            team_id = #{teamId}
+        <if test="beginDate !=null">
+            <![CDATA[
+            and begin_time between #{beginDate}::date and #{endDate}::date
+            ]]>
+        </if>
+        GROUP BY
+          begin_time::date
+        /*ORDER BY
+        begin_time::date*/
     </select>
 
     <delete id="delete" parameterType="long">

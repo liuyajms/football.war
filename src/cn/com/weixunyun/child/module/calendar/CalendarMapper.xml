@@ -11,7 +11,7 @@
 
     <select id="getListByTeamId" resultType="map" parameterType="map">
         SELECT
-            C .free_time as freeTime,
+            C .free_time as date,
             COUNT (free_time) as count
         FROM
             team_player tp

@@ -9,6 +9,7 @@ import cn.com.weixunyun.child.model.vo.TeamVO;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by PC on 2015/7/25.
@@ -84,6 +85,16 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
     @Override
     public Match select(Long id) {
         return matchMapper.select(id);
+    }
+
+    @Override
+    public List<Map<Date, Integer>> getListByPlayerId(Long playerId, Date beginDate, Date endDate) {
+        return matchMapper.getListByPlayerId(playerId, beginDate, endDate);
+    }
+
+    @Override
+    public List<Map<Date, Integer>> getListByTeamId(Long teamId, Date beginDate, Date endDate) {
+        return matchMapper.getListByTeamId(teamId, beginDate, endDate);
     }
 
 

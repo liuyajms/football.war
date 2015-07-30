@@ -30,10 +30,10 @@ public class TeamResource extends AbstractResource {
                                 @QueryParam("beginAge") Integer beginAge,
                                 @QueryParam("endAge") Integer endAge,
                                 @QueryParam("keyword") String keyword,
-                                @QueryParam("sourceId") Long sourceId,
+                                @QueryParam("srcTeamId") Long srcTeamId,
                                 @QueryParam("page") long page, @QueryParam("rows") long rows) {
         return super.getService(TeamService.class)
-                .getList(city, rule, beginAge, endAge, keyword, sourceId, rows, page * rows);
+                .getList(city, rule, beginAge, endAge, keyword, srcTeamId, rows, page * rows);
     }
 
     @GET

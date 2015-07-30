@@ -6,6 +6,7 @@ import cn.com.weixunyun.child.ResultEntity;
 import cn.com.weixunyun.child.model.bean.Match;
 import cn.com.weixunyun.child.model.bean.Team;
 import cn.com.weixunyun.child.model.bean.TeamPlayer;
+import cn.com.weixunyun.child.model.service.FriendService;
 import cn.com.weixunyun.child.model.service.MatchService;
 import cn.com.weixunyun.child.model.service.TeamPlayerService;
 import cn.com.weixunyun.child.model.service.TeamService;
@@ -229,7 +230,10 @@ public class MatchResource extends AbstractResource {
         if (playerId.equals(super.getAuthedId(rsessionid)) || playerId == 0) {//主动加入
             teamPlayer.setAgreed(true);
             teamPlayer.setPlayerId(super.getAuthedId(rsessionid));
-        } else {//队长邀请人参与
+        } else {//队长邀请人参与，需要检查是否与该球员为好友
+            if (super.getService(FriendService.class).isFriend(super.getAuthedId(rsessionid), playerId) == 0) {
+                return new ResultEntity(HttpStatus.SC_FORBIDDEN, "请检查该球员是否为您的好友");
+            }
             teamPlayer.setAgreed(false);
             teamPlayer.setPlayerId(playerId);
         }
