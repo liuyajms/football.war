@@ -45,7 +45,7 @@ public class MatchResource extends AbstractResource {
 
 
     @GET
-    @Description("列表（新增字段是否已加入）")
+    @Description("列表")
     public List<MatchVO> getList(@CookieParam("rsessionid") String rsessionid,
                                  @QueryParam("city") String city,
                                  @QueryParam("rule") Integer rule,
@@ -64,19 +64,52 @@ public class MatchResource extends AbstractResource {
     @GET
     @Path("player/{playerId}")
     @Description("查询某人的球赛列表，为0则查看我的球赛")
-    public List<MatchVO> getMatchList(@CookieParam("rsessionid") String rsessionid,
-                                      @PathParam("playerId") Long playerId,
-                                      @QueryParam("type") Integer type, //友谊赛、训练赛
-                                      @QueryParam("beginDate") String beginDate,
-                                      @QueryParam("endDate") String endDate,
-                                      @QueryParam("keyword") String keyword,
-                                      @QueryParam("page") long page, @QueryParam("rows") long rows) {
-        return service.getPlayerMatchList(playerId == 0 ? super.getAuthedId(rsessionid) : playerId, type,
+    public List<MatchVO> getPlayerMatchList(@CookieParam("rsessionid") String rsessionid,
+                                            @PathParam("playerId") Long playerId,
+                                            @QueryParam("type") Integer type, //友谊赛、训练赛
+                                            @QueryParam("beginDate") String beginDate,
+                                            @QueryParam("endDate") String endDate,
+                                            @QueryParam("keyword") String keyword,
+                                            @QueryParam("page") int page, @QueryParam("rows") int rows) {
+        return service.getMatchList(playerId == 0 ? super.getAuthedId(rsessionid) : playerId, null, null, type,
                 StringUtils.isNotBlank(beginDate) ? Date.valueOf(beginDate) : null,
                 StringUtils.isNotBlank(endDate) ? Date.valueOf(endDate) : null,
                 keyword, rows, page * rows);
     }
 
+
+    @GET
+    @Path("court/{courtId}")
+    @Description("球场相关的球赛列表")
+    public List<MatchVO> getCourtMatchList(@CookieParam("rsessionid") String rsessionid,
+                                           @PathParam("courtId") Long courtId,
+                                           @QueryParam("type") Integer type, //友谊赛、训练赛
+                                           @QueryParam("beginDate") String beginDate,
+                                           @QueryParam("endDate") String endDate,
+                                           @QueryParam("keyword") String keyword,
+                                           @QueryParam("page") int page, @QueryParam("rows") int rows) {
+        return service.getMatchList(null, courtId, null, type,
+                StringUtils.isNotBlank(beginDate) ? Date.valueOf(beginDate) : null,
+                StringUtils.isNotBlank(endDate) ? Date.valueOf(endDate) : null,
+                keyword, rows, page * rows);
+    }
+
+
+    @GET
+    @Path("team/{teamId}")
+    @Description("球队相关的球赛列表")
+    public List<MatchVO> getTeamMatchList(@CookieParam("rsessionid") String rsessionid,
+                                          @PathParam("teamId") Long teamId,
+                                          @QueryParam("type") Integer type, //友谊赛、训练赛
+                                          @QueryParam("beginDate") String beginDate,
+                                          @QueryParam("endDate") String endDate,
+                                          @QueryParam("keyword") String keyword,
+                                          @QueryParam("page") int page, @QueryParam("rows") int rows) {
+        return service.getMatchList(null, null, teamId, type,
+                StringUtils.isNotBlank(beginDate) ? Date.valueOf(beginDate) : null,
+                StringUtils.isNotBlank(endDate) ? Date.valueOf(endDate) : null,
+                keyword, rows, page * rows);
+    }
 
     @GET
     @Path("{id}")

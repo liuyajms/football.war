@@ -52,22 +52,27 @@
         </if>
     </select>
 
-<!--我的球赛-->
-    <select id="getPlayerMatchList" resultType="MatchVO" parameterType="map">
+<!--我的球赛、球场球赛、球队球赛列表-->
+    <select id="getMatchList" resultType="MatchVO" parameterType="map">
         select m.*, c.name as court_name
         from (
-            SELECT m.* from match m
-              /*join team t on t.id=m.team_id and t.tmp is true*/
+            SELECT m.*, tp.player_id from match m
               join team_player tp on tp.team_id=m.team_id
-              where tp.player_id=#{playerId}
             UNION ALL
-            SELECT m.* from match m
-              /*join team t on t.id=m.accept_team_id and t.tmp is true*/
+            SELECT m.*, tp.player_id from match m
               join team_player tp on tp.team_id=m.accept_team_id
-              where tp.player_id=#{playerId}
         ) m
         left join court c on c.id=m.court_id
         <where>
+            <if test="playerId !=null">
+                and m.player_id=#{playerId}
+            </if>
+            <if test="courtId !=null">
+                and m.court_id=#{courtId}
+            </if>
+            <if test="teamId !=null">
+                and m.team_id=#{teamId}
+            </if>
             <if test="beginDate !=null">
                 and m.begin_time > #{beginDate}
             </if>
@@ -89,7 +94,7 @@
         </if>
     </select>
 
-    <sql id="MatchSelect">
+    <sql id="DateSelect">
         SELECT
             begin_time :: DATE AS date,
             COUNT (*) AS COUNT
@@ -114,7 +119,7 @@
     </sql>
 
     <select id="getListByPlayerId" resultType="map" parameterType="map">
-        <include refid="MatchSelect"/>
+        <include refid="DateSelect"/>
         WHERE
             player_id = #{playerId}
         <if test="beginDate !=null">
@@ -129,7 +134,7 @@
     </select>
 
     <select id="getListByTeamId" resultType="map" parameterType="map">
-        <include refid="MatchSelect"/>
+        <include refid="DateSelect"/>
         WHERE
             team_id = #{teamId}
         <if test="beginDate !=null">

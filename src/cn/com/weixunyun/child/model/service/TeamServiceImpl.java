@@ -56,7 +56,6 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
 
         team.setFreeTimeList(super.getMapper(CalendarMapper.class).getListByTeamId(id, beginDate, endDate));
 
-        team.setMatchList(super.getMapper(MatchMapper.class).getListByTeamId(id, beginDate, endDate));
 
 
         return team;

@@ -21,9 +21,10 @@ public interface MatchMapper {
 
     void update(Match record);
 
-    List<MatchVO> getPlayerMatchList(@Param("playerId") Long playerId, @Param("type") Integer type,
-                                     @Param("beginDate") Date beginDate, @Param("endDate") Date endDate,
-                                     @Param("keyword") String keyword, @Param("rows") long rows, @Param("offset") long offset);
+    List<MatchVO> getMatchList(@Param("playerId") Long playerId, @Param("courtId") Long courtId,
+                               @Param("teamId") Long teamId, @Param("type") Integer type,
+                               @Param("beginDate") Date beginDate, @Param("endDate") Date endDate,
+                               @Param("keyword") String keyword, @Param("rows") int rows, @Param("offset") int offset);
 
     Match select(Long id);
 
@@ -48,5 +49,5 @@ public interface MatchMapper {
      * @return
      */
     List<Map<Date, Integer>> getListByTeamId(@Param("teamId") Long teamId,
-                               @Param("beginDate") Date beginDate, @Param("endDate") Date endDate);
+                                             @Param("beginDate") Date beginDate, @Param("endDate") Date endDate);
 }
