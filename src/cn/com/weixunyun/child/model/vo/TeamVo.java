@@ -20,10 +20,19 @@ public class TeamVO extends Team {
 
     private List<Map<Date, Integer>> freeTimeList;//球队每天的空闲数
 
+    private List<Map<Date, Integer>> matchList;//球队近两周每天参与的球赛数
+
     private int PlayerCount;
 
     private Boolean isJoined;
 
+    public List<Map<Date, Integer>> getMatchList() {
+        return matchList;
+    }
+
+    public void setMatchList(List<Map<Date, Integer>> matchList) {
+        this.matchList = matchList;
+    }
 
     public List<Map<Date, Integer>> getFreeTimeList() {
         return freeTimeList;
