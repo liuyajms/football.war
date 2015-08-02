@@ -5,11 +5,11 @@ import cn.com.weixunyun.child.NotNull;
 import cn.com.weixunyun.child.PropertiesListener;
 import cn.com.weixunyun.child.Session;
 import cn.com.weixunyun.child.model.pojo.School;
-import cn.com.weixunyun.child.model.service.GlobalService;
 import cn.com.weixunyun.child.model.service.SequenceService;
 import cn.com.weixunyun.child.model.service.ServiceFactory;
 import cn.com.weixunyun.child.model.vo.PlayerVO;
 import cn.com.weixunyun.child.util.ImageUtils;
+import cn.com.weixunyun.child.util.ValidateUtil;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -246,7 +246,9 @@ public abstract class AbstractResource {
             if (flag) {
                 id = getService(SequenceService.class).sequence();
             }
-
+            if (flag) {//初次构建对象时，进行字段校验
+                validateField(cls, map);
+            }
             for (Method method : methods) {
                 name = method.getName();
                 if (name.startsWith("set")) {
@@ -296,7 +298,7 @@ public abstract class AbstractResource {
                             method.invoke(t, Date.valueOf(str));
                         }
                     } else if (type == Integer.class) {
-                        if ((str != null) && (!"".equals(str))) {
+                        if (ValidateUtil.isNumber(str)) {
                             method.invoke(t, Integer.valueOf(str));
                         }
                     } else if (type == java.util.Date.class) {
@@ -305,9 +307,6 @@ public abstract class AbstractResource {
                         }
                     }
                 }
-            }
-            if (flag) {//初次构建对象时，进行字段校验
-                validateField(t);
             }
             return t;
         } catch (InvocationTargetException e) {
@@ -322,6 +321,29 @@ public abstract class AbstractResource {
         }
     }
 
+    private <T> void validateField(Class<T> cls, Map<String, PartField> map) {
+
+        try {
+            T t = cls.newInstance();
+            Field[] fields = t.getClass().getDeclaredFields();
+
+            for (Field field : fields) {
+                field.setAccessible(true);
+                if (field.isAnnotationPresent(NotNull.class)) {
+                    if (map.get(field.getName()) == null || StringUtils.isBlank(map.get(field.getName()).getValue())) {
+                        throw new WebApplicationException(new IllegalArgumentException(field.getName() + "为必填参数"),
+                                HttpStatus.SC_BAD_REQUEST);
+                    }
+                }
+            }
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     /**
      * 校验字段属性
      *
@@ -333,7 +355,7 @@ public abstract class AbstractResource {
         for (Field field : fields) {
             field.setAccessible(true);
             if (field.isAnnotationPresent(NotNull.class)) {
-                if(field.get(t) == null){
+                if (field.get(t) == null) {
                     throw new WebApplicationException(new IllegalArgumentException(field.getName() + "为必填参数"),
                             HttpStatus.SC_BAD_REQUEST);
                 }

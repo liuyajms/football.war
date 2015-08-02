@@ -58,13 +58,11 @@ public class TeamResource extends AbstractResource {
             throws Exception {
         Map<String, PartField> map = super.partMulti(request);
 
-        Integer rule = getParamValue(map, "rule");
-        Integer color = getParamValue(map, "color");
 
         Team team = super.buildBean(Team.class, map, null);
 
-        team.setRule(rule);
-        team.setColor(color);
+        team.setRule(getParamValue(map, "rule"));
+        team.setColor(getParamValue(map, "color"));
         team.setCreatePlayerId(super.getAuthedId(rsessionid));
 
         updateImage(map, team.getId());
