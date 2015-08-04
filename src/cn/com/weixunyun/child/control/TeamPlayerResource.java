@@ -27,10 +27,11 @@ public class TeamPlayerResource extends AbstractResource {
     @GET
     @Description("查询自己参与的球队列表")
     public List<TeamPlayerVO> getTeamList(@CookieParam("rsessionid") String rsessionid,
+                                          @QueryParam("playerId") Long playerId,
                                           @QueryParam("keyword") String keyword) {
 
         return super.getService(TeamPlayerService.class)
-                .getList(null, super.getAuthedId(rsessionid), keyword);
+                .getList(null, playerId == null ? super.getAuthedId(rsessionid) : playerId, keyword);
     }
 
     @GET

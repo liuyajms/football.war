@@ -11,6 +11,7 @@ import org.apache.wink.common.annotations.Workspace;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.Map;
 
 @Workspace(workspaceTitle = "Workspace Title", collectionTitle = "Collection Title")
 @Path("/friend")
@@ -29,6 +30,16 @@ public class FriendResource extends AbstractResource {
                 .getList(super.getAuthedId(rsessionid), keyword, rows, page * rows);
     }
 
+    @GET
+    @Path("all")
+    @Description("我的好友列表及我参与的球队球员的列表")
+    public Map<String, List<? extends Object>> getAllList(@CookieParam("rsessionid") String rsessionid,
+                                     @QueryParam("teamId") Long teamId,
+                                  @QueryParam("keyword") String keyword) {
+
+        return super.getService(FriendService.class)
+                .getFormatAllList(super.getAuthedId(rsessionid), teamId, keyword);
+    }
 
     @POST
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})

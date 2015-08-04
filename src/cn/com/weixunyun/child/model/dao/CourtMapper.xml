@@ -9,19 +9,18 @@
 
     <select id="getList" resultType="CourtVO" parameterType="map">
         select c.* from court c
-        <where>
-            <if test="city !=null">
-                and c.address like '%'|| #{city}||'%'
-            </if>
-            <if test="rule !=null">
-                <![CDATA[
+        where c.tmp is not true
+        <if test="city !=null">
+            and c.address like '%'|| #{city}||'%'
+        </if>
+        <if test="rule !=null">
+            <![CDATA[
                 and c.rule & #{rule} > 0
                 ]]>
-            </if>
-            <if test="keyword !=null and keyword !=''">
-                and ( c.name like '%'|| #{keyword}||'%' or c.mobile like '%'|| #{keyword}||'%')
-            </if>
-        </where>
+        </if>
+        <if test="keyword !=null and keyword !=''">
+            and ( c.name like '%'|| #{keyword}||'%' or c.mobile like '%'|| #{keyword}||'%')
+        </if>
         order by c.id desc
         <if test="rows !=null and rows !=0">
             limit #{rows} offset #{offset}

@@ -8,6 +8,26 @@ public class FriendVO extends Friend {
 
     private String friendName;
 
+    private String teamName;//teamName、teamId用于我的球友列表
+
+    private Long teamId;
+
+    public Long getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(Long teamId) {
+        this.teamId = teamId;
+    }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
+
     public String getFriendName() {
         return friendName;
     }

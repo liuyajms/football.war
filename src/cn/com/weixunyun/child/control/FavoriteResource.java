@@ -26,10 +26,11 @@ public class FavoriteResource extends AbstractResource {
     @GET
     @Description("获取我收藏的球场列表")
     public List<CourtVO> getList(@CookieParam("rsessionid") String rsessionid,
+                                 @QueryParam("playerId") Long playerId,
                                  @QueryParam("keyword") String keyword,
                                  @QueryParam("page") long page, @QueryParam("rows") long rows) {
 
-        return service.getList(super.getAuthedId(rsessionid), keyword, rows, page * rows);
+        return service.getList(playerId == null ? super.getAuthedId(rsessionid) : playerId, keyword, rows, page * rows);
     }
 
 

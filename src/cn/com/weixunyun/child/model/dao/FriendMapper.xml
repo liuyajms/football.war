@@ -21,6 +21,40 @@
         </if>
     </select>
 
+    <select id="getTeamPlayerList" resultType="FriendVO" parameterType="map">
+        SELECT
+            T . ID AS team_id,
+            T . NAME AS team_name,
+            P . ID AS friend_id,
+            P . NAME AS friend_name
+        FROM
+            team T
+        LEFT JOIN team_player tp ON T . ID = tp.team_id
+        LEFT JOIN player P ON P . ID = tp.player_id
+        where tp.player_id != #{playerId}
+        and
+        <choose>
+            <when test="teamId !=null">
+                t.id = #{teamId}
+            </when>
+            <otherwise>
+                T . ID IN (
+                SELECT
+                team_id
+                FROM
+                team_player
+                WHERE
+                player_id = #{playerId}
+                )
+            </otherwise>
+        </choose>
+        <if test="keyword !=null and keyword !=''">
+            and p.name like '%'|| #{keyword}||'%'
+        </if>
+        ORDER BY t.name,t.id
+    </select>
+
+
     <delete id="delete" parameterType="map">
         delete from friend
         where player_id=#{playerId} and friend_id=#{friendId}

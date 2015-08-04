@@ -81,4 +81,15 @@ public class PlayerServiceImpl extends AbstractService implements PlayerService 
     public int updateInfo(@Param("id") Long id, @Param("password") String password) {
         return super.getMapper(PlayerMapper.class).updateInfo(id, password);
     }
+
+    @Override
+    public void insertHX(Player player) {
+        insert(player);
+        //创建环信账号
+    }
+
+    @Override
+    public void deleteHX(Long id) {
+
+    }
 }

@@ -5,6 +5,7 @@ import cn.com.weixunyun.child.model.vo.FriendVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface FriendMapper {
     void delete(@Param("playerId") Long playerId, @Param("friendId") Long friendId);
@@ -15,4 +16,7 @@ public interface FriendMapper {
                            @Param("rows") long rows, @Param("offset") long offset);
 
     int isFriend(@Param("playerId") Long playerId, @Param("friendId") Long friendId);
+
+    List<FriendVO> getTeamPlayerList(@Param("playerId") Long playerId, @Param("teamId") Long teamId,
+                                     @Param("keyword") String keyword);
 }

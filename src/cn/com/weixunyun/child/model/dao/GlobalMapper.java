@@ -2,14 +2,11 @@ package cn.com.weixunyun.child.model.dao;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import cn.com.weixunyun.child.model.pojo.Global;
 
+@CacheNamespace
 public interface GlobalMapper {
 
 	@Select("select * from global where code_parent = #{codeParent} and code = #{code} limit 1")

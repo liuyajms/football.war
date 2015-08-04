@@ -1,6 +1,7 @@
 package cn.com.weixunyun.child.model.service;
 
 import cn.com.weixunyun.child.model.dao.DictionaryValueMapper;
+import cn.com.weixunyun.child.model.dao.GlobalMapper;
 import cn.com.weixunyun.child.model.pojo.DictionaryValue;
 import org.apache.ibatis.session.SqlSession;
 
@@ -46,4 +47,14 @@ public abstract class AbstractService {
         return nameList;
     }
 
+    /**
+     * 获取全局配置信息
+     * @param codeParent
+     * @param code
+     * @return
+     */
+    protected String getGlobalValue(String codeParent, String code){
+
+        return getMapper(GlobalMapper.class).select(codeParent, code).getValue();
+    }
 }
