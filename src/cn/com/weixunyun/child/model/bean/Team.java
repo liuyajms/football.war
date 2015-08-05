@@ -33,6 +33,16 @@ public class Team implements Serializable{
 
     private Boolean tmp;
 
+    private String groupId;
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
     public Boolean getTmp() {
         return tmp;
     }

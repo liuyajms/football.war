@@ -104,8 +104,14 @@ public class TeamPlayerResource extends AbstractResource {
         Long authedId = super.getAuthedId(rsessionid);
         playerId = playerId == 0 ? super.getAuthedId(rsessionid) : playerId;
 
-        if (authedId != playerId) {
-            if (super.getService(TeamService.class).get(teamId).getCreatePlayerId() != authedId) {
+        Long createPlayerId = super.getService(TeamService.class).get(teamId).getCreatePlayerId();
+
+        if (authedId.equals(playerId)) {
+            if (authedId.equals(createPlayerId)) {//队长退出,删除并指定下任
+                service.deleteCreatePlayerId(teamId, playerId);
+            }
+        }else{
+            if (!authedId.equals(createPlayerId)) {//非队长删除其他成员，禁止操作
                 return new ResultEntity(HttpStatus.SC_FORBIDDEN, "您不是当前球队队长，无权删除该球员");
             }
         }

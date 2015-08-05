@@ -5,6 +5,7 @@ import cn.com.weixunyun.child.model.dao.MatchMapper;
 import cn.com.weixunyun.child.model.dao.PlayerMapper;
 import cn.com.weixunyun.child.model.vo.PlayerVO;
 import cn.com.weixunyun.child.module.calendar.CalendarMapper;
+import cn.com.weixunyun.child.module.easemob.EasemobHelper;
 import cn.com.weixunyun.child.util.DateUtil;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,11 +17,19 @@ public class PlayerServiceImpl extends AbstractService implements PlayerService 
     @Override
     public void delete(Long id) {
         super.getMapper(PlayerMapper.class).delete(id);
+
+        if (super.getGlobalValue("huanxin", "open").equals("1")) {
+            EasemobHelper.deleteUser(id);
+        }
     }
 
     @Override
-    public void insert(Player record) {
-        super.getMapper(PlayerMapper.class).insert(record);
+    public void insert(Player player) {
+        super.getMapper(PlayerMapper.class).insert(player);
+
+        if (super.getGlobalValue("huanxin", "open").equals("1")) {
+            EasemobHelper.createUser(player.getId());
+        }
     }
 
     @Override
@@ -82,14 +91,4 @@ public class PlayerServiceImpl extends AbstractService implements PlayerService 
         return super.getMapper(PlayerMapper.class).updateInfo(id, password);
     }
 
-    @Override
-    public void insertHX(Player player) {
-        insert(player);
-        //创建环信账号
-    }
-
-    @Override
-    public void deleteHX(Long id) {
-
-    }
 }

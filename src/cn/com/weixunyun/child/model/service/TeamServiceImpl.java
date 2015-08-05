@@ -2,12 +2,12 @@ package cn.com.weixunyun.child.model.service;
 
 import cn.com.weixunyun.child.model.bean.Team;
 import cn.com.weixunyun.child.model.bean.TeamPlayer;
-import cn.com.weixunyun.child.model.dao.MatchMapper;
 import cn.com.weixunyun.child.model.dao.TeamMapper;
 import cn.com.weixunyun.child.model.dao.TeamPlayerMapper;
 import cn.com.weixunyun.child.model.vo.TeamPlayerVO;
 import cn.com.weixunyun.child.model.vo.TeamVO;
 import cn.com.weixunyun.child.module.calendar.CalendarMapper;
+import cn.com.weixunyun.child.module.easemob.EasemobHelper;
 import cn.com.weixunyun.child.util.DateUtil;
 
 import java.sql.Date;
@@ -17,11 +17,17 @@ import java.util.List;
 public class TeamServiceImpl extends AbstractService implements TeamService {
     @Override
     public void delete(Long id) {
+        if (super.isHuanXinOpen()) {
+            EasemobHelper.deleteGroup(super.getMapper(TeamMapper.class).select(id).getGroupId());
+        }
         super.getMapper(TeamMapper.class).delete(id);
     }
 
     @Override
     public void insert(Team record) {
+        if (super.isHuanXinOpen()) {
+            record.setGroupId(EasemobHelper.createGroup(record.getName(), record.getCreatePlayerId()));
+        }
         //创建球队，并将创建者加入该球队
         super.getMapper(TeamMapper.class).insert(record);
 
@@ -57,7 +63,6 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
         team.setFreeTimeList(super.getMapper(CalendarMapper.class).getListByTeamId(id, beginDate, endDate));
 
 
-
         return team;
     }
 
@@ -76,6 +81,13 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
 
     @Override
     public void update(Team record) {
+        if (super.isHuanXinOpen() && record.getName() != null) {
+            Team team = super.getMapper(TeamMapper.class).get(record.getId());
+            if (team.getName().equals(record.getName())) {
+                EasemobHelper.updateGroup(team.getGroupId(), record.getName());
+            }
+        }
+
         super.getMapper(TeamMapper.class).update(record);
     }
 

@@ -175,9 +175,11 @@ public class MatchResource extends AbstractResource {
         Map<String, PartField> map = super.partMulti(request);
         Match match = super.buildBean(Match.class, map, id);
 
+        Team team = super.buildBean(Team.class, map, null);
+
         updateImage(map, match.getTeamId(), "team");
 
-        service.update(match);
+        service.updateMatch(team, match);
 
         return new ResultEntity(HttpStatus.SC_OK, "修改球赛成功");
 
@@ -195,7 +197,7 @@ public class MatchResource extends AbstractResource {
             return new ResultEntity(HttpStatus.SC_FORBIDDEN, "请检查是否有权限删除");
         }
 
-        int n = super.getService(MatchService.class).delete(id);
+        int n = super.getService(MatchService.class).deleteMatch(id);
 
         if (n > 0) {
             return new ResultEntity(HttpStatus.SC_OK, "删除成功");
@@ -293,16 +295,18 @@ public class MatchResource extends AbstractResource {
     }
 
     @DELETE
-    @Path("{id}/{teamId}")
+    @Path("{id}/{teamId}/{playerId}")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
-    @Description("拒绝或取消加入球赛")
+    @Description("（拒绝邀请或退赛）或（球赛队长踢人）")
     public ResultEntity refusedMatch(@PathParam("id") Long id, @PathParam("teamId") Long teamId,
+                                     @PathParam("playerId") Long playerId,
                                      @CookieParam("rsessionid") String rsessionid) {
 
         checkMatch(id, teamId);
-        teamPlayerService.delete(teamId, super.getAuthedId(rsessionid));
+//        teamPlayerService.delete(teamId, super.getAuthedId(rsessionid));
 
-        return new ResultEntity(HttpStatus.SC_OK, "操作成功");
+//        return new ResultEntity(HttpStatus.SC_OK, "操作成功");
+        return new TeamPlayerResource().delete(teamId, playerId, rsessionid);
 
     }
 

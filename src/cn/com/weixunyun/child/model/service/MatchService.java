@@ -13,4 +13,10 @@ public interface MatchService extends MatchMapper {
 
     //接受挑战
     void acceptMatch(Team team, Match match);
+
+    //修改球赛
+    void updateMatch(Team team, Match match);
+
+    //删除球赛，同时需要删除球队AB方
+    int deleteMatch(Long id);
 }

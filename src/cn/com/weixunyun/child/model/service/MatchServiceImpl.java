@@ -103,13 +103,29 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
     public void insertMatch(Team team, Match match) {
         teamService.insert(team);
         matchMapper.insert(match);
-//        teamPlayerMapper.insert(teamPlayer);
     }
 
     @Override
     public void acceptMatch(Team team, Match match) {
         teamService.insert(team);
         matchMapper.update(match);
-//        teamPlayerMapper.insert(teamPlayer);
+    }
+
+    @Override
+    public void updateMatch(Team team, Match match) {
+        teamService.update(team);
+        matchMapper.update(match);
+    }
+
+    @Override
+    public int deleteMatch(Long id) {
+        Match match = matchMapper.get(id);
+
+        teamService.delete(match.getTeamId());
+        if (match.getAcceptTeamId() != null) {
+            teamService.delete(match.getAcceptTeamId());
+        }
+
+        return matchMapper.delete(id);
     }
 }

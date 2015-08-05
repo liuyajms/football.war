@@ -87,11 +87,11 @@
     insert into team (id, name, rule,
       color, court_id, address,
       description, src_team_id, create_time,
-      create_player_id, update_time, tmp)
+      create_player_id, update_time, tmp, group_id)
     values (#{id,jdbcType=NUMERIC}, #{name,jdbcType=VARCHAR}, #{rule,jdbcType=INTEGER},
       #{color,jdbcType=INTEGER}, #{courtId,jdbcType=NUMERIC}, #{address,jdbcType=VARCHAR},
       #{description,jdbcType=VARCHAR}, #{srcTeamId}, #{createTime,jdbcType=TIMESTAMP},
-      #{createPlayerId,jdbcType=NUMERIC}, #{updateTime,jdbcType=TIMESTAMP}, #{tmp})
+      #{createPlayerId,jdbcType=NUMERIC}, #{updateTime,jdbcType=TIMESTAMP}, #{tmp}, #{groupId})
   </insert>
 
     <update id="update" parameterType="Team" >

@@ -49,12 +49,17 @@ public abstract class AbstractService {
 
     /**
      * 获取全局配置信息
+     *
      * @param codeParent
      * @param code
      * @return
      */
-    protected String getGlobalValue(String codeParent, String code){
+    protected String getGlobalValue(String codeParent, String code) {
 
         return getMapper(GlobalMapper.class).select(codeParent, code).getValue();
+    }
+
+    protected boolean isHuanXinOpen() {
+        return getMapper(GlobalMapper.class).select("huanxin", "open").getValue().equals("1");
     }
 }
