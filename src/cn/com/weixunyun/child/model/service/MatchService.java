@@ -9,13 +9,13 @@ import cn.com.weixunyun.child.model.dao.MatchMapper;
  */
 public interface MatchService extends MatchMapper {
     //创建球赛
-    void insertMatch(Team team, Match match);
+    void insertMatch(Match match, Team team, String[] playerIds);
 
     //接受挑战
-    void acceptMatch(Team team, Match match);
+    void acceptMatch(Match match, Team team, String[] playerIds);
 
     //修改球赛
-    void updateMatch(Team team, Match match);
+    void updateMatch(Match match, Team team);
 
     //删除球赛，同时需要删除球队AB方
     int deleteMatch(Long id);

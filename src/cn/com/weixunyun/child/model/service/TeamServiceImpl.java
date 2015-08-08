@@ -26,7 +26,7 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
     @Override
     public void insert(Team record) {
         if (super.isHuanXinOpen()) {
-            record.setGroupId(EasemobHelper.createGroup(record.getName(), record.getCreatePlayerId()));
+            record.setGroupId(EasemobHelper.createGroup(record.getName(), new Long[]{record.getCreatePlayerId()}));
         }
         //创建球队，并将创建者加入该球队
         super.getMapper(TeamMapper.class).insert(record);
@@ -97,7 +97,7 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
     }
 
     @Override
-    public void insertPlayer(Team team, String[] playerIds) {
+    public void insertPlayer(Team team, String[] playerIds, boolean agreed) {
         this.insert(team);
 
         if (playerIds != null) {
@@ -105,7 +105,7 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
                 TeamPlayer teamPlayer = new TeamPlayer();
                 teamPlayer.setPlayerId(Long.parseLong(playerId));
                 teamPlayer.setTeamId(team.getId());
-                teamPlayer.setAgreed(true);
+                teamPlayer.setAgreed(agreed);
 
                 super.getMapper(TeamPlayerMapper.class).insert(teamPlayer);
             }

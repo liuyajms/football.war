@@ -75,7 +75,7 @@ public class TeamResource extends AbstractResource {
 
         }
 //        super.getService(TeamService.class).insert(team);
-        super.getService(TeamService.class).insertPlayer(team, playerIds);
+        super.getService(TeamService.class).insertPlayer(team, playerIds, true);
 
     }
 

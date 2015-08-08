@@ -100,19 +100,19 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
 
 
     @Override
-    public void insertMatch(Team team, Match match) {
-        teamService.insert(team);
+    public void insertMatch(Match match, Team team, String[] playerIds) {
+        teamService.insertPlayer(team, playerIds, false);
         matchMapper.insert(match);
     }
 
     @Override
-    public void acceptMatch(Team team, Match match) {
-        teamService.insert(team);
+    public void acceptMatch(Match match, Team team, String[] playerIds) {
+        teamService.insertPlayer(team, playerIds, false);
         matchMapper.update(match);
     }
 
     @Override
-    public void updateMatch(Team team, Match match) {
+    public void updateMatch(Match match, Team team) {
         teamService.update(team);
         matchMapper.update(match);
     }

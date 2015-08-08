@@ -126,7 +126,7 @@ public class MatchResource extends AbstractResource {
 
     @POST
     @Consumes({MediaType.MULTIPART_FORM_DATA})
-    @Description("新建球赛，（新建友谊赛时包含srcTeamId字段，新建训练赛时不需要该字段）")
+    @Description("新建球赛，（新建友谊赛时包含srcTeamId字段，新建训练赛时不需要该字段）,可预先邀请队员，字段为playerIds")
     public ResultEntity insert(@Context HttpServletRequest request, @CookieParam("rsessionid") String rsessionid)
             throws IOException {
         Map<String, PartField> map = super.partMulti(request);
@@ -151,7 +151,14 @@ public class MatchResource extends AbstractResource {
 
         updateImage(map, team.getId(), "team");
 
-        service.insertMatch(team, match);
+        //判断是否有邀请的球员
+        String[] playerIds = null;
+        if(map.containsKey("playerIds") && StringUtils.isNotBlank(map.get("playerIds").getValue().toString())){
+            playerIds = map.get("playerIds").getValue().split(",");
+        }
+
+
+        service.insertMatch(match, team, playerIds);
 
         return new ResultEntity(HttpStatus.SC_OK, "球赛创建成功");
 
@@ -179,7 +186,7 @@ public class MatchResource extends AbstractResource {
 
         updateImage(map, match.getTeamId(), "team");
 
-        service.updateMatch(team, match);
+        service.updateMatch(match, team);
 
         return new ResultEntity(HttpStatus.SC_OK, "修改球赛成功");
 
@@ -208,17 +215,12 @@ public class MatchResource extends AbstractResource {
     /**
      * 以下为业务功能部分
      *
-     * @param request
-     * @param id
-     * @param rsessionid
-     * @return
-     * @throws IOException
      */
 
     @POST
     @Path("{id}")
     @Consumes({MediaType.MULTIPART_FORM_DATA})
-    @Description("接受挑战赛，(我要应战,如果选择球队，则需要srcTeamId字段)")
+    @Description("接受挑战赛，(我要应战,如果选择我的球队，则需要srcTeamId字段)，可预先邀请队员，字段为playerIds")
     public ResultEntity acceptMatch(@Context HttpServletRequest request,
                                     @PathParam("id") Long id,
                                     @CookieParam("rsessionid") String rsessionid) throws IOException {
@@ -241,7 +243,13 @@ public class MatchResource extends AbstractResource {
 
         updateImage(map, team.getId(), "team");
 
-        service.acceptMatch(team, match);
+        //判断是否有邀请的球员
+        String[] playerIds = null;
+        if(map.containsKey("playerIds") && StringUtils.isNotBlank(map.get("playerIds").getValue().toString())){
+            playerIds = map.get("playerIds").getValue().split(",");
+        }
+
+        service.acceptMatch(match, team, playerIds);
 
         return new ResultEntity(HttpStatus.SC_OK, "成功接受挑战");
 
