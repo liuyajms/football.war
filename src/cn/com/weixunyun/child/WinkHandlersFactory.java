@@ -2,7 +2,10 @@ package cn.com.weixunyun.child;
 
 import cn.com.weixunyun.child.util.ThrowableUtils;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.JSONLibDataFormatSerializer;
+import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson.serializer.SimpleDateFormatSerializer;
 import org.apache.http.HttpStatus;
 import org.apache.wink.server.handlers.*;
 
@@ -82,7 +85,11 @@ public class WinkHandlersFactory extends HandlersFactory {
                             Response.Status.fromStatusCode(code).getReasonPhrase(),
                             context.getResponseEntity());
 
-                    String str = JSON.toJSONString(resultEntity, SerializerFeature.WriteMapNullValue);
+//                    String str = JSON.toJSONString(resultEntity, SerializerFeature.WriteMapNullValue);
+                    SerializeConfig config = new SerializeConfig();
+                    config.put(java.sql.Date.class, new SimpleDateFormatSerializer("yyyy-MM-dd"));
+
+                    String str = JSON.toJSONString(resultEntity, config, SerializerFeature.WriteMapNullValue);
 
                     context.setResponseEntity(str);
                 }

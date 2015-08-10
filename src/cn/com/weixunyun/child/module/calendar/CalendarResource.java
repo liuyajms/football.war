@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType;
 import java.sql.Date;
 
 @Workspace(workspaceTitle = "Workspace Title", collectionTitle = "Collection Title")
-@Path("/calendar")
+@Path("/calendar/{freeTime}")
 @Produces(MediaType.APPLICATION_JSON)
 @Description("足球日历")
 public class CalendarResource extends AbstractResource {
@@ -20,7 +20,7 @@ public class CalendarResource extends AbstractResource {
     @POST
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     @Description("添加")
-    public ResultEntity insert(@FormParam("freeTime") String freeTime, @CookieParam("rsessionid") String rsessionid)
+    public ResultEntity insert(@PathParam("freeTime") String freeTime, @CookieParam("rsessionid") String rsessionid)
             throws Exception {
 
         super.getService(CalendarService.class).insert(super.getAuthedId(rsessionid), Date.valueOf(freeTime));
@@ -31,7 +31,7 @@ public class CalendarResource extends AbstractResource {
 
     @DELETE
     @Description("删除")
-    public ResultEntity delete(@FormParam("freeTime") String freeTime, @CookieParam("rsessionid") String rsessionid) {
+    public ResultEntity delete(@PathParam("freeTime") String freeTime, @CookieParam("rsessionid") String rsessionid) {
 
         int n = super.getService(CalendarService.class).delete(super.getAuthedId(rsessionid), Date.valueOf(freeTime));
 

@@ -2,6 +2,7 @@ package cn.com.weixunyun.child.model.service;
 
 import cn.com.weixunyun.child.model.bean.Team;
 import cn.com.weixunyun.child.model.bean.TeamPlayer;
+import cn.com.weixunyun.child.model.dao.FriendMapper;
 import cn.com.weixunyun.child.model.dao.TeamMapper;
 import cn.com.weixunyun.child.model.dao.TeamPlayerMapper;
 import cn.com.weixunyun.child.model.vo.TeamPlayerVO;
@@ -63,5 +64,47 @@ public class TeamPlayerServiceImpl extends AbstractService implements TeamPlayer
         } else {//delete team
             teamMapper.delete(teamId);
         }
+    }
+
+    @Override
+    public void insertMulti(Long userId, Long teamId, String[] playerIds) {
+
+        TeamPlayer teamPlayer = new TeamPlayer();
+        teamPlayer.setTeamId(teamId);
+        teamPlayer.setAgreed(true);
+
+        for (String playerId : playerIds) {
+            if (super.getMapper(FriendMapper.class).isFriend(userId, Long.valueOf(playerId)) == 0) {
+                throw new RuntimeException("请检查该球员是否为您的好友");
+            }
+            teamPlayer.setPlayerId(Long.valueOf(playerId));
+
+            try {
+                this.insert(teamPlayer);
+            } catch (RuntimeException e) {
+                if(!e.getMessage().contains("un_team_player")){
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        }
+
+    }
+
+    @Override
+    public void deleteMulti(Long authedId, Long teamId, String[] playerIds) {
+
+        Long createPlayerId = null;
+        for (String playerId : playerIds) {
+            if (playerId.equals(authedId.toString())) {//删除创建者
+                createPlayerId = Long.valueOf(playerId);
+                continue;
+            }
+            this.delete(teamId, Long.valueOf(playerId));
+        }
+
+        if (createPlayerId != null) {
+            this.deleteCreatePlayerId(teamId, createPlayerId);
+        }
+
     }
 }

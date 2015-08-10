@@ -111,7 +111,7 @@ public class EasemobHelper {
             ObjectNode node = EasemobChatGroups.creatChatGroups(dataObjectNode);
 
             handlerResult(node);
-            return node.findValue("data").findValue("groupid").toString();
+            return node.findValue("data").findValue("groupid").toString().replaceAll("\"", "");
         } catch (Exception e) {
             if (n > 0) {
                 createGroup(groupName, playerIds, --n);

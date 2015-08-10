@@ -1,5 +1,6 @@
 package cn.com.weixunyun.child.model.service;
 
+import cn.com.weixunyun.child.Autowired;
 import cn.com.weixunyun.child.model.bean.Team;
 import cn.com.weixunyun.child.model.bean.TeamPlayer;
 import cn.com.weixunyun.child.model.dao.TeamMapper;
@@ -15,6 +16,10 @@ import java.util.List;
 
 
 public class TeamServiceImpl extends AbstractService implements TeamService {
+
+    @Autowired
+    private TeamPlayerService teamPlayerService;
+
     @Override
     public void delete(Long id) {
         if (super.isHuanXinOpen()) {
@@ -107,7 +112,9 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
                 teamPlayer.setTeamId(team.getId());
                 teamPlayer.setAgreed(agreed);
 
-                super.getMapper(TeamPlayerMapper.class).insert(teamPlayer);
+                //注意：此处新开了一个事务
+                teamPlayerService.insert(teamPlayer);
+//                super.getMapper(TeamPlayerMapper.class).insert(teamPlayer);
             }
         }
     }
