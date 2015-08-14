@@ -89,7 +89,8 @@ public class WinkHandlersFactory extends HandlersFactory {
                     SerializeConfig config = new SerializeConfig();
                     config.put(java.sql.Date.class, new SimpleDateFormatSerializer("yyyy-MM-dd"));
 
-                    String str = JSON.toJSONString(resultEntity, config, SerializerFeature.WriteMapNullValue);
+                    String str = JSON.toJSONString(resultEntity, config,
+                            SerializerFeature.WriteMapNullValue, SerializerFeature.SortField);
 
                     context.setResponseEntity(str);
                 }
