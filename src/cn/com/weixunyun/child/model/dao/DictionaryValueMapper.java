@@ -19,12 +19,15 @@ public interface DictionaryValueMapper {
 	
 	@Insert("insert into dictionary_value (dictionary_table_code,dictionary_field_code,code, name,ord) "
 			+ "values (#{dictionaryTableCode},#{dictionaryFieldCode},#{code}, #{name},#{ord})")
+    @Options(flushCache = true)
 	public void insert(DictionaryValue dictionaryValue);
 
 	@Update("update dictionary_value set name=#{name},ord=#{ord} where code=#{code} and dictionary_table_code=#{dictionaryTableCode} and dictionary_field_code=#{dictionaryFieldCode}")
+    @Options(flushCache = true)
 	public void update(DictionaryValue dictionaryValue);
 
 	@Delete("delete from dictionary_value where code = #{code} and dictionary_table_code = #{dictionaryTableCode} and dictionary_field_code=#{dictionaryFieldCode} and school_id=#{schoolId}")
+    @Options(flushCache = true)
 	public void delete(DictionaryValue d);
 	
 	@SelectProvider(type = DictionaryValueMapperProvider.class, method = "getValueList")

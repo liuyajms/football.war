@@ -23,12 +23,15 @@ public interface GlobalMapper {
 	public List<Global> getList();
 
 	@Insert("insert into global (code_parent, code, value) values (#{codeParent}, #{code}, #{value})")
+    @Options(flushCache = true)
 	public void insert(Global global);
 
 	@Update("update global set value=#{value} where code_parent=#{codeParent} and code=#{code}")
+    @Options(flushCache = true)
 	public void update(Global global);
 
 	@Delete("delete from global where code_parent = #{codeParent} and code = #{code}")
+    @Options(flushCache = true)
 	public void delete(Global global);
 
 }
