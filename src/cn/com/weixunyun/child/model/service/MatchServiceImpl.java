@@ -4,7 +4,10 @@ import cn.com.weixunyun.child.Autowired;
 import cn.com.weixunyun.child.model.bean.Match;
 import cn.com.weixunyun.child.model.bean.Team;
 import cn.com.weixunyun.child.model.dao.MatchMapper;
+import cn.com.weixunyun.child.model.dao.TeamMapper;
+import cn.com.weixunyun.child.model.dao.TeamPlayerMapper;
 import cn.com.weixunyun.child.model.vo.MatchVO;
+import cn.com.weixunyun.child.model.vo.TeamPlayerVO;
 import cn.com.weixunyun.child.model.vo.TeamVO;
 
 import java.sql.Date;
@@ -38,14 +41,34 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
     }
 
     private MatchVO setTeamData(MatchVO matchVO) {
-        //设置参赛队
+       /* //设置参赛队
         TeamVO team = teamService.get(matchVO.getTeamId());
         matchVO.setTeam(team);
         //设置迎战队
         TeamVO acceptTeam = matchVO.getAcceptTeamId() == null ? null : teamService.get(matchVO.getAcceptTeamId());
+        matchVO.setAcceptTeam(acceptTeam);*/
+
+        //获取参赛队，及其队员列表
+        TeamVO team = getTeamVO(matchVO.getTeamId());
+
+        //获取应战队，及其队员列表
+        TeamVO acceptTeam = getTeamVO(matchVO.getAcceptTeamId());
+
+        matchVO.setTeam(team);
         matchVO.setAcceptTeam(acceptTeam);
 
         return matchVO;
+    }
+
+    private TeamVO getTeamVO(Long teamId) {
+        if(teamId !=null){
+            TeamVO team = super.getMapper(TeamMapper.class).get(teamId);
+            List<TeamPlayerVO> teamPlayerList = super.getMapper(TeamPlayerMapper.class).getList(teamId, null, null);
+            team.setTeamPlayerList(teamPlayerList);
+            team.setPlayerCount(teamPlayerList.size());
+            return team;
+        }
+        return null;
     }
 
     private List<MatchVO> setTeamData(List<MatchVO> matchVOList) {

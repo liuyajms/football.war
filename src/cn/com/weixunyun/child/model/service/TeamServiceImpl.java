@@ -17,9 +17,6 @@ import java.util.List;
 
 public class TeamServiceImpl extends AbstractService implements TeamService {
 
-    @Autowired
-    private TeamPlayerService teamPlayerService;
-
     @Override
     public void delete(Long id) {
         if (super.isHuanXinOpen()) {
@@ -112,9 +109,18 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
                 teamPlayer.setTeamId(team.getId());
                 teamPlayer.setAgreed(agreed);
 
-                //注意：此处新开了一个事务
-                teamPlayerService.insert(teamPlayer);
-//                super.getMapper(TeamPlayerMapper.class).insert(teamPlayer);
+                /*
+                注意：此处新开了一个事务,所以此时新建的球队记录并未保存至数据库，从而导致team_player表外键报错
+                解决：copy service中的方法至此处
+                 */
+//                teamPlayerService.insert(teamPlayer);
+                super.getMapper(TeamPlayerMapper.class).insert(teamPlayer);
+
+                if (super.isHuanXinOpen()) {
+                    String groupId = super.getMapper(TeamMapper.class).select(teamPlayer.getTeamId()).getGroupId();
+                    EasemobHelper.addUserToGroup(groupId, teamPlayer.getPlayerId());
+                }
+
             }
         }
     }

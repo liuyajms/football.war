@@ -5,7 +5,8 @@
     <sql id="BaseSelect">
         SELECT
           M .*, dv. NAME AS rule_name,
-          C .address
+          C .address,
+          C .name as court_name
         FROM
           MATCH M
         LEFT JOIN dictionary_value dv ON dv.dictionary_table_code = 'team'

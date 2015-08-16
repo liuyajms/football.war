@@ -15,6 +15,16 @@ public class MatchVO extends Match{
 
     private String address;//比赛地址
 
+    private String courtName;
+
+    public String getCourtName() {
+        return courtName;
+    }
+
+    public void setCourtName(String courtName) {
+        this.courtName = courtName;
+    }
+
     public String getRuleName() {
         return ruleName;
     }
