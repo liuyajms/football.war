@@ -4,10 +4,10 @@
 
     <select id="getList" resultType="TeamPlayerVO" parameterType="map">
         SELECT
-          tp.*, P . NAME AS player_name,
-          T . NAME AS team_name
+        tp.*, P . NAME AS player_name,
+        T . NAME AS team_name
         FROM
-          team_player tp
+        team_player tp
         LEFT JOIN player P ON P . ID = tp.player_id
         LEFT JOIN team T ON T . ID = tp.team_id
         <where>
@@ -22,6 +22,18 @@
             </if>
         </where>
         order by tp.create_time
+    </select>
+
+    <select id="getCount" parameterType="map" resultType="int">
+        select count(*) from team_player tp
+        <where>
+            <if test="teamId !=null">
+                and tp.team_id=#{teamId}
+            </if>
+            <if test="playerId !=null">
+                and tp.player_id=#{playerId}
+            </if>
+        </where>
     </select>
 
     <delete id="delete" parameterType="map">

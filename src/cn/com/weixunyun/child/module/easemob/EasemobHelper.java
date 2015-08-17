@@ -133,6 +133,9 @@ public class EasemobHelper {
     }
 
     public static void deleteGroup(String groupId, int n) {
+        if(groupId == null){
+            return;
+        }
         try {
             ObjectNode deleteChatGroupNode = EasemobChatGroups.deleteChatGroups(groupId);
             handlerResult(deleteChatGroupNode);
@@ -155,7 +158,9 @@ public class EasemobHelper {
     }
 
     public static void updateGroup(String groupId, String groupName, int n) {
-
+        if(groupId == null){
+            return;
+        }
         try {
             ObjectNode dataNode = JsonNodeFactory.instance.objectNode();
             dataNode.put("groupname", groupName);
@@ -182,12 +187,15 @@ public class EasemobHelper {
 
 
     public static void addUserToGroup(String groupId, Long playerId, int n) {
+        if(groupId == null){
+            return;
+        }
         try {
             ObjectNode addUserToGroupNode = EasemobChatGroups.addUserToGroup(groupId, playerId.toString());
             handlerResult(addUserToGroupNode);
         } catch (Exception e) {
             if (n > 0) {
-                addUserToGroup(groupId, playerId, n);
+                addUserToGroup(groupId, playerId, --n);
             } else {
                 throw new RuntimeException("添加群用户失败:" + e.getMessage());
             }
@@ -202,19 +210,23 @@ public class EasemobHelper {
      * @param playerId
      */
     public static void deleteUserFromGroup(String groupId, Long playerId) {
-        ObjectNode deleteUserFromGroupNode = EasemobChatGroups.deleteUserFromGroup(groupId, playerId.toString());
-        handlerResult(deleteUserFromGroupNode);
+        if(groupId !=null){
+            ObjectNode deleteUserFromGroupNode = EasemobChatGroups.deleteUserFromGroup(groupId, playerId.toString());
+            handlerResult(deleteUserFromGroupNode);
+        }
     }
 
     public static void deleteUserFromGroup(String groupId, Long playerId, int n) {
-        try {
-            ObjectNode deleteUserFromGroupNode = EasemobChatGroups.deleteUserFromGroup(groupId, playerId.toString());
-            handlerResult(deleteUserFromGroupNode);
-        } catch (Exception e) {
-            if (n > 0) {
-                deleteGroup(groupId, --n);
-            } else {
-                throw new RuntimeException("删除群用户失败:" + e.getMessage());
+        if(groupId !=null){
+            try {
+                ObjectNode deleteUserFromGroupNode = EasemobChatGroups.deleteUserFromGroup(groupId, playerId.toString());
+                handlerResult(deleteUserFromGroupNode);
+            } catch (Exception e) {
+                if (n > 0) {
+                    deleteGroup(groupId, --n);
+                } else {
+                    throw new RuntimeException("删除群用户失败:" + e.getMessage());
+                }
             }
         }
     }

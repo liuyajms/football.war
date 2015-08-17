@@ -15,4 +15,6 @@ public interface TeamPlayerMapper {
                                @Param("keyword") String keyword);
 
     void agreed(@Param("teamId") Long teamId, @Param("playerId") Long playerId);
+
+    int getCount(@Param("teamId") Long teamId, @Param("playerId") Long playerId);
 }

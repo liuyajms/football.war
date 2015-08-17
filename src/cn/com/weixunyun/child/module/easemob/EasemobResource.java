@@ -11,6 +11,7 @@ import cn.com.weixunyun.child.model.service.TeamService;
 import cn.com.weixunyun.child.model.vo.PlayerVO;
 import cn.com.weixunyun.child.model.vo.TeamPlayerVO;
 import cn.com.weixunyun.child.model.vo.TeamVO;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.wink.common.annotations.Workspace;
 
@@ -77,7 +78,7 @@ public class EasemobResource extends AbstractResource {
         TeamService teamService = super.getService(TeamService.class);
         TeamPlayerService teamPlayerService = super.getService(TeamPlayerService.class);
 
-        List<TeamVO> teamList = teamService.getList(null, null, null, null, null, null, 0, 0);
+        List<TeamVO> teamList = teamService.getAllList(null, 0, 0);
 
         Map<String, List<TeamVO>> map = new HashMap<>();
         List<TeamVO> successList = new ArrayList<>();
@@ -85,9 +86,15 @@ public class EasemobResource extends AbstractResource {
 
         for (TeamVO team : teamList) {
             try {
+
+                //如果组ID非空，则代表已经初始化，则忽略掉
+                if (StringUtils.isNotBlank(team.getGroupId())) {
+                    break;
+                }
+
                 List<TeamPlayerVO> playerVOList = teamPlayerService.getList(team.getId(), null, null);
 
-                if(playerVOList.size() > 0) {//球队有球员时才创建群组
+                if (playerVOList.size() > 0) {//球队有球员时才创建群组
                     Long[] playerIds = new Long[playerVOList.size()];
 
                     for (int i = 0; i < playerIds.length; i++) {
@@ -128,7 +135,7 @@ public class EasemobResource extends AbstractResource {
         try {
             List<TeamPlayerVO> playerVOList = teamPlayerService.getList(team.getId(), null, null);
 
-            if(playerVOList.size() > 0){//球队有球员时才创建群组
+            if (playerVOList.size() > 0) {//球队有球员时才创建群组
                 Long[] playerIds = new Long[playerVOList.size()];
 
                 for (int i = 0; i < playerIds.length; i++) {
@@ -138,7 +145,7 @@ public class EasemobResource extends AbstractResource {
                 team.setGroupId(groupId);
                 //保存组ID
                 teamService.update(team);
-            }else{
+            } else {
                 return new ResultEntity(HttpStatus.SC_BAD_REQUEST, "创建失败,该群无成员");
             }
 

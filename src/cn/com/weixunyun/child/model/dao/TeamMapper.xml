@@ -78,6 +78,16 @@
         </if>
     </select>
 
+    <select id="getAllList" resultType="Team" parameterType="map">
+        select * from team
+        <if test="tmp !=null">
+            and tmp = #{tmp}
+        </if>
+        <if test="rows !=null and rows !=0">
+            limit #{rows} offset #{offset}
+        </if>
+    </select>
+
     <delete id="delete" parameterType="long">
         delete from team
         where id = #{id,jdbcType=NUMERIC}

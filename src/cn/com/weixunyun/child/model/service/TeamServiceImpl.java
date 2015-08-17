@@ -1,6 +1,5 @@
 package cn.com.weixunyun.child.model.service;
 
-import cn.com.weixunyun.child.Autowired;
 import cn.com.weixunyun.child.model.bean.Team;
 import cn.com.weixunyun.child.model.bean.TeamPlayer;
 import cn.com.weixunyun.child.model.dao.TeamMapper;
@@ -79,6 +78,11 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
         }
 
         return list;
+    }
+
+    @Override
+    public List<TeamVO> getAllList(Boolean tmp, int rows, int offset) {
+        return super.getMapper(TeamMapper.class).getAllList(tmp, rows, offset);
     }
 
     @Override

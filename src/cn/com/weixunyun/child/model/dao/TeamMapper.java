@@ -20,6 +20,8 @@ public interface TeamMapper {
                          @Param("keyword") String keyword, @Param("srcTeamId") Long srcTeamId,
                          @Param("rows") long rows, @Param("offset") long offset);
 
+    List<TeamVO> getAllList(@Param("tmp") Boolean tmp, @Param("rows") int rows, @Param("offset") int offset);
+
     void update(Team record);
 
     void updated(Long id);

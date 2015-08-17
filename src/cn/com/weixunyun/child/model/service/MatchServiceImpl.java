@@ -16,6 +16,7 @@ import java.util.Map;
 
 /**
  * Created by PC on 2015/7/25.
+ * bug：凡使用到teamService的方法，均存在事务不一致的bug。。。
  */
 public class MatchServiceImpl extends AbstractService implements MatchService {
     @Autowired

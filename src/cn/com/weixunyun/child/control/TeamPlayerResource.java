@@ -92,7 +92,7 @@ public class TeamPlayerResource extends AbstractResource {
     @Description("球队队长拉人（多个）")
     public ResultEntity insertMulti(@PathParam("teamId") Long teamId,
                                     @FormParam("playerIds") String playerIds,
-                                    @CookieParam("rsessionid") String rsessionid){
+                                    @CookieParam("rsessionid") String rsessionid) {
 
         service.insertMulti(super.getAuthedId(rsessionid), teamId, playerIds.split(","));
 
@@ -139,6 +139,7 @@ public class TeamPlayerResource extends AbstractResource {
 
     /**
      * 删除多个队友，先判断删除列表中是否包含自身，若包含，则先删除其他队友，然后删除自己，并指定下任队长；否则，直接删除
+     *
      * @param teamId
      * @param playerIds
      * @param rsessionid
@@ -148,8 +149,8 @@ public class TeamPlayerResource extends AbstractResource {
     @Path("{teamId}")
     @Description("删除多个队友")
     public ResultEntity deleteMulti(@PathParam("teamId") Long teamId,
-                               @QueryParam("playerIds") String playerIds,
-                               @CookieParam("rsessionid") String rsessionid) {
+                                    @QueryParam("playerIds") String playerIds,
+                                    @CookieParam("rsessionid") String rsessionid) {
 
         Long createPlayerId = super.getService(TeamService.class).get(teamId).getCreatePlayerId();
         //身份校验

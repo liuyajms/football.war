@@ -7,7 +7,6 @@ import cn.com.weixunyun.child.model.dao.TeamMapper;
 import cn.com.weixunyun.child.model.dao.TeamPlayerMapper;
 import cn.com.weixunyun.child.model.vo.TeamPlayerVO;
 import cn.com.weixunyun.child.module.easemob.EasemobHelper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -43,8 +42,13 @@ public class TeamPlayerServiceImpl extends AbstractService implements TeamPlayer
     }
 
     @Override
-    public void agreed(@Param("teamId") Long teamId, @Param("playerId") Long playerId) {
+    public void agreed(Long teamId, Long playerId) {
         super.getMapper(TeamPlayerMapper.class).agreed(teamId, playerId);
+    }
+
+    @Override
+    public int getCount(Long teamId, Long playerId) {
+        return super.getMapper(TeamPlayerMapper.class).getCount(teamId, playerId);
     }
 
     @Override
@@ -77,15 +81,21 @@ public class TeamPlayerServiceImpl extends AbstractService implements TeamPlayer
             if (super.getMapper(FriendMapper.class).isFriend(userId, Long.valueOf(playerId)) == 0) {
                 throw new RuntimeException("请检查该球员是否为您的好友");
             }
-            teamPlayer.setPlayerId(Long.valueOf(playerId));
 
-            try {
-                this.insert(teamPlayer);
+            //检查是否已有该记录,注意：存在并发，可能导致数据不同步
+            if (super.getMapper(TeamPlayerMapper.class).getCount(teamId, Long.valueOf(playerId)) > 0) {
+                continue;
+            }
+
+            teamPlayer.setPlayerId(Long.valueOf(playerId));
+            this.insert(teamPlayer);
+
+          /*  try {
             } catch (RuntimeException e) {
                 if(!e.getMessage().contains("un_team_player")){
                     throw new RuntimeException(e.getMessage());
                 }
-            }
+            }*/
         }
 
     }
