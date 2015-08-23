@@ -33,12 +33,12 @@
     </delete>
     <insert id="insert" parameterType="Court">
         insert into court (id, name, rule,
-          mobile, address, px,
+          mobile, address, detail_address, px,
           py, open_time, description,
           tmp, create_time, create_player_id, update_time
         )
         values (#{id,jdbcType=NUMERIC}, #{name,jdbcType=VARCHAR}, #{rule,jdbcType=INTEGER},
-          #{mobile,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{px,jdbcType=NUMERIC},
+          #{mobile,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{detailAddress}, #{px,jdbcType=NUMERIC},
           #{py,jdbcType=NUMERIC}, #{openTime,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
           #{tmp,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP}, #{createPlayerId,jdbcType=NUMERIC},
           #{updateTime})
@@ -58,6 +58,9 @@
             </if>
             <if test="address != null" >
                 address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="detailAddress !=null">
+                detail_address = #{detailAddress}
             </if>
             <if test="px != null" >
                 px = #{px,jdbcType=NUMERIC},

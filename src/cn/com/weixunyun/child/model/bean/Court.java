@@ -13,7 +13,9 @@ public class Court implements Serializable{
 
     private String mobile;
 
-    private String address;
+    private String address;//注册地址，eg：成都市 金牛区
+
+    private String detailAddress;//详细地址
 
     private Double px;
 
@@ -30,6 +32,14 @@ public class Court implements Serializable{
     private Timestamp updateTime;
 
     private Long createPlayerId;
+
+    public String getDetailAddress() {
+        return detailAddress;
+    }
+
+    public void setDetailAddress(String detailAddress) {
+        this.detailAddress = detailAddress;
+    }
 
     public Timestamp getUpdateTime() {
         return updateTime;

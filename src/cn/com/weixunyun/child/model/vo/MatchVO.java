@@ -13,9 +13,32 @@ public class MatchVO extends Match{
 
     private String ruleName;//赛制
 
+    /**
+     * 以下为比赛球场信息
+     */
     private String address;//比赛地址
 
     private String courtName;
+
+    private Double px;
+
+    private Double py;
+
+    public Double getPx() {
+        return px;
+    }
+
+    public void setPx(Double px) {
+        this.px = px;
+    }
+
+    public Double getPy() {
+        return py;
+    }
+
+    public void setPy(Double py) {
+        this.py = py;
+    }
 
     public String getCourtName() {
         return courtName;
