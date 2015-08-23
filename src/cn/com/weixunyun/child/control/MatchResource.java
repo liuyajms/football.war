@@ -167,7 +167,7 @@ public class MatchResource extends AbstractResource {
 
     @PUT
     @Path("{id}")
-    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+    @Consumes({MediaType.MULTIPART_FORM_DATA})
     @Description("修改球赛")
     public ResultEntity update(@Context HttpServletRequest request, @PathParam("id") Long id,
                                @CookieParam("rsessionid") String rsessionid) throws IOException {
@@ -182,7 +182,7 @@ public class MatchResource extends AbstractResource {
         Map<String, PartField> map = super.partMulti(request);
         Match match = super.buildBean(Match.class, map, id);
 
-        Team team = super.buildBean(Team.class, map, null);
+        Team team = super.buildBean(Team.class, map, matchVO.getTeamId());
 
         updateImage(map, match.getTeamId(), "team");
 

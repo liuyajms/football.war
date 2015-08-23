@@ -67,6 +67,8 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
             List<TeamPlayerVO> teamPlayerList = super.getMapper(TeamPlayerMapper.class).getList(teamId, null, null);
             team.setTeamPlayerList(teamPlayerList);
             team.setPlayerCount(teamPlayerList.size());
+            team.setColorList(super.getDicValueList("team", "color", team.getColor()));
+
             return team;
         }
         return null;

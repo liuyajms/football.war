@@ -15,9 +15,9 @@ public class Court implements Serializable{
 
     private String address;
 
-    private Long px;
+    private Double px;
 
-    private Long py;
+    private Double py;
 
     private String openTime;
 
@@ -79,19 +79,19 @@ public class Court implements Serializable{
         this.address = address == null ? null : address.trim();
     }
 
-    public Long getPx() {
+    public Double getPx() {
         return px;
     }
 
-    public void setPx(Long px) {
+    public void setPx(Double px) {
         this.px = px;
     }
 
-    public Long getPy() {
+    public Double getPy() {
         return py;
     }
 
-    public void setPy(Long py) {
+    public void setPy(Double py) {
         this.py = py;
     }
 
