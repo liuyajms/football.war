@@ -62,7 +62,13 @@
                 ]]>
         </if>
         <if test="keyword !=null and keyword !=''">
-            and ( t.name like '%'|| #{keyword}||'%' )
+            and ( t.name like '%'|| #{keyword}||'%'
+                or t.id in (
+                SELECT t.id from team t
+                left join court c on c.id=t.court_id
+                where c.name like
+                '%'|| #{keyword}||'%'
+            ))
         </if>
         <choose>
             <when test="srcTeamId !=null">

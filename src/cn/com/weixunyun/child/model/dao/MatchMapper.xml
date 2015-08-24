@@ -46,7 +46,7 @@
                     ]]>
             </if>
             <if test="keyword !=null and keyword !=''">
-                and ( m.name like '%'|| #{keyword}||'%' or m.mobile like '%'|| #{keyword}||'%')
+                and ( m.name like '%'|| #{keyword}||'%' or C .name like '%'|| #{keyword}||'%')
             </if>
         </where>
         order by m.begin_time desc

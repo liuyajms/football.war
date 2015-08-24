@@ -37,7 +37,14 @@
                 ]]>
             </if>
             <if test="keyword !=null and keyword !=''">
-                and ( p.name like '%'|| #{keyword}||'%' or p.mobile like '%'|| #{keyword}||'%')
+                and ( p.name like '%'|| #{keyword}||'%'
+                or p.id in (
+                    SELECT tp.player_id from team_player tp
+                    left join team t on t.id=tp.team_id
+                    left join court c on c.id=t.court_id
+                    where c.name like
+                   '%'|| #{keyword}||'%'
+                ))
             </if>
         </where>
         order by p.id desc
