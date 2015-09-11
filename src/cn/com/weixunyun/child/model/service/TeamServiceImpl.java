@@ -69,9 +69,9 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
 
     @Override
     public List<TeamVO> getList(String city, Integer rule, Integer beginAge, Integer endAge,
-                                String keyword, Long sourceId, long rows, long offset) {
+                                String keyword, Long sourceId, Double px, Double py, long rows, long offset) {
         List<TeamVO> list = super.getMapper(TeamMapper.class)
-                .getList(city, rule, beginAge, endAge, keyword, sourceId, rows, offset);
+                .getList(city, rule, beginAge, endAge, keyword, sourceId, px, py, rows, offset);
 
         for (TeamVO team : list) {
             team.setRuleList(super.getDicValueList("team", "rule", team.getRule()));

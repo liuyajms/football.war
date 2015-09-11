@@ -40,8 +40,9 @@ public class CourtResource extends AbstractResource {
                                  @QueryParam("city") String city,
                                  @QueryParam("rule") Integer rule,
                                  @QueryParam("keyword") String keyword,
+                                 @QueryParam("px") Double px, @QueryParam("py") Double py,
                                  @QueryParam("page") long page, @QueryParam("rows") long rows) {
-        return service.getList(city, rule, keyword, rows, page * rows);
+        return service.getList(city, rule, keyword, px, py, rows, page * rows);
     }
 
     @GET

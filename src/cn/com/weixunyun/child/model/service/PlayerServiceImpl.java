@@ -50,9 +50,9 @@ public class PlayerServiceImpl extends AbstractService implements PlayerService 
 
     @Override
     public List<PlayerVO> getList(String city, Integer role, Integer beginAge, Integer endAge,
-                                  String keyword, long rows, long offset) {
+                                  String keyword, Double px, Double py, long rows, long offset) {
         List<PlayerVO> playerVOList = super.getMapper(PlayerMapper.class)
-                .getList(city, role, beginAge, endAge, keyword, rows, offset);
+                .getList(city, role, beginAge, endAge, keyword, px, py, rows, offset);
 
         for (PlayerVO playerVO : playerVOList) {
             playerVO.setRoleList(super.getDicValueList("player", "role", playerVO.getRole()));

@@ -26,6 +26,15 @@ public class TeamVO extends Team {
 
     private Boolean isJoined;
 
+    private int distance;
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
 
     public MatchVO getMatch() {
         return match;

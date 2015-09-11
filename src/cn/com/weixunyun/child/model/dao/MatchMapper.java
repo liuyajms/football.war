@@ -17,7 +17,9 @@ public interface MatchMapper {
 
     List<MatchVO> getList(@Param("city") String city, @Param("rule") Integer rule,
                           @Param("beginDate") Date beginDate, @Param("endDate") Date endDate,
-                          @Param("keyword") String keyword, @Param("rows") long rows, @Param("offset") long offset);
+                          @Param("keyword") String keyword,
+                          @Param("px") Double px, @Param("py") Double py,
+                          @Param("rows") long rows, @Param("offset") long offset);
 
     void update(Match record);
 

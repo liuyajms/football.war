@@ -18,6 +18,7 @@ public interface TeamMapper {
     List<TeamVO> getList(@Param("city") String city, @Param("rule") Integer rule,
                          @Param("beginAge") Integer beginAge, @Param("endAge") Integer endAge,
                          @Param("keyword") String keyword, @Param("srcTeamId") Long srcTeamId,
+                         @Param("px") Double px, @Param("py") Double py,
                          @Param("rows") long rows, @Param("offset") long offset);
 
     List<TeamVO> getAllList(@Param("tmp") Boolean tmp, @Param("rows") int rows, @Param("offset") int offset);

@@ -24,6 +24,16 @@ public class MatchVO extends Match{
 
     private Double py;
 
+    private int distance;
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
     public Double getPx() {
         return px;
     }

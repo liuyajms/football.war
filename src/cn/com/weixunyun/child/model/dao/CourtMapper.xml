@@ -8,7 +8,11 @@
     </select>
 
     <select id="getList" resultType="CourtVO" parameterType="map">
-        select c.* from court c
+        select c.*
+        <if test="px !=null and py !=null">
+            , round(earth_distance(ll_to_earth(py, px), ll_to_earth(#{py}, #{px}))) AS distance
+        </if>
+        from court c
         where c.tmp is not true
         <if test="city !=null">
             and c.address like '%'|| #{city}||'%'
@@ -21,7 +25,14 @@
         <if test="keyword !=null and keyword !=''">
             and ( c.name like '%'|| #{keyword}||'%' or c.mobile like '%'|| #{keyword}||'%')
         </if>
-        order by c.id desc
+        <choose>
+            <when test="px !=null and py !=null">
+                order by distance
+            </when>
+            <otherwise>
+                order by c.id desc
+            </otherwise>
+        </choose>
         <if test="rows !=null and rows !=0">
             limit #{rows} offset #{offset}
         </if>

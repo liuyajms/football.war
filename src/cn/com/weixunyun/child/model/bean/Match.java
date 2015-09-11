@@ -4,9 +4,8 @@ import cn.com.weixunyun.child.NotNull;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Date;
 
-public class Match implements Serializable{
+public class Match implements Serializable {
     private static final long serialVersionUID = -6323234265936955615L;
     private Long id;
 
@@ -18,9 +17,9 @@ public class Match implements Serializable{
     private String fee;
 
     @NotNull
-    private Date beginTime;
+    private Timestamp beginTime;
 
-    private Date endTime;
+    private Timestamp endTime;
 
     private Long courtId;
 
@@ -84,19 +83,19 @@ public class Match implements Serializable{
         this.fee = fee == null ? null : fee.trim();
     }
 
-    public Date getBeginTime() {
+    public Timestamp getBeginTime() {
         return beginTime;
     }
 
-    public void setBeginTime(Date beginTime) {
+    public void setBeginTime(Timestamp beginTime) {
         this.beginTime = beginTime;
     }
 
-    public Date getEndTime() {
+    public Timestamp getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(Timestamp endTime) {
         this.endTime = endTime;
     }
 
@@ -116,7 +115,7 @@ public class Match implements Serializable{
         this.type = type;
     }
 
-    public Date getCreateTime() {
+    public Timestamp getCreateTime() {
         return createTime;
     }
 
@@ -132,7 +131,7 @@ public class Match implements Serializable{
         this.createPlayerId = createPlayerId;
     }
 
-    public Date getUpdateTime() {
+    public Timestamp getUpdateTime() {
         return updateTime;
     }
 

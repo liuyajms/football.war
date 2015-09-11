@@ -15,6 +15,16 @@ public class CourtVO extends Court {
 
     private Boolean isFavorite;
 
+    private int distance;
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
     public Boolean getIsFavorite() {
         return isFavorite;
     }

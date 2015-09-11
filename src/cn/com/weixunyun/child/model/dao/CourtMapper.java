@@ -14,7 +14,9 @@ public interface CourtMapper {
     CourtVO get(Long id);
 
     List<CourtVO> getList(@Param("city") String city, @Param("rule") Integer rule,
-                          @Param("keyword") String keyword, @Param("rows") long rows, @Param("offset") long offset);
+                          @Param("keyword") String keyword,
+                          @Param("px") Double px, @Param("py") Double py,
+                          @Param("rows") long rows, @Param("offset") long offset);
 
     void update(Court record);
 

@@ -42,7 +42,13 @@
     <select id="getList" resultType="TeamVO" parameterType="map">
         select t.*,
         (select count(*) from team_player tp where tp.team_id=t.id) as player_count
+        <if test="px !=null and py !=null">
+            , round(earth_distance(ll_to_earth(p.py, p.px), ll_to_earth(#{py}, #{px}))) AS distance
+        </if>
         from team t
+        <if test="px !=null and py !=null">
+            left join player p on p.id = t.create_player_id
+        </if>
         where t.tmp is not true
         <if test="city !=null">
             and t.address like '%'|| #{city}||'%'
@@ -78,7 +84,15 @@
                 and t.src_team_id is null
             </otherwise>
         </choose>
-        order by t.id desc
+        <choose>
+            <when test="px !=null and py !=null">
+                order by distance
+            </when>
+            <otherwise>
+                order by t.id desc
+            </otherwise>
+        </choose>
+
         <if test="rows !=null and rows !=0">
             limit #{rows} offset #{offset}
         </if>

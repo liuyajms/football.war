@@ -1,6 +1,7 @@
 package cn.com.weixunyun.child.control;
 
 import cn.com.weixunyun.child.Autowired;
+import cn.com.weixunyun.child.Constants;
 import cn.com.weixunyun.child.Description;
 import cn.com.weixunyun.child.ResultEntity;
 import cn.com.weixunyun.child.model.bean.Match;
@@ -40,9 +41,6 @@ public class MatchResource extends AbstractResource {
     @Autowired
     private TeamPlayerService teamPlayerService;
 
-    public final static int MATCH_TRAIN = 1;//训练赛
-    public final static int MATCH_FRIEND = 2;//友谊赛
-
 
     @GET
     @Description("列表")
@@ -52,12 +50,13 @@ public class MatchResource extends AbstractResource {
                                  @QueryParam("beginDate") String beginDate,
                                  @QueryParam("endDate") String endDate,
                                  @QueryParam("keyword") String keyword,
+                                 @QueryParam("px") Double px, @QueryParam("py") Double py,
                                  @QueryParam("page") long page, @QueryParam("rows") long rows) {
 
         return service.getList(city, rule,
                 StringUtils.isNotBlank(beginDate) ? Date.valueOf(beginDate) : null,
                 StringUtils.isNotBlank(endDate) ? Date.valueOf(endDate) : null,
-                keyword, rows, page * rows);
+                keyword, px, py, rows, page * rows);
     }
 
 
@@ -145,7 +144,7 @@ public class MatchResource extends AbstractResource {
 
         team.setCreatePlayerId(super.getAuthedId(rsessionid));
         team.setTmp(true);
-        if (match.getType() == MATCH_FRIEND) {
+        if (match.getType() == Constants.MATCH_FRIEND) {
             team.setName(teamService.get(team.getSrcTeamId()).getName());
         }
 
@@ -153,7 +152,7 @@ public class MatchResource extends AbstractResource {
 
         //判断是否有邀请的球员
         String[] playerIds = null;
-        if(map.containsKey("playerIds") && StringUtils.isNotBlank(map.get("playerIds").getValue().toString())){
+        if (map.containsKey("playerIds") && StringUtils.isNotBlank(map.get("playerIds").getValue().toString())) {
             playerIds = map.get("playerIds").getValue().split(",");
         }
 
@@ -214,7 +213,6 @@ public class MatchResource extends AbstractResource {
 
     /**
      * 以下为业务功能部分
-     *
      */
 
     @POST
@@ -233,7 +231,7 @@ public class MatchResource extends AbstractResource {
         //加入球赛应战方
         Match match = service.get(id);
         match.setAcceptTeamId(team.getId());
-        if (match.getType() != MATCH_FRIEND) {
+        if (match.getType() != Constants.MATCH_FRIEND) {
             return new ResultEntity(HttpStatus.SC_BAD_REQUEST, "错误请求");
         }
 
@@ -245,7 +243,7 @@ public class MatchResource extends AbstractResource {
 
         //判断是否有邀请的球员
         String[] playerIds = null;
-        if(map.containsKey("playerIds") && StringUtils.isNotBlank(map.get("playerIds").getValue().toString())){
+        if (map.containsKey("playerIds") && StringUtils.isNotBlank(map.get("playerIds").getValue().toString())) {
             playerIds = map.get("playerIds").getValue().split(",");
         }
 

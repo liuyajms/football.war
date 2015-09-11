@@ -31,9 +31,10 @@ public class TeamResource extends AbstractResource {
                                 @QueryParam("endAge") Integer endAge,
                                 @QueryParam("keyword") String keyword,
                                 @QueryParam("srcTeamId") Long srcTeamId,
+                                @QueryParam("px") Double px, @QueryParam("py") Double py,
                                 @QueryParam("page") long page, @QueryParam("rows") long rows) {
         return super.getService(TeamService.class)
-                .getList(city, rule, beginAge, endAge, keyword, srcTeamId, rows, page * rows);
+                .getList(city, rule, beginAge, endAge, keyword, srcTeamId, px, py, rows, page * rows);
     }
 
     @GET

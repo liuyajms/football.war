@@ -54,8 +54,8 @@ public class CourtServiceImpl extends AbstractService implements CourtService {
     }
 
     @Override
-    public List<CourtVO> getList(String city, Integer rule, String keyword, long rows, long offset) {
-        List<CourtVO> list = mapper.getList(city, rule, keyword, rows, offset);
+    public List<CourtVO> getList(String city, Integer rule, String keyword, Double px, Double py, long rows, long offset) {
+        List<CourtVO> list = mapper.getList(city, rule, keyword, px, py, rows, offset);
 
         for (CourtVO courtVO : list) {
             courtVO.setRuleList(super.getDicValueList("team", "rule", courtVO.getRule()));

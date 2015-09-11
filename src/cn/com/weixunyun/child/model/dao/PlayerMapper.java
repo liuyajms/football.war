@@ -15,7 +15,9 @@ public interface PlayerMapper {
 
     List<PlayerVO> getList(@Param("city") String city, @Param("role") Integer role,
                            @Param("beginAge") Integer beginAge, @Param("endAge") Integer endAge,
-                           @Param("keyword") String keyword, @Param("rows") long rows, @Param("offset") long offset);
+                           @Param("keyword") String keyword,
+                           @Param("px") Double px, @Param("py") Double py,
+                           @Param("rows") long rows, @Param("offset") long offset);
 
     void update(Player record);
 

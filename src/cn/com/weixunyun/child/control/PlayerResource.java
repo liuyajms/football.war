@@ -8,9 +8,7 @@ import cn.com.weixunyun.child.model.bean.Player;
 import cn.com.weixunyun.child.model.service.FriendService;
 import cn.com.weixunyun.child.model.service.PlayerService;
 import cn.com.weixunyun.child.model.vo.PlayerVO;
-import cn.com.weixunyun.child.util.ImageUtils;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.wink.common.annotations.Workspace;
@@ -20,8 +18,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -42,9 +38,10 @@ public class PlayerResource extends AbstractResource {
                                   @QueryParam("beginAge") Integer beginAge,
                                   @QueryParam("endAge") Integer endAge,
                                   @QueryParam("keyword") String keyword,
+                                  @QueryParam("px") Double px, @QueryParam("py") Double py,
                                   @QueryParam("page") long page, @QueryParam("rows") long rows) {
         return super.getService(PlayerService.class)
-                .getList(city, role, beginAge, endAge, keyword, rows, page * rows);
+                .getList(city, role, beginAge, endAge, keyword, px, py, rows, page * rows);
     }
 
     @GET

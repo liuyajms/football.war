@@ -17,7 +17,15 @@
     </select>
 
     <select id="getList" resultType="PlayerVO" parameterType="map">
-        <include refid="BaseSelect"/>
+        select p.*, dv.name as leg_name
+        <if test="px !=null and py !=null">
+            , round(earth_distance(ll_to_earth(py, px), ll_to_earth(#{py}, #{px}))) AS distance
+        </if>
+        from player p
+        left join dictionary_value dv
+        on dv.dictionary_table_code = 'player'
+        and dictionary_field_code = 'leg'
+        and dv.code=p.leg
         <where>
             <if test="city !=null">
                 and p.address like '%'|| #{city}||'%'
@@ -47,7 +55,14 @@
                 ))
             </if>
         </where>
-        order by p.id desc
+        <choose>
+            <when test="px !=null and py !=null">
+                order by distance
+            </when>
+            <otherwise>
+                order by p.id desc
+            </otherwise>
+        </choose>
         <if test="rows !=null and rows !=0">
             limit #{rows} offset #{offset}
         </if>

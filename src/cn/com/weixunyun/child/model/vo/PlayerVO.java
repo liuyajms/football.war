@@ -18,6 +18,15 @@ public class PlayerVO extends Player {
 
     private Boolean isFriend;
 
+    private int distance;
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
 
     public List<Map<Date, Integer>> getMatchList() {
         return matchList;

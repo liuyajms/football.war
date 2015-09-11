@@ -89,8 +89,8 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
 
     @Override
     public List<MatchVO> getList(String city, Integer rule, Date beginDate, Date endDate,
-                                 String keyword, long rows, long offset) {
-        List<MatchVO> matchVOList = matchMapper.getList(city, rule, beginDate, endDate, keyword, rows, offset);
+                                 String keyword, Double px, Double py, long rows, long offset) {
+        List<MatchVO> matchVOList = matchMapper.getList(city, rule, beginDate, endDate, keyword, px, py, rows, offset);
 
         return setTeamData(matchVOList);
     }

@@ -27,7 +27,21 @@
     </select>
 
     <select id="getList" resultType="MatchVO" parameterType="map">
-        <include refid="BaseSelect"/>
+        SELECT
+          M .*, dv. NAME AS rule_name,
+          C .address,
+          C .name as court_name,
+          C .px,
+          C .py
+        <if test="px !=null and py !=null">
+            , round(earth_distance(ll_to_earth(C. py, C .px), ll_to_earth(#{py}, #{px}))) AS distance
+        </if>
+        FROM
+          MATCH M
+        LEFT JOIN dictionary_value dv ON dv.dictionary_table_code = 'team'
+        AND dictionary_field_code = 'rule'
+        AND M . RULE = dv.code :: INTEGER
+        LEFT JOIN court C ON C . ID = M .court_id
         <where>
             <if test="city !=null">
                 and m.address like '%'|| #{city}||'%'
@@ -49,7 +63,16 @@
                 and ( m.name like '%'|| #{keyword}||'%' or C .name like '%'|| #{keyword}||'%')
             </if>
         </where>
-        order by m.begin_time desc
+
+        <choose>
+            <when test="px !=null and py !=null">
+                order by distance
+            </when>
+            <otherwise>
+                order by m.begin_time desc
+            </otherwise>
+        </choose>
+
         <if test="rows !=null and rows !=0">
             limit #{rows} offset #{offset}
         </if>
