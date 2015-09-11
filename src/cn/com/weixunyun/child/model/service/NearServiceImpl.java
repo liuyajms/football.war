@@ -1,5 +1,6 @@
 package cn.com.weixunyun.child.model.service;
 
+import cn.com.weixunyun.child.Autowired;
 import cn.com.weixunyun.child.model.dao.NearMapper;
 import cn.com.weixunyun.child.model.dao.TeamPlayerMapper;
 import cn.com.weixunyun.child.model.vo.MatchVO;
@@ -12,6 +13,9 @@ import java.util.List;
  */
 public class NearServiceImpl extends AbstractService implements NearService {
 
+    @Autowired
+    private MatchService matchService;
+
     @Override
     public List<Near> getList(String city, Double px, Double py, int rows, int offset) {
         List<Near> nearList = super.getMapper(NearMapper.class).getList(city, px, py, rows, offset);
@@ -21,17 +25,22 @@ public class NearServiceImpl extends AbstractService implements NearService {
             switch (near.getType()) {
                 case 0://球赛,设置球队信息，及球赛比赛结束时间等信息
 
-                    MatchServiceImpl matchService = new MatchServiceImpl();
-                    matchService.setSession(super.getSession());
+//                    MatchServiceImpl matchService = new MatchServiceImpl();
+//                    matchService.setSession(super.getSession());
 
                     MatchVO matchVO = matchService.get(near.getId());
                     near.setTeamNum(matchVO.getTeam().getPlayerCount());
                     near.setTeamId(matchVO.getTeamId());
                     near.setTeamName(matchVO.getTeam().getName());
 
-                    near.setAcceptTeamNum(matchVO.getAcceptTeam().getPlayerCount());
-                    near.setAcceptTeamId(matchVO.getAcceptTeamId());
-                    near.setTeamName(matchVO.getAcceptTeam().getName());
+                    if (matchVO.getAcceptTeamId() != null) {
+                        near.setAcceptTeamNum(matchVO.getAcceptTeam().getPlayerCount());
+                        near.setAcceptTeamId(matchVO.getAcceptTeamId());
+                        near.setTeamName(matchVO.getAcceptTeam().getName());
+                    } else {
+                        near.setAcceptTeamNum(0);
+                    }
+
 
                     near.setBeginTime(matchVO.getBeginTime());
                     near.setEndTime(matchVO.getEndTime());
