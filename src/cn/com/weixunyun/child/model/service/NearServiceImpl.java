@@ -47,7 +47,7 @@ public class NearServiceImpl extends AbstractService implements NearService {
                     near.setDicList(super.getDicValueList("team", "rule", near.getDic()));
                     break;
                 case 1://球队，设置球队人数
-                    near.setNum(super.getMapper(TeamPlayerMapper.class).getCount(near.getId(), null));
+                    near.setTeamNum(super.getMapper(TeamPlayerMapper.class).getCount(near.getId(), null));
                     near.setDicList(super.getDicValueList("team", "rule", near.getDic()));
                     break;
                 case 2://球员，数据字典

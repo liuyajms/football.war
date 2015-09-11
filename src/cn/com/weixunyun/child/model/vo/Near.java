@@ -7,9 +7,9 @@ import java.util.List;
 /**
  * Created by PC on 2015/9/10.
  */
-public class Near implements Serializable{
+public class Near implements Serializable {
     private static final long serialVersionUID = 5884275088900692930L;
-    private int type;//球赛0、球队1、球员2、球场3
+    private int type;//球赛1(训练赛),2(友谊赛)、球队3、球员4、球场5
 
     private Long id;
 
@@ -20,9 +20,9 @@ public class Near implements Serializable{
     //player
     private String name;
 
-    private Integer sex;
+    private Integer sex;//性别
 
-    private int num;//球员年龄，球队人数
+    private Integer age;//球员年龄
 
     private Integer dic;//数据字典
     private List<String> dicList;//球员场上位置，球队赛制，球场赛制，
@@ -38,8 +38,6 @@ public class Near implements Serializable{
     private Timestamp beginTime;
 
     private Timestamp endTime;
-
-    private String ruleName;
 
     private Long acceptTeamId;
 
@@ -83,14 +81,6 @@ public class Near implements Serializable{
 
     public void setAcceptTeamNum(Integer acceptTeamNum) {
         this.acceptTeamNum = acceptTeamNum;
-    }
-
-    public String getRuleName() {
-        return ruleName;
-    }
-
-    public void setRuleName(String ruleName) {
-        this.ruleName = ruleName;
     }
 
     public String getAcceptTeamName() {
@@ -149,12 +139,12 @@ public class Near implements Serializable{
         this.dic = dic;
     }
 
-    public int getNum() {
-        return num;
+    public Integer getAge() {
+        return age;
     }
 
-    public void setNum(int num) {
-        this.num = num;
+    public void setAge(Integer age) {
+        this.age = age;
     }
 
     public Integer getSex() {
