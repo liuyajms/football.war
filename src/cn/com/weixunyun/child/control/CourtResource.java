@@ -8,6 +8,8 @@ import cn.com.weixunyun.child.model.service.CourtServeService;
 import cn.com.weixunyun.child.model.service.CourtService;
 import cn.com.weixunyun.child.model.service.FavoriteService;
 import cn.com.weixunyun.child.model.vo.CourtVO;
+import cn.com.weixunyun.child.util.ExcelParser;
+import cn.com.weixunyun.child.util.ThrowableUtils;
 import org.apache.http.HttpStatus;
 import org.apache.wink.common.annotations.Workspace;
 
@@ -135,5 +137,31 @@ public class CourtResource extends AbstractResource {
 
     }
 
+    @POST
+    @Path("imported")
+    @Consumes({MediaType.MULTIPART_FORM_DATA})
+    @Description("导入添加")
+    public DMLResponse insertMulti(@Context HttpServletRequest request, @CookieParam("rsessionid") String rsessionid)
+            throws Exception {
+        try {
 
+            Map<String, PartField> map = super.partMulti(request);
+            PartFieldFile file = map.get("import").getFile();
+            int del = Integer.parseInt(map.get("del").getValue());
+
+            if (!file.getOriName().endsWith(".xlsx")) {
+                return new DMLResponse(false, "请导入.xlsx文件！");
+            }
+
+            List<Map<String, Object>> list = new ExcelParser().redXlsx("court", file);
+
+            int n = service.insertMulti(del, list);
+
+            return new DMLResponse(true, Integer.toString(n));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Throwable throwable = ThrowableUtils.getRootCause(e);
+            return new DMLResponse(false, throwable.getMessage());
+        }
+    }
 }

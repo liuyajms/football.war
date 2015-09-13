@@ -5,7 +5,7 @@ public class YmParser extends AbstractParser<String> {
 	public String exception = "格式必须为YYYYMM，如：201308";
 
 	@Override
-	public String parse(String s, Long schoolId) throws ParserException {
+	public String parse(String s) throws ParserException {
 		if (s.length() == 6) {
 			try {
 				Long.parseLong(s);

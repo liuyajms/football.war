@@ -1,14 +1,14 @@
 package cn.com.weixunyun.child.util;
 
+import cn.com.weixunyun.child.util.excel.DictionaryParser;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.com.weixunyun.child.util.excel.*;
-
 public class ExcelParserColumn {
 
-	public List<ColumnProperties> getStudentParserList(Long schoolId) {
-		List<ColumnProperties> list = new ArrayList<ColumnProperties>();
+/*	public List<ColumnProperties> getStudentParserList(Long schoolId) {
+        List<ColumnProperties> list = new ArrayList<ColumnProperties>();
 		list.add(new ColumnProperties("name", false));
 		list.add(new ColumnProperties("gender", true, new DictionaryParser(schoolId, "student", "gender")));
 		list.add(new ColumnProperties("birthday", true, new DateParser()));
@@ -38,6 +38,19 @@ public class ExcelParserColumn {
 		list.add(new ColumnProperties("description"));
 		list.add(new ColumnProperties("type", true, new BoolParser()));
 		return list;
-	}
+	}*/
 
+    public List<ColumnProperties> getCourtParserList() {
+        List<ColumnProperties> list = new ArrayList<ColumnProperties>();
+        list.add(new ColumnProperties("name", false));
+        list.add(new ColumnProperties("rule", true, new DictionaryParser("team", "rule")));
+        list.add(new ColumnProperties("mobile"));
+        list.add(new ColumnProperties("address", false));
+        list.add(new ColumnProperties("detailAddress"));
+        list.add(new ColumnProperties("px"));
+        list.add(new ColumnProperties("py"));
+        list.add(new ColumnProperties("openTime"));
+        list.add(new ColumnProperties("description"));
+        return list;
+    }
 }

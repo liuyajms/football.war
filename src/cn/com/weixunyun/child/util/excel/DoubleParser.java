@@ -5,7 +5,7 @@ public class DoubleParser extends AbstractParser<Double> {
 	public String exception = "必须为数值";
 
 	@Override
-	public Double parse(String s, Long schoolId) throws ParserException {
+	public Double parse(String s) throws ParserException {
 		try {
 			return Double.parseDouble(s);
 		} catch (NumberFormatException e) {

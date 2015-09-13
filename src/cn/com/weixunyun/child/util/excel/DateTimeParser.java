@@ -8,7 +8,7 @@ public class DateTimeParser extends AbstractParser<java.sql.Timestamp> {
 	public String exception = "日期格式有误，如：2013年1月1日 1:10";
 
 	@Override
-	public java.sql.Timestamp parse(String s, Long schoolId) throws ParserException {
+	public java.sql.Timestamp parse(String s) throws ParserException {
 		try {
 			String arr[] = s.split("\"");
 			String str = "";

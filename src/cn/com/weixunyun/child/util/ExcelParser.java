@@ -21,28 +21,28 @@ public class ExcelParser {
 
     private ExcelParserColumn excelParserColumn = new ExcelParserColumn();
 
-    public List<Map<String, Object>> redXlsx(String tableName, File file, String r, Long schoolId) throws Exception {
-        return redXlsx(tableName, file, 0, schoolId);
+    public List<Map<String, Object>> redXlsx(String tableName, File file) throws Exception {
+        return redXlsx(tableName, file, 0);
     }
 
-    public List<Map<String, Object>> redXlsx(String tableName, File file, int sheetIndex, Long schoolId)
+    public List<Map<String, Object>> redXlsx(String tableName, File file, int sheetIndex)
             throws Exception {
         List<ColumnProperties> propertiesList = null;
 
 
         try {
+            tableName = tableName.substring(0, 1).toUpperCase() + tableName.substring(1);
             propertiesList = (List<ColumnProperties>) excelParserColumn.getClass()
-                    .getMethod("get" + tableName + "ParserList", new Class[]{Long.class})
-                    .invoke(excelParserColumn, new Object[]{schoolId});
+                    .getMethod("get" + tableName + "ParserList", new Class[]{})
+                    .invoke(excelParserColumn, new Object[]{});
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return redXlsx(propertiesList, file, sheetIndex, schoolId);
+        return redXlsx(propertiesList, file, sheetIndex);
     }
 
-    public List<Map<String, Object>> redXlsx(List<ColumnProperties> propertiesList, File file, int sheetIndex,
-                                             Long schoolId) throws Exception {
+    public List<Map<String, Object>> redXlsx(List<ColumnProperties> propertiesList, File file, int sheetIndex) throws Exception {
         if (propertiesList == null) {
             throw new RuntimeException("参数错误");
         }
@@ -78,7 +78,7 @@ public class ExcelParser {
                         } else {
                             Object o = null;
                             try {
-                                o = parser.parse(cell.getStringCellValue().trim(), schoolId);
+                                o = parser.parse(cell.getStringCellValue().trim());
                             } catch (ParserException e) {
                                 errorList.add(new ColumnError(i, j, cell.getStringCellValue(), e.getMessage()));
                             }
@@ -160,7 +160,7 @@ public class ExcelParser {
                         } else {
                             Object o = null;
                             try {
-                                o = parser.parse(cell.getStringCellValue(), schoolId);
+                                o = parser.parse(cell.getStringCellValue());
                             } catch (ParserException e) {
                                 errorList.add(new ColumnError(i, j, cell.getStringCellValue(), e.getMessage()));
                             }

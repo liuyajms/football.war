@@ -9,20 +9,13 @@ import java.util.*;
 public class Rules {
 
     public static void main(String[] args) {
-        System.out.println(new IntegerParser().exception);
-        new Rules().columnRules(6568L, "teacher");
     }
 
-    public Map<String, String> columnRules(Long schoolId, String str) {
+    public Map<String, String> columnRules(String str) {
         Map<String, String> map = new LinkedHashMap<String, String>();
 
         ExcelParserColumn excelParserColumn = new ExcelParserColumn();
         List<ColumnProperties> list = new ArrayList<ColumnProperties>();
-        if ("student".equals(str)) {
-            list = excelParserColumn.getStudentParserList(schoolId);
-        } else if ("teacher".equals(str)) {
-            list = excelParserColumn.getTeacherParserList(schoolId);
-        }
 
         for (ColumnProperties columnProperties : list) {
             System.out.println(columnProperties.getName());
@@ -45,11 +38,11 @@ public class Rules {
                     map.put(ExcelParserColumnName.map.get(str).get(columnProperties.getName()), new YmParser().exception);
                 } else if (columnProperties.getParser().toString().contains("DictionaryParser")) {
                     if ("gender".equals(columnProperties.getName().toString())) {
-                        map.put(ExcelParserColumnName.map.get(str).get(columnProperties.getName()), new DictionaryParser(schoolId, "student", "gender").exception);
+                        map.put(ExcelParserColumnName.map.get(str).get(columnProperties.getName()), new DictionaryParser("student", "gender").exception);
                     } else if ("parentsType".equals(columnProperties.getName().toString())) {
-                        map.put(ExcelParserColumnName.map.get(str).get(columnProperties.getName()), new DictionaryParser(schoolId, "parents", "type").exception);
+                        map.put(ExcelParserColumnName.map.get(str).get(columnProperties.getName()), new DictionaryParser("parents", "type").exception);
                     } else if ("title".equals(columnProperties.getName().toString())) {
-                        map.put(ExcelParserColumnName.map.get(str).get(columnProperties.getName()), new DictionaryParser(schoolId, "teacher", "title").exception);
+                        map.put(ExcelParserColumnName.map.get(str).get(columnProperties.getName()), new DictionaryParser("teacher", "title").exception);
                     }
                 }
             } else {
@@ -60,15 +53,11 @@ public class Rules {
         return map;
     }
 
-    public List<Rule> rules(Long schoolId, String str) {
+    public List<Rule> rules(String str) {
         List<Rule> pList = new LinkedList<Rule>();
 
         ExcelParserColumn excelParserColumn = new ExcelParserColumn();
         List<ColumnProperties> list = new ArrayList<ColumnProperties>();
-        if ("student".equals(str)) {
-            //TODO
-            list = excelParserColumn.getStudentParserList(schoolId);
-        }
 
         Rule pair = null;
         for (ColumnProperties columnProperties : list) {
@@ -101,27 +90,27 @@ public class Rules {
                     pair.setType("文本");
                 } else if (columnProperties.getParser().toString().contains("DictionaryParser")) {
                     if ("gender".equals(columnProperties.getName().toString())) {
-                        pair.setValue(new DictionaryParser(schoolId, "student", "gender").exception);
+                        pair.setValue(new DictionaryParser("student", "gender").exception);
                         pair.setType("数据字典");
                         pair.setTable("student");
                         pair.setField("gender");
                     } else if ("parentsType".equals(columnProperties.getName().toString())) {
-                        pair.setValue(new DictionaryParser(schoolId, "parents", "type").exception);
+                        pair.setValue(new DictionaryParser("parents", "type").exception);
                         pair.setType("数据字典");
                         pair.setTable("parents");
                         pair.setField("type");
                     } else if ("title".equals(columnProperties.getName().toString())) {
-                        pair.setValue(new DictionaryParser(schoolId, "teacher", "title").exception);
+                        pair.setValue(new DictionaryParser("teacher", "title").exception);
                         pair.setType("数据字典");
                         pair.setTable("teacher");
                         pair.setField("title");
                     } else if ("type".equals(columnProperties.getName().toString()) && "course_score".equals(str)) {
-                        pair.setValue(new DictionaryParser(schoolId, "course_score", "type").exception);
+                        pair.setValue(new DictionaryParser("course_score", "type").exception);
                         pair.setType("数据字典");
                         pair.setTable("course_score");
                         pair.setField("type");
                     } else if ("type".equals(columnProperties.getName().toString()) && "student_grow".equals(str)) {
-                        pair.setValue(new DictionaryParser(schoolId, "student_grow", "type").exception);
+                        pair.setValue(new DictionaryParser("student_grow", "type").exception);
                         pair.setType("数据字典");
                         pair.setTable("student_grow");
                         pair.setField("type");

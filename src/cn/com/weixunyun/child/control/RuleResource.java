@@ -80,27 +80,27 @@ public class RuleResource extends AbstractResource {
                     pair.setType("文本");
                 } else if (columnProperties.getParser().toString().contains("DictionaryParser")) {
                     if ("gender".equals(columnProperties.getName().toString())) {
-                        pair.setValue(new DictionaryParser(schoolId, "student", "gender").exception);
+                        pair.setValue(new DictionaryParser("student", "gender").exception);
                         pair.setType("数据字典");
                         pair.setTable("student");
                         pair.setField("gender");
                     } else if ("parentsType".equals(columnProperties.getName().toString())) {
-                        pair.setValue(new DictionaryParser(schoolId, "parents", "type").exception);
+                        pair.setValue(new DictionaryParser("parents", "type").exception);
                         pair.setType("数据字典");
                         pair.setTable("parents");
                         pair.setField("type");
                     } else if ("title".equals(columnProperties.getName().toString())) {
-                        pair.setValue(new DictionaryParser(schoolId, "teacher", "title").exception);
+                        pair.setValue(new DictionaryParser("teacher", "title").exception);
                         pair.setType("数据字典");
                         pair.setTable("teacher");
                         pair.setField("title");
                     } else if ("type".equals(columnProperties.getName().toString()) && "course_score".equals(str)) {
-                        pair.setValue(new DictionaryParser(schoolId, "course_score", "type").exception);
+                        pair.setValue(new DictionaryParser("course_score", "type").exception);
                         pair.setType("数据字典");
                         pair.setTable("course_score");
                         pair.setField("type");
                     } else if ("type".equals(columnProperties.getName().toString()) && "student_grow".equals(str)) {
-                        pair.setValue(new DictionaryParser(schoolId, "student_grow", "type").exception);
+                        pair.setValue(new DictionaryParser("student_grow", "type").exception);
                         pair.setType("数据字典");
                         pair.setTable("student_grow");
                         pair.setField("type");

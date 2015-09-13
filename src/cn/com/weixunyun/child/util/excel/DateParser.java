@@ -8,7 +8,7 @@ public class DateParser extends AbstractParser<java.util.Date> {
 	public String exception = "必须为日期，格式为：2013-1-1";
 
 	@Override
-	public java.util.Date parse(String s, Long schoolId) throws ParserException {
+	public java.util.Date parse(String s) throws ParserException {
 		try {
 			String arr[] = s.split("\"");
 			String str = "";

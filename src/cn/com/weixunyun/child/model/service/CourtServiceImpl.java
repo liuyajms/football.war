@@ -10,6 +10,7 @@ import cn.com.weixunyun.child.model.vo.CourtVO;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by PC on 2015/7/24.
@@ -92,5 +93,20 @@ public class CourtServiceImpl extends AbstractService implements CourtService {
         for (String serveId : serveIds) {
             serveMapper.insert(court.getId(), Long.parseLong(serveId));
         }
+    }
+
+    @Override
+    public int insertMulti(int del, List<Map<String, Object>> list) {
+        //删除所有数据
+//        if (del == 1) {
+//            mapper.deleteAll(params);
+//        }
+        //插入数据
+        for (Map<String, Object> dataMap : list) {
+            Court court = super.buildEntity(Court.class, dataMap);
+            mapper.insert(court);
+        }
+
+        return list.size();
     }
 }
