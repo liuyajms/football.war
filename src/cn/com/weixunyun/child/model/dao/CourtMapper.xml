@@ -71,7 +71,7 @@
                 address = #{address,jdbcType=VARCHAR},
             </if>
             <if test="detailAddress !=null">
-                detail_address = #{detailAddress}
+                detail_address = #{detailAddress},
             </if>
             <if test="px != null" >
                 px = #{px,jdbcType=NUMERIC},
