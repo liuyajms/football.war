@@ -34,6 +34,7 @@ public class NearServiceImpl extends AbstractService implements NearService {
                     near.setTeamNum(matchVO.getTeam().getPlayerCount());
                     near.setTeamId(matchVO.getTeamId());
                     near.setTeamName(matchVO.getTeam().getName());
+                    near.setCourtName(matchVO.getCourtName());
 
                     if (matchVO.getAcceptTeamId() != null) {
                         near.setAcceptTeamNum(matchVO.getAcceptTeam().getPlayerCount());

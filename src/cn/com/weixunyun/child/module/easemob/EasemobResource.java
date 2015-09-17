@@ -11,12 +11,16 @@ import cn.com.weixunyun.child.model.service.TeamService;
 import cn.com.weixunyun.child.model.vo.PlayerVO;
 import cn.com.weixunyun.child.model.vo.TeamPlayerVO;
 import cn.com.weixunyun.child.model.vo.TeamVO;
+import cn.com.weixunyun.child.module.easemob.api.EasemobMessages;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.wink.common.annotations.Workspace;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +32,22 @@ import java.util.Map;
 @Description("环信同步")
 public class EasemobResource extends AbstractResource {
 
+    @POST
+    @Path("message")
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+    @Description("添加成员")
+    public ResultEntity sendSystemMsg(@CookieParam("rsessionid") String rsessionid,
+                                      @FormParam("targetType") String targetType,
+                                      @FormParam("targetIds") String targetIds,
+                                      String test,
+                                      @FormParam("msg") String msg,
+                                      @FormParam("ext") String ext) {
+
+        if(EasemobMessages.senSystemMessages(targetType, targetIds.split(","), msg, ext)){
+            return new ResultEntity(HttpStatus.SC_OK, "发送成功");
+        }
+        return new ResultEntity(HttpStatus.SC_INTERNAL_SERVER_ERROR, "发送失败");
+    }
 
     /**
      * 一、查询所有的球员，创建环信账号

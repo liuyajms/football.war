@@ -20,4 +20,8 @@ public interface Constants {
 	public static String APP_CLIENT_SECRET = PropertiesUtils.getProperties().getProperty("APP_CLIENT_SECRET");
 	// DEFAULT_PASSWORD
 	public static String DEFAULT_PASSWORD = PropertiesUtils.getProperties().getProperty("APP_USER_PASS","1357924680");
+
+    public static String SYS_ACCOUNT = PropertiesUtils.getProperties().getProperty("APP_SYS_COUNT","0");
+    public static String SYS_PASSWORD = PropertiesUtils.getProperties().getProperty("APP_SYS_PASSWORD","abc123");
+
 }
