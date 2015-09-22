@@ -182,4 +182,11 @@
         update_time=now()
         where id=#{id}
     </update>
+
+    <update id="findPassword" parameterType="map">
+        update player
+        set password=#{password},
+        update_time=now()
+        where mobile=#{mobile}
+    </update>
 </mapper>

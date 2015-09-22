@@ -11,6 +11,7 @@ import cn.com.weixunyun.child.model.vo.TeamPlayerVO;
 import cn.com.weixunyun.child.model.vo.TeamVO;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,8 +23,17 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
     @Autowired
     private MatchMapper matchMapper;
 
-    @Autowired
-    private TeamService teamService;
+//    @Autowired
+//    private TeamService teamService;
+
+//    private TeamService teamService;
+
+    public TeamService getTeamService() {
+        TeamServiceImpl teamService = new TeamServiceImpl();
+        teamService.setSession(super.getSession());
+
+        return teamService;
+    }
 
 
     @Override
@@ -75,7 +85,13 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
     }
 
     private List<MatchVO> setTeamData(List<MatchVO> matchVOList) {
+        List<MatchVO> resultList = new ArrayList<>();
         for (MatchVO matchVO : matchVOList) {
+            //如果非公开，并且应战方为空，则不显示在附近中。
+            if(!matchVO.getOpen() && matchVO.getAcceptTeamId() == null){
+                continue;
+            }
+
             matchVO = setTeamData(matchVO);
             //清空球员列表
             matchVO.getTeam().setTeamPlayerList(null);
@@ -83,8 +99,10 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
             if (matchVO.getAcceptTeam() != null) {
                 matchVO.getAcceptTeam().setTeamPlayerList(null);
             }
+
+            resultList.add(matchVO);
         }
-        return matchVOList;
+        return resultList;
     }
 
     @Override
@@ -127,19 +145,19 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
 
     @Override
     public void insertMatch(Match match, Team team, String[] playerIds) {
-        teamService.insertPlayer(team, playerIds, false);
+        getTeamService().insertPlayer(team, playerIds, false);
         matchMapper.insert(match);
     }
 
     @Override
     public void acceptMatch(Match match, Team team, String[] playerIds) {
-        teamService.insertPlayer(team, playerIds, false);
+        getTeamService().insertPlayer(team, playerIds, false);
         matchMapper.update(match);
     }
 
     @Override
     public void updateMatch(Match match, Team team) {
-        teamService.update(team);
+        getTeamService().update(team);
         matchMapper.update(match);
     }
 
@@ -147,9 +165,9 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
     public int deleteMatch(Long id) {
         Match match = matchMapper.get(id);
 
-        teamService.delete(match.getTeamId());
+        getTeamService().delete(match.getTeamId());
         if (match.getAcceptTeamId() != null) {
-            teamService.delete(match.getAcceptTeamId());
+            getTeamService().delete(match.getAcceptTeamId());
         }
 
         return matchMapper.delete(id);

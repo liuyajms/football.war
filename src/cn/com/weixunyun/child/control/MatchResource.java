@@ -141,6 +141,7 @@ public class MatchResource extends AbstractResource {
         Match match = super.buildBean(Match.class, map, null);
         match.setCreatePlayerId(super.getAuthedId(rsessionid));
         match.setTeamId(team.getId());
+        match.setOpen(match.getOpen() == null ? true : match.getOpen());
 
         team.setCreatePlayerId(super.getAuthedId(rsessionid));
         team.setTmp(true);
@@ -159,7 +160,7 @@ public class MatchResource extends AbstractResource {
 
         service.insertMatch(match, team, playerIds);
 
-        return new ResultEntity(HttpStatus.SC_OK, "球赛创建成功");
+        return new ResultEntity(HttpStatus.SC_OK, "球赛创建成功", match);
 
     }
 

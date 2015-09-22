@@ -68,7 +68,10 @@ public class TeamPlayerResource extends AbstractResource {
         TeamPlayer teamPlayer = new TeamPlayer();
         teamPlayer.setTeamId(teamId);
 
-        if (super.getAuthedId(rsessionid).equals(playerId) || playerId == 0) {//主动加入
+        /**
+         * 审核暂改为环信发送消息审核
+         */
+/*        if (super.getAuthedId(rsessionid).equals(playerId) || playerId == 0) {//主动加入
             teamPlayer.setAgreed(false);
             teamPlayer.setPlayerId(super.getAuthedId(rsessionid));
         } else {//邀请加入，无需审核，但需要检查是否为好友
@@ -77,8 +80,11 @@ public class TeamPlayerResource extends AbstractResource {
             }
             teamPlayer.setAgreed(true);
             teamPlayer.setPlayerId(playerId);
-        }
+        }*/
 
+
+        teamPlayer.setAgreed(true);
+        teamPlayer.setPlayerId(playerId == 0 ? super.getAuthedId(rsessionid) : playerId);
 
         super.getService(TeamPlayerService.class).insert(teamPlayer);
 
@@ -89,7 +95,7 @@ public class TeamPlayerResource extends AbstractResource {
     @POST
     @Path("{teamId}")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
-    @Description("球队队长拉人（多个）")
+    @Description("1、球队队长拉人（多个）2、球赛中的球队拉人")
     public ResultEntity insertMulti(@PathParam("teamId") Long teamId,
                                     @FormParam("playerIds") String playerIds,
                                     @CookieParam("rsessionid") String rsessionid) {

@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 public class Match implements Serializable {
-    private static final long serialVersionUID = -6323234265936955615L;
+    private static final long serialVersionUID = 4023801273483100509L;
     private Long id;
 
     private String name;
@@ -34,6 +34,16 @@ public class Match implements Serializable {
     private Long teamId; //挑战方或训练方，必填字段
 
     private Long acceptTeamId; //应战方
+
+    private Boolean open;//是否公开在附近选择中
+
+    public Boolean getOpen() {
+        return open;
+    }
+
+    public void setOpen(Boolean open) {
+        this.open = open;
+    }
 
     public Long getTeamId() {
         return teamId;

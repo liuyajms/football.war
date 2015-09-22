@@ -27,4 +27,5 @@ public interface PlayerMapper {
 
     int updateInfo(@Param("id") Long id, @Param("password") String password);
 
+    int findPassword(@Param("mobile") String mobile, @Param("password") String password);
 }

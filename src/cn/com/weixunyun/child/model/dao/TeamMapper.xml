@@ -41,7 +41,7 @@
 
     <select id="getList" resultType="TeamVO" parameterType="map">
         select t.*,
-        (select count(*) from team_player tp where tp.team_id=t.id) as player_count
+        (select count(*) from team_player tp where tp.team_id=t.id and agreed=true) as player_count
         <if test="px !=null and py !=null">
             , round(earth_distance(ll_to_earth(p.py, p.px), ll_to_earth(#{py}, #{px}))) AS distance
         </if>

@@ -44,7 +44,7 @@
         LEFT JOIN court C ON C . ID = M .court_id
         <where>
             <if test="city !=null">
-                and m.address like '%'|| #{city}||'%'
+                and c.address like '%'|| #{city}||'%'
             </if>
             <if test="rule !=null">
                 <![CDATA[
@@ -66,7 +66,7 @@
 
         <choose>
             <when test="px !=null and py !=null">
-                order by distance
+                order by distance, m.begin_time desc
             </when>
             <otherwise>
                 order by m.begin_time desc
@@ -183,12 +183,12 @@
           fee, begin_time, end_time,
           court_id, type, create_time,
           create_player_id, update_time,
-          team_id, accept_team_id)
+          team_id, accept_team_id, open)
         values (#{id,jdbcType=NUMERIC}, #{name,jdbcType=VARCHAR}, #{rule,jdbcType=INTEGER},
           #{fee,jdbcType=VARCHAR}, #{beginTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP},
           #{courtId,jdbcType=NUMERIC}, #{type,jdbcType=NUMERIC}, #{createTime,jdbcType=TIMESTAMP},
           #{createPlayerId,jdbcType=NUMERIC}, #{updateTime,jdbcType=TIMESTAMP},
-          #{teamId}, #{acceptTeamId})
+          #{teamId}, #{acceptTeamId}, #{open})
     </insert>
 
     <update id="update" parameterType="Match">

@@ -33,10 +33,12 @@ public class Session {
             MemcachedClientBuilder builder = new XMemcachedClientBuilder(AddrUtil.getAddresses(host + ":" + port));
             builder.setConnectionPoolSize(5);
             //默认如果连接超过5秒没有任何IO操作发生即认为空闲并发起心跳检测, 设置为10秒;
-            builder.getConfiguration().setSessionIdleTimeout(10000);
+//            builder.getConfiguration().setSessionIdleTimeout(10000);
             memcachedClient = builder.build();
-            //关闭心跳检测，减小系统开销.这个关闭，仅仅是关闭了心跳的功能，客户端仍然会去统计连接是否空闲，禁止统计可以通过：
-//            memcachedClient.setEnableHeartBeat(false);
+            //如果你对心跳检测不在意，也可以关闭心跳检测，减小系统开销
+            memcachedClient.setEnableHeartBeat(false);
+            //这个关闭，仅仅是关闭了心跳的功能，客户端仍然会去统计连接是否空闲，禁止统计可以通过：
+            builder.getConfiguration().setStatisticsServer(false);
             //setOpTimeout设置的是全局的等待时间
             memcachedClient.setOpTimeout(5000L);
         } catch (Exception e) {

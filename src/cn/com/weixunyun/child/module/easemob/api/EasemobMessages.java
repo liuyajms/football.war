@@ -7,6 +7,9 @@ import cn.com.weixunyun.child.module.easemob.vo.ClientSecretCredential;
 import cn.com.weixunyun.child.module.easemob.vo.Credential;
 import cn.com.weixunyun.child.module.easemob.vo.EndPoints;
 import cn.com.weixunyun.child.util.HTTPClientUtils;
+import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -16,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * REST API Demo: 发送消息 REST API HttpClient4.3实现
@@ -236,7 +241,12 @@ public class EasemobMessages {
     public static boolean senSystemMessages(String targetType, String[] targetIds, String msg, String exts) {
         // 给用户发一条文本消息
         ObjectNode ext = factory.objectNode();
-        ext.putObject(exts);
+//        ext.put("attr", exts);
+        JSONObject obj = JSONObject.parseObject(exts);
+        Set<Map.Entry<String,Object>> set = obj.entrySet();
+        for(Map.Entry<String,Object> entry : set){
+            ext.put(entry.getKey(), entry.getValue().toString());
+        }
 
         ArrayNode targetusers = factory.arrayNode();
         for (String id : targetIds) {

@@ -11,6 +11,7 @@
         LEFT JOIN player P ON P . ID = tp.player_id
         LEFT JOIN team T ON T . ID = tp.team_id
         <where>
+            agreed = true
             <if test="teamId !=null">
                 and tp.team_id=#{teamId}
             </if>
@@ -27,6 +28,7 @@
     <select id="getCount" parameterType="map" resultType="int">
         select count(*) from team_player tp
         <where>
+            agreed = true
             <if test="teamId !=null">
                 and tp.team_id=#{teamId}
             </if>

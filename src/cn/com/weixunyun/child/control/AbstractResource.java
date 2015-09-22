@@ -267,11 +267,12 @@ public abstract class AbstractResource {
                             method.invoke(t, false);
                         }
                     } else if (type == Timestamp.class) {
-                        if (flag) {
+                        if ((flag && "createTime".equals(name))
+                                || (!flag && "updateTime".equals(name))) {
                             method.invoke(t, new Timestamp(System.currentTimeMillis()));
                         } else {
-                            if (!"createTime".equals(name)) {
-                                method.invoke(t, new Timestamp(System.currentTimeMillis()));
+                            if ((str != null) && (!"".equals(str))) {
+                                method.invoke(t, new Timestamp(Long.parseLong(str)));
                             }
                         }
 

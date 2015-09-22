@@ -7,7 +7,6 @@ import cn.com.weixunyun.child.model.vo.PlayerVO;
 import cn.com.weixunyun.child.module.calendar.CalendarMapper;
 import cn.com.weixunyun.child.module.easemob.EasemobHelper;
 import cn.com.weixunyun.child.util.DateUtil;
-import org.apache.ibatis.annotations.Param;
 
 import java.sql.Date;
 import java.util.List;
@@ -78,7 +77,7 @@ public class PlayerServiceImpl extends AbstractService implements PlayerService 
     }
 
     @Override
-    public PlayerVO login(@Param("username") String username, @Param("password") String password) {
+    public PlayerVO login(String username, String password) {
         PlayerVO player = super.getMapper(PlayerMapper.class).login(username, password);
         if (player != null && player.getId() != null) {
             super.getMapper(PlayerMapper.class).updated(player.getId());
@@ -87,8 +86,13 @@ public class PlayerServiceImpl extends AbstractService implements PlayerService 
     }
 
     @Override
-    public int updateInfo(@Param("id") Long id, @Param("password") String password) {
+    public int updateInfo(Long id, String password) {
         return super.getMapper(PlayerMapper.class).updateInfo(id, password);
+    }
+
+    @Override
+    public int findPassword(String mobile, String password) {
+        return super.getMapper(PlayerMapper.class).findPassword(mobile, password);
     }
 
 }

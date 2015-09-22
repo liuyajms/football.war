@@ -236,5 +236,24 @@ public class PlayerResource extends AbstractResource {
 
     }
 
+    @PUT
+    @Path("password")
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+    @Description("找回密码")
+    public DMLResponse findPassword(@FormParam("mobile") String mobile, @FormParam("verifyCode") String verifyCode) {
 
+        if (!VerifyResource.verify(mobile, verifyCode)) {
+            return new DMLResponse(false, "验证码错误");
+        }
+
+        // 修改家长密码
+        PlayerService service = super.getService(PlayerService.class);
+        int n = service.findPassword(mobile, DigestUtils.md5Hex(verifyCode));
+
+        if (n > 0) {
+            return new DMLResponse(true, "修改密码成功");
+        } else {
+            return new DMLResponse(false, "修改失败，请检查账号是否正确");
+        }
+    }
 }
