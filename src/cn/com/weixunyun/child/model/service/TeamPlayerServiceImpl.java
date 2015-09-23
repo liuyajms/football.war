@@ -37,8 +37,8 @@ public class TeamPlayerServiceImpl extends AbstractService implements TeamPlayer
     }
 
     @Override
-    public List<TeamPlayerVO> getList(Long teamId, Long playerId, String keyword) {
-        return super.getMapper(TeamPlayerMapper.class).getList(teamId, playerId, keyword);
+    public List<TeamPlayerVO> getList(Long teamId, Long playerId, Boolean tmp, String keyword) {
+        return super.getMapper(TeamPlayerMapper.class).getList(teamId, playerId, tmp, keyword);
     }
 
     @Override
@@ -59,7 +59,8 @@ public class TeamPlayerServiceImpl extends AbstractService implements TeamPlayer
 
         this.delete(teamId, playerId);
 
-        List<TeamPlayerVO> list = mapper.getList(teamId, playerId, null);
+        //获取playerId球队的所有球员
+        List<TeamPlayerVO> list = mapper.getList(teamId, playerId, null, null);
         if (list.size() > 0) {//appoint create_player_id
             Team team = new Team();
             team.setId(teamId);

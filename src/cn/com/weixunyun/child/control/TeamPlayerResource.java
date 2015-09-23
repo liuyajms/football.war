@@ -31,7 +31,7 @@ public class TeamPlayerResource extends AbstractResource {
                                           @QueryParam("keyword") String keyword) {
 
         return super.getService(TeamPlayerService.class)
-                .getList(null, playerId == null ? super.getAuthedId(rsessionid) : playerId, keyword);
+                .getList(null, playerId == null ? super.getAuthedId(rsessionid) : playerId, false, keyword);
     }
 
     @GET
@@ -42,7 +42,7 @@ public class TeamPlayerResource extends AbstractResource {
                                             @QueryParam("keyword") String keyword) {
 
         return super.getService(TeamPlayerService.class)
-                .getList(teamId, null, keyword);
+                .getList(teamId, null, null, keyword);
     }
 
 

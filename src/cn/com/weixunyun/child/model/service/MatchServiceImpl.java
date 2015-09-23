@@ -74,7 +74,8 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
     private TeamVO getTeamVO(Long teamId) {
         if(teamId !=null){
             TeamVO team = super.getMapper(TeamMapper.class).get(teamId);
-            List<TeamPlayerVO> teamPlayerList = super.getMapper(TeamPlayerMapper.class).getList(teamId, null, null);
+            //获取临时球队的球员列表
+            List<TeamPlayerVO> teamPlayerList = super.getMapper(TeamPlayerMapper.class).getList(teamId, null, true, null);
             team.setTeamPlayerList(teamPlayerList);
             team.setPlayerCount(teamPlayerList.size());
             team.setColorList(super.getDicValueList("team", "color", team.getColor()));

@@ -10,18 +10,19 @@
         team_player tp
         LEFT JOIN player P ON P . ID = tp.player_id
         LEFT JOIN team T ON T . ID = tp.team_id
-        <where>
-            agreed = true
-            <if test="teamId !=null">
-                and tp.team_id=#{teamId}
-            </if>
-            <if test="playerId !=null">
-                and tp.player_id=#{playerId}
-            </if>
-            <if test="keyword !=null and keyword !=''">
-                and (p.name like '%'|| #{keyword}||'%' or t.name like '%'|| #{keyword}||'%')
-            </if>
-        </where>
+        where agreed = true
+        <if test="tmp != null">
+            and T . tmp = #{tmp}
+        </if>
+        <if test="teamId !=null">
+            and tp.team_id=#{teamId}
+        </if>
+        <if test="playerId !=null">
+            and tp.player_id=#{playerId}
+        </if>
+        <if test="keyword !=null and keyword !=''">
+            and (p.name like '%'|| #{keyword}||'%' or t.name like '%'|| #{keyword}||'%')
+        </if>
         order by tp.create_time
     </select>
 

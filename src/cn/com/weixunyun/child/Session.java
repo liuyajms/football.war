@@ -23,7 +23,7 @@ public class Session {
     }
 
     private String id;
-    private static final int EXP = 30 * 3600 * 24;
+    private static final int EXP = 7 * 3600 * 24;
     private static MemcachedClient memcachedClient = null;
 
     static {

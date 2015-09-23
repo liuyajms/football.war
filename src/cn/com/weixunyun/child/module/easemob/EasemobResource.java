@@ -113,7 +113,7 @@ public class EasemobResource extends AbstractResource {
                     break;
                 }
 
-                List<TeamPlayerVO> playerVOList = teamPlayerService.getList(team.getId(), null, null);
+                List<TeamPlayerVO> playerVOList = teamPlayerService.getList(team.getId(), null, null, null);
 
                 if (playerVOList.size() > 0) {//球队有球员时才创建群组
                     Long[] playerIds = new Long[playerVOList.size()];
@@ -154,7 +154,7 @@ public class EasemobResource extends AbstractResource {
         Team team = teamService.select(teamId);
 
         try {
-            List<TeamPlayerVO> playerVOList = teamPlayerService.getList(team.getId(), null, null);
+            List<TeamPlayerVO> playerVOList = teamPlayerService.getList(team.getId(), null, null, null);
 
             if (playerVOList.size() > 0) {//球队有球员时才创建群组
                 Long[] playerIds = new Long[playerVOList.size()];

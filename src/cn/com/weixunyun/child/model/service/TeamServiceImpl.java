@@ -53,7 +53,7 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
         team.setColorList(super.getDicValueList("team", "color", team.getColor()));
 
         //查询球队成员
-        List<TeamPlayerVO> teamPlayerList = super.getMapper(TeamPlayerMapper.class).getList(id, null, null);
+        List<TeamPlayerVO> teamPlayerList = super.getMapper(TeamPlayerMapper.class).getList(id, null, null, null);
         team.setTeamPlayerList(teamPlayerList);
         team.setPlayerCount(teamPlayerList.size());
 

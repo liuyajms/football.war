@@ -12,6 +12,7 @@ public interface TeamPlayerMapper {
     void insert(TeamPlayer teamPlayer);
 
     List<TeamPlayerVO> getList(@Param("teamId") Long teamId, @Param("playerId") Long playerId,
+                               @Param("tmp") Boolean tmp,
                                @Param("keyword") String keyword);
 
     void agreed(@Param("teamId") Long teamId, @Param("playerId") Long playerId);

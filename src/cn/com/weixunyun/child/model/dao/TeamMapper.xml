@@ -49,7 +49,7 @@
         <if test="px !=null and py !=null">
             left join player p on p.id = t.create_player_id
         </if>
-        where t.tmp is not true
+        where t.tmp is false
         <if test="city !=null">
             and t.address like '%'|| #{city}||'%'
         </if>
