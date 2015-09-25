@@ -11,8 +11,8 @@
         <package name="cn.com.weixunyun.child.model.vo"></package>
         <package name="cn.com.weixunyun.child.model.bean"></package>
     </typeAliases>
-	<environments default="development">
-		<environment id="development">
+	<environments default="football">
+		<environment id="football">
 			<transactionManager type="JDBC" />
 			<dataSource type="POOLED">
 				<property name="driver" value="org.postgresql.Driver" />
@@ -21,6 +21,16 @@
 				<property name="password" value="1234" />
 			</dataSource>
 		</environment>
+
+        <environment id="log">
+            <transactionManager type="JDBC" />
+            <dataSource type="POOLED">
+                <property name="driver" value="org.postgresql.Driver" />
+                <property name="url" value="jdbc:postgresql://localhost:5432/football_log" />
+                <property name="username" value="postgres" />
+                <property name="password" value="1234" />
+            </dataSource>
+        </environment>
 	</environments>
 	<mappers>
 		<package name="cn.com.weixunyun.child.model.dao" />

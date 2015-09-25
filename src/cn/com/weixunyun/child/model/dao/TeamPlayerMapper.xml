@@ -2,14 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.com.weixunyun.child.model.dao.TeamPlayerMapper">
 
-    <select id="getList" resultType="TeamPlayerVO" parameterType="map">
-        SELECT
-        tp.*, P . NAME AS player_name,
-        T . NAME AS team_name
-        FROM
-        team_player tp
-        LEFT JOIN player P ON P . ID = tp.player_id
-        LEFT JOIN team T ON T . ID = tp.team_id
+    <sql id="BaseQuery">
         where agreed = true
         <if test="tmp != null">
             and T . tmp = #{tmp}
@@ -21,8 +14,19 @@
             and tp.player_id=#{playerId}
         </if>
         <if test="keyword !=null and keyword !=''">
-            and (p.name like '%'|| #{keyword}||'%' or t.name like '%'|| #{keyword}||'%')
+            and (P.name like '%'|| #{keyword}||'%' or T.name like '%'|| #{keyword}||'%')
         </if>
+    </sql>
+
+    <select id="getList" resultType="TeamPlayerVO" parameterType="map">
+        SELECT
+        tp.*, P . NAME AS player_name,
+        T . NAME AS team_name
+        FROM
+        team_player tp
+        LEFT JOIN player P ON P . ID = tp.player_id
+        LEFT JOIN team T ON T . ID = tp.team_id
+        <include refid="BaseQuery"/>
         order by tp.create_time
     </select>
 

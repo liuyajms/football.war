@@ -1,83 +1,91 @@
 package cn.com.weixunyun.child;
 
-import java.io.IOException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-
-import cn.com.weixunyun.child.model.bean.Player;
-import cn.com.weixunyun.child.model.vo.PlayerVO;
-import org.apache.commons.io.IOUtils;
-
 import cn.com.weixunyun.child.control.AbstractResource;
 import cn.com.weixunyun.child.model.pojo.Log;
-import cn.com.weixunyun.child.model.pojo.Parents;
-import cn.com.weixunyun.child.model.pojo.School;
-import cn.com.weixunyun.child.model.pojo.Teacher;
 import cn.com.weixunyun.child.model.service.LogService;
-import cn.com.weixunyun.child.model.service.ServiceFactory;
+import cn.com.weixunyun.child.model.service.LogServiceFactory;
+import cn.com.weixunyun.child.model.vo.PlayerVO;
+
+import javax.servlet.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class LogFilter extends AbstractResource implements Filter {
 
-	@Override
-	public void destroy() {
-	}
+    private static final int BUFFER_SIZE = 100;
 
-	@Override
-	public void doFilter(ServletRequest arg0, ServletResponse arg1, FilterChain chain) throws IOException,
-			ServletException {
-		chain.doFilter(arg0, arg1);
+    private List<Log> logList;
 
-		try {
-			HttpServletRequest request = (HttpServletRequest) arg0;
-			String url = request.getPathInfo();
-			String method = request.getMethod();
+    @Override
+    public void destroy() {
+    }
 
-			Long userId = null;
+    @Override
+    public void doFilter(ServletRequest arg0, ServletResponse arg1, FilterChain chain) throws IOException,
+            ServletException {
+        chain.doFilter(arg0, arg1);
 
-			String rsessionid = null;
-			Cookie[] cookies = request.getCookies();
-			if (cookies != null) {
-				for (Cookie cookie : cookies) {
-					if ("rsessionid".equals(cookie.getName())) {
-						rsessionid = cookie.getValue();
-						break;
-					}
-				}
-			}
-			if (rsessionid != null) {
-				Session session = Session.getInstance(rsessionid);
-				if (session != null) {
+        try {
+            HttpServletRequest request = (HttpServletRequest) arg0;
+            String url = request.getPathInfo();
+            String method = request.getMethod();
 
-					PlayerVO player = session.get("player");
-					if (player != null) {
-						userId = player.getId();
-					}
-				}
-			}
+            Long userId = null;
 
-			Log log = new Log();
-			log.setUserId(userId);
-			log.setUrl(url);
-			log.setMethod(method);
-			log.setTime(new java.sql.Timestamp(System.currentTimeMillis()));
+            String rsessionid = null;
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("rsessionid".equals(cookie.getName())) {
+                        rsessionid = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+            if (rsessionid != null) {
+                Session session = Session.getInstance(rsessionid);
+                if (session != null) {
 
-			LogService logService = ServiceFactory.getService(LogService.class);
-			logService.insert(log);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+                    PlayerVO player = session.get("player");
+                    if (player != null) {
+                        userId = player.getId();
+                    }
+                }
+            }
 
-	}
+            Log log = new Log();
+            log.setUserId(userId);
+            log.setUrl(url);
+            log.setMethod(method);
+            log.setTime(new java.sql.Timestamp(System.currentTimeMillis()));
 
-	@Override
-	public void init(FilterConfig arg0) throws ServletException {
-	}
+//			LogService logService = ServiceFactory.getService(LogService.class);
+//			logService.insert(log);
+
+            System.out.println("=================L:" + logList.size());
+            if (logList.size() < BUFFER_SIZE) {
+                logList.add(log);
+            } else {
+                synchronized (logList) {
+                    LogService logService = LogServiceFactory.getService(LogService.class);
+                    logService.insertBatch(logList);
+                    logList.clear();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void init(FilterConfig arg0) throws ServletException {
+        logList = Collections.synchronizedList(new ArrayList<Log>(BUFFER_SIZE));
+    }
 
 }

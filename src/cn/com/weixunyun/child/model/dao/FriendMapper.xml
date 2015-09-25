@@ -32,13 +32,13 @@
         LEFT JOIN team_player tp ON T . ID = tp.team_id
         LEFT JOIN player P ON P . ID = tp.player_id
         where tp.player_id != #{playerId}
-        and
+        and T . tmp = false
         <choose>
             <when test="teamId !=null">
-                t.id = #{teamId}
+                and t.id = #{teamId}
             </when>
             <otherwise>
-                T . ID IN (
+                and T . ID IN (
                 SELECT
                 team_id
                 FROM

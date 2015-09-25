@@ -160,7 +160,7 @@ public class MatchResource extends AbstractResource {
 
         service.insertMatch(match, team, playerIds);
 
-        return new ResultEntity(HttpStatus.SC_OK, "球赛创建成功", match);
+        return new ResultEntity(HttpStatus.SC_OK, "球赛创建成功", service.get(match.getId()));
 
     }
 
