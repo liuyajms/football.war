@@ -29,6 +29,9 @@ public class Near implements Serializable {
 
     private String description;
 
+    //court
+    private String detailAddress;
+
     //team
 //    private Integer rule;
 //    private List<String> ruleList;
@@ -52,6 +55,14 @@ public class Near implements Serializable {
     private Integer teamNum;
 
     private String courtName;
+
+    public String getDetailAddress() {
+        return detailAddress;
+    }
+
+    public void setDetailAddress(String detailAddress) {
+        this.detailAddress = detailAddress;
+    }
 
     public String getCourtName() {
         return courtName;

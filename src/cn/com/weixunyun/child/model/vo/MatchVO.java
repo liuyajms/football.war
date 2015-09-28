@@ -18,6 +18,8 @@ public class MatchVO extends Match{
      */
     private String address;//比赛地址
 
+    private String detailAddress;//比赛（球赛）的详细地址
+
     private String courtName;
 
     private Double px;
@@ -25,6 +27,14 @@ public class MatchVO extends Match{
     private Double py;
 
     private int distance;
+
+    public String getDetailAddress() {
+        return detailAddress;
+    }
+
+    public void setDetailAddress(String detailAddress) {
+        this.detailAddress = detailAddress;
+    }
 
     public int getDistance() {
         return distance;

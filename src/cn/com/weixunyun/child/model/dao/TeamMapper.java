@@ -27,4 +27,5 @@ public interface TeamMapper {
 
     void updated(Long id);
 
+    List<TeamVO> getPlayerTeamList(@Param("playerId") Long playerId, @Param("rows") int rows, @Param("offset") int offset);
 }

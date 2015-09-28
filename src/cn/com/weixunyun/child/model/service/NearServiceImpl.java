@@ -25,6 +25,7 @@ public class NearServiceImpl extends AbstractService implements NearService {
 
             switch (near.getType()) {
                 case Constants.MATCH_TRAIN:
+                    break;
                 case Constants.MATCH_FRIEND: //球赛,设置球队信息，及球赛比赛结束时间等信息
 
 //                    MatchServiceImpl matchService = new MatchServiceImpl();
@@ -32,13 +33,15 @@ public class NearServiceImpl extends AbstractService implements NearService {
 
                     MatchVO matchVO = matchService.get(near.getId());
                     near.setTeamNum(matchVO.getTeam().getPlayerCount());
-                    near.setTeamId(matchVO.getTeamId());
+//                    near.setTeamId(matchVO.getTeamId());
+                    near.setTeamId(matchVO.getTeam().getSrcTeamId());
                     near.setTeamName(matchVO.getTeam().getName());
                     near.setCourtName(matchVO.getCourtName());
 
                     if (matchVO.getAcceptTeamId() != null) {
                         near.setAcceptTeamNum(matchVO.getAcceptTeam().getPlayerCount());
-                        near.setAcceptTeamId(matchVO.getAcceptTeamId());
+//                        near.setAcceptTeamId(matchVO.getAcceptTeamId());
+                        near.setAcceptTeamId(matchVO.getAcceptTeam().getSrcTeamId());
                         near.setTeamName(matchVO.getAcceptTeam().getName());
                     } else {
                         near.setAcceptTeamNum(0);

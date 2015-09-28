@@ -66,7 +66,6 @@ public class LogFilter extends AbstractResource implements Filter {
 //			LogService logService = ServiceFactory.getService(LogService.class);
 //			logService.insert(log);
 
-            System.out.println("=================L:" + logList.size());
             if (logList.size() < BUFFER_SIZE) {
                 logList.add(log);
             } else {

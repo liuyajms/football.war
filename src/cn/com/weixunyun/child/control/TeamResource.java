@@ -6,6 +6,7 @@ import cn.com.weixunyun.child.model.bean.TeamPlayer;
 import cn.com.weixunyun.child.model.service.TeamService;
 import cn.com.weixunyun.child.model.vo.TeamVO;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpStatus;
 import org.apache.wink.common.annotations.Workspace;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +39,16 @@ public class TeamResource extends AbstractResource {
     }
 
     @GET
+    @Path("player/{playerId}")
+    @Description("获取某人的球队列表,为0则查询自己的球队列表")
+    public List<TeamVO> getPlayerTeamList(@CookieParam("rsessionid") String rsessionid,
+                                          @PathParam("playerId") Long playerId,
+                                          @QueryParam("page") int page, @QueryParam("rows") int rows) {
+        return super.getService(TeamService.class)
+                .getPlayerTeamList(playerId == 0 ? super.getAuthedId(rsessionid) : playerId, rows, page * rows);
+    }
+
+    @GET
     @Path("{id}")
     @Description("详情")
     public TeamVO select(@PathParam("id") long id, @CookieParam("rsessionid") String rsessionid) {
@@ -59,8 +70,11 @@ public class TeamResource extends AbstractResource {
             throws Exception {
         Map<String, PartField> map = super.partMulti(request);
 
-
         Team team = super.buildBean(Team.class, map, null);
+
+        if(StringUtils.isBlank(team.getAddress()) || team.getRule() == null){
+            throw new WebApplicationException(new IllegalArgumentException("缺少address或rule参数"), HttpStatus.SC_FORBIDDEN);
+        }
 
         team.setRule(getParamValue(map, "rule"));
         team.setColor(getParamValue(map, "color"));
@@ -70,7 +84,7 @@ public class TeamResource extends AbstractResource {
 
         //判断是否有预制球员
         String[] playerIds = null;
-        if(map.containsKey("playerIds") && StringUtils.isNotBlank(map.get("playerIds").getValue().toString())){
+        if (map.containsKey("playerIds") && StringUtils.isNotBlank(map.get("playerIds").getValue().toString())) {
 
             playerIds = map.get("playerIds").getValue().split(",");
 

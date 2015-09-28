@@ -11,14 +11,14 @@ public class Team implements Serializable{
 
     private String name;
 
-    @NotNull
+//    @NotNull
     private Integer rule;
 
     private Integer color;
 
     private Long courtId;
 
-    @NotNull
+//    @NotNull
     private String address;
 
     private String description;

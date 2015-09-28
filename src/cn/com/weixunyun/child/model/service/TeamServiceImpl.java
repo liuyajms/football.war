@@ -1,5 +1,6 @@
 package cn.com.weixunyun.child.model.service;
 
+import cn.com.weixunyun.child.Autowired;
 import cn.com.weixunyun.child.model.bean.Team;
 import cn.com.weixunyun.child.model.bean.TeamPlayer;
 import cn.com.weixunyun.child.model.dao.TeamMapper;
@@ -15,6 +16,9 @@ import java.util.List;
 
 
 public class TeamServiceImpl extends AbstractService implements TeamService {
+
+    @Autowired
+    TeamMapper mapper;
 
     @Override
     public void delete(Long id) {
@@ -103,6 +107,15 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
     }
 
     @Override
+    public List<TeamVO> getPlayerTeamList(Long playerId, int rows, int offset) {
+        List<TeamVO> list = mapper.getPlayerTeamList(playerId, rows, offset);
+        for (TeamVO team : list) {
+            team.setRuleList(super.getDicValueList("team", "rule", team.getRule()));
+        }
+        return list;
+    }
+
+    @Override
     public void insertPlayer(Team team, String[] playerIds, boolean agreed) {
         this.insert(team);
 
@@ -113,17 +126,23 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
                 teamPlayer.setTeamId(team.getId());
                 teamPlayer.setAgreed(agreed);
 
+                TeamPlayerServiceImpl teamPlayerService = new TeamPlayerServiceImpl();
+                teamPlayerService.setSession(super.getSession());
+
+                teamPlayerService.insert(teamPlayer);
+
+
                 /*
                 注意：此处新开了一个事务,所以此时新建的球队记录并未保存至数据库，从而导致team_player表外键报错
                 解决：copy service中的方法至此处
                  */
 //                teamPlayerService.insert(teamPlayer);
-                super.getMapper(TeamPlayerMapper.class).insert(teamPlayer);
-
-                if (super.isHuanXinOpen()) {
-                    String groupId = super.getMapper(TeamMapper.class).select(teamPlayer.getTeamId()).getGroupId();
-                    EasemobHelper.addUserToGroup(groupId, teamPlayer.getPlayerId());
-                }
+//                super.getMapper(TeamPlayerMapper.class).insert(teamPlayer);
+//
+//                if (super.isHuanXinOpen()) {
+//                    String groupId = super.getMapper(TeamMapper.class).select(teamPlayer.getTeamId()).getGroupId();
+//                    EasemobHelper.addUserToGroup(groupId, teamPlayer.getPlayerId());
+//                }
 
             }
         }

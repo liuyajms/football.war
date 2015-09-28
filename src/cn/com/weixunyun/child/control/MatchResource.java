@@ -7,10 +7,7 @@ import cn.com.weixunyun.child.ResultEntity;
 import cn.com.weixunyun.child.model.bean.Match;
 import cn.com.weixunyun.child.model.bean.Team;
 import cn.com.weixunyun.child.model.bean.TeamPlayer;
-import cn.com.weixunyun.child.model.service.FriendService;
-import cn.com.weixunyun.child.model.service.MatchService;
-import cn.com.weixunyun.child.model.service.TeamPlayerService;
-import cn.com.weixunyun.child.model.service.TeamService;
+import cn.com.weixunyun.child.model.service.*;
 import cn.com.weixunyun.child.model.vo.MatchVO;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpStatus;
@@ -70,7 +67,7 @@ public class MatchResource extends AbstractResource {
                                             @QueryParam("endDate") String endDate,
                                             @QueryParam("keyword") String keyword,
                                             @QueryParam("page") int page, @QueryParam("rows") int rows) {
-        return service.getMatchList(playerId == 0 ? super.getAuthedId(rsessionid) : playerId, null, null, type,
+        return service.getPlayerMatchList(playerId == 0 ? super.getAuthedId(rsessionid) : playerId, type,
                 StringUtils.isNotBlank(beginDate) ? Date.valueOf(beginDate) : null,
                 StringUtils.isNotBlank(endDate) ? Date.valueOf(endDate) : null,
                 keyword, rows, page * rows);
@@ -87,7 +84,7 @@ public class MatchResource extends AbstractResource {
                                            @QueryParam("endDate") String endDate,
                                            @QueryParam("keyword") String keyword,
                                            @QueryParam("page") int page, @QueryParam("rows") int rows) {
-        return service.getMatchList(null, courtId, null, type,
+        return service.getCourtMatchList(courtId, type,
                 StringUtils.isNotBlank(beginDate) ? Date.valueOf(beginDate) : null,
                 StringUtils.isNotBlank(endDate) ? Date.valueOf(endDate) : null,
                 keyword, rows, page * rows);
@@ -104,7 +101,7 @@ public class MatchResource extends AbstractResource {
                                           @QueryParam("endDate") String endDate,
                                           @QueryParam("keyword") String keyword,
                                           @QueryParam("page") int page, @QueryParam("rows") int rows) {
-        return service.getMatchList(null, null, teamId, type,
+        return service.getTeamMatchList(teamId, type,
                 StringUtils.isNotBlank(beginDate) ? Date.valueOf(beginDate) : null,
                 StringUtils.isNotBlank(endDate) ? Date.valueOf(endDate) : null,
                 keyword, rows, page * rows);
@@ -134,15 +131,20 @@ public class MatchResource extends AbstractResource {
             return new ResultEntity(HttpStatus.SC_BAD_REQUEST, "球赛类型字段为空");
         }
 
-        //先创建临时球队
-        Team team = super.buildBean(Team.class, map, null);
+        Long teamId = super.getService(SequenceService.class).sequence();
 
         //创建球赛
         Match match = super.buildBean(Match.class, map, null);
         match.setCreatePlayerId(super.getAuthedId(rsessionid));
-        match.setTeamId(team.getId());
+        match.setTeamId(teamId);
         match.setOpen(match.getOpen() == null ? true : match.getOpen());
 
+        //先创建临时球队
+        Team team = super.buildBean(Team.class, map, teamId);
+/*        Team team = new Team();
+        team.setId(teamId);
+        team.setRule(map.containsKey("rule") ? Integer.valueOf(map.get("rule").getValue()) : null);
+        team.setCourtId(Long.valueOf(map.get("courtId").getValue()));*/
         team.setCreatePlayerId(super.getAuthedId(rsessionid));
         team.setTmp(true);
         if (match.getType() == Constants.MATCH_FRIEND) {
@@ -218,35 +220,49 @@ public class MatchResource extends AbstractResource {
 
     @POST
     @Path("{id}")
-    @Consumes({MediaType.MULTIPART_FORM_DATA})
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     @Description("接受挑战赛，(我要应战,如果选择我的球队，则需要srcTeamId字段)，可预先邀请队员，字段为playerIds")
-    public ResultEntity acceptMatch(@Context HttpServletRequest request,
+    public ResultEntity acceptMatch(@FormParam("playerIds") String playerIdStr,
+                                    @FormParam("color") Integer color,
+                                    @FormParam("srcTeamId") Long srcTeamId,
                                     @PathParam("id") Long id,
                                     @CookieParam("rsessionid") String rsessionid) throws IOException {
         checkMatch(id, null);
 
         //先创建临时球队
-        Map<String, PartField> map = super.partMulti(request);
-        Team team = super.buildBean(Team.class, map, null);
+//        Map<String, PartField> map = super.partMulti(request);
+//        Team team = super.buildBean(Team.class, map, null);
+        Long teamId = super.getService(SequenceService.class).sequence();
 
         //加入球赛应战方
         Match match = service.get(id);
-        match.setAcceptTeamId(team.getId());
+        match.setAcceptTeamId(teamId);
         if (match.getType() != Constants.MATCH_FRIEND) {
             return new ResultEntity(HttpStatus.SC_BAD_REQUEST, "错误请求");
         }
 
+        Team team = new Team();
+        team.setId(teamId);
+        team.setColor(color);
+        team.setSrcTeamId(srcTeamId);
         team.setCreatePlayerId(super.getAuthedId(rsessionid));
         team.setTmp(true);
-        team.setName(teamService.get(team.getSrcTeamId()).getName());
+        team.setName(teamService.select(team.getSrcTeamId()).getName());
 
-        updateImage(map, team.getId(), "team");
+        //赋值球队头像,(改为由客户端根据srcTeamId字段来获取)
+//        FileUtils.copyFile(new File(super.getFilePath(), "team/" + srcTeamId + ".png"),
+//                new File(super.getFilePath(), "team/" + teamId + ".png"));
+
+//        updateImage(map, team.getId(), "team");
 
         //判断是否有邀请的球员
         String[] playerIds = null;
-        if (map.containsKey("playerIds") && StringUtils.isNotBlank(map.get("playerIds").getValue().toString())) {
-            playerIds = map.get("playerIds").getValue().split(",");
+        if (StringUtils.isNotBlank(playerIdStr)) {
+            playerIds = playerIdStr.split(",");
         }
+//        if (map.containsKey("playerIds") && StringUtils.isNotBlank(map.get("playerIds").toString())) {
+//            playerIds = map.get("playerIds").toString().split(",");
+//        }
 
         service.acceptMatch(match, team, playerIds);
 
@@ -255,6 +271,9 @@ public class MatchResource extends AbstractResource {
     }
 
 
+    /**
+     * 单个加入球队，多个的由客户端发送消息给环信，球员收到消息后主动加入球赛
+     */
     @POST
     @Path("{id}/{teamId}/{playerId}")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
@@ -287,6 +306,10 @@ public class MatchResource extends AbstractResource {
     }
 
 
+    @Deprecated
+    /**
+     * 审核部分移交环信处理
+     */
     @PUT
     @Path("{id}/{teamId}")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
@@ -303,7 +326,6 @@ public class MatchResource extends AbstractResource {
 
     @DELETE
     @Path("{id}/{teamId}/{playerId}")
-    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     @Description("（拒绝邀请或退赛）或（球赛队长踢人）")
     public ResultEntity refusedMatch(@PathParam("id") Long id, @PathParam("teamId") Long teamId,
                                      @PathParam("playerId") Long playerId,

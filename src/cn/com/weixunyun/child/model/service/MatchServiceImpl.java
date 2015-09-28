@@ -68,11 +68,16 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
         matchVO.setTeam(team);
         matchVO.setAcceptTeam(acceptTeam);
 
+        //设置赛制
+        if (matchVO.getRule() != null) {
+            matchVO.setRuleName(super.getDicValueList("team", "rule", matchVO.getRule()).get(0));
+        }
+
         return matchVO;
     }
 
     private TeamVO getTeamVO(Long teamId) {
-        if(teamId !=null){
+        if (teamId != null) {
             TeamVO team = super.getMapper(TeamMapper.class).get(teamId);
             //获取临时球队的球员列表
             List<TeamPlayerVO> teamPlayerList = super.getMapper(TeamPlayerMapper.class).getList(teamId, null, true, null);
@@ -89,9 +94,9 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
         List<MatchVO> resultList = new ArrayList<>();
         for (MatchVO matchVO : matchVOList) {
             //如果非公开，并且应战方为空，则不显示在附近中。
-            if(!matchVO.getOpen() && matchVO.getAcceptTeamId() == null){
-                continue;
-            }
+//            if(!matchVO.getOpen() && matchVO.getAcceptTeamId() == null){
+//                continue;
+//            }
 
             matchVO = setTeamData(matchVO);
             //清空球员列表
@@ -120,15 +125,6 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
     }
 
     @Override
-    public List<MatchVO> getMatchList(Long playerId, Long courtId, Long teamId, Integer type,
-                                      Date beginDate, Date endDate,
-                                      String keyword, int rows, int offset) {
-        List<MatchVO> matchVOList = matchMapper
-                .getMatchList(playerId, courtId, teamId, type, beginDate, endDate, keyword, rows, offset);
-        return setTeamData(matchVOList);
-    }
-
-    @Override
     public Match select(Long id) {
         return matchMapper.select(id);
     }
@@ -143,16 +139,36 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
         return matchMapper.getListByTeamId(teamId, beginDate, endDate);
     }
 
+    @Override
+    public List<MatchVO> getPlayerMatchList(Long playerId, Integer type,
+                                            Date beginDate, Date endDate, String keyword, int rows, int offset) {
+        List<MatchVO> matchVOList = matchMapper
+                .getPlayerMatchList(playerId, type, beginDate, endDate, keyword, rows, offset);
+        return setTeamData(matchVOList);
+    }
+
+    @Override
+    public List<MatchVO> getCourtMatchList(Long courtId, Integer type,
+                                           Date beginDate, Date endDate, String keyword, int rows, int offset) {
+        return matchMapper.getCourtMatchList(courtId, type, beginDate, endDate, keyword, rows, offset);
+    }
+
+    @Override
+    public List<MatchVO> getTeamMatchList(Long teamId, Integer type,
+                                          Date beginDate, Date endDate, String keyword, int rows, int offset) {
+        return matchMapper.getCourtMatchList(teamId, type, beginDate, endDate, keyword, rows, offset);
+    }
+
 
     @Override
     public void insertMatch(Match match, Team team, String[] playerIds) {
-        getTeamService().insertPlayer(team, playerIds, false);
+        getTeamService().insertPlayer(team, playerIds, true);//审核字段默认同意，由环信审核
         matchMapper.insert(match);
     }
 
     @Override
     public void acceptMatch(Match match, Team team, String[] playerIds) {
-        getTeamService().insertPlayer(team, playerIds, false);
+        getTeamService().insertPlayer(team, playerIds, true);//审核字段默认同意，由环信审核
         matchMapper.update(match);
     }
 

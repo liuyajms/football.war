@@ -108,6 +108,16 @@
         </if>
     </select>
 
+    <select id="getPlayerTeamList" resultType="TeamVO" parameterType="map">
+        select t.*,
+        (select count(*) from team_player tp where tp.team_id=t.id and agreed=true) as player_count
+        from team t
+        where t.tmp is false
+        <if test="rows !=null and rows !=0">
+            limit #{rows} offset #{offset}
+        </if>
+    </select>
+
     <delete id="delete" parameterType="long">
         delete from team
         where id = #{id,jdbcType=NUMERIC}

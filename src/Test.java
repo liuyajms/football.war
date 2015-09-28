@@ -38,8 +38,12 @@ public class Test {
 	public static void main(String args[]) throws Exception {
 		int[] ns = new int[] { 1, 4, 5, 7, 9, 3, 12 };
 		ns = new Test().merge(ns, 0, ns.length - 1);
-		for (int i = 0; i < ns.length; i++) {
-			System.out.print(ns[i] + " ");
-		}
-	}
+//		for (int i = 0; i < ns.length; i++) {
+//			System.out.print(ns[i] + " ");
+//		}
+
+        Long id = 3L, oo = 3L;
+        System.out.println(id.equals(oo));
+        System.out.println(id == oo);
+    }
 }

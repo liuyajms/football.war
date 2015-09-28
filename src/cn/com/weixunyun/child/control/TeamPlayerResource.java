@@ -46,6 +46,7 @@ public class TeamPlayerResource extends AbstractResource {
     }
 
 
+    @Deprecated
     /**
      * 如果该球员为当前登录者，则无须校验；
      * 否则，判断该球员是否为当前登录人的好友，如果不是，则禁止加入该球队（待校验：当前登录者是否为该球队队长）
@@ -62,8 +63,7 @@ public class TeamPlayerResource extends AbstractResource {
     @Description("球员加入某个球队（playerId为0则申请加入球队）")
     public ResultEntity insert(@PathParam("teamId") Long teamId,
                                @PathParam("playerId") Long playerId,
-                               @CookieParam("rsessionid") String rsessionid)
-            throws Exception {
+                               @CookieParam("rsessionid") String rsessionid){
 
         TeamPlayer teamPlayer = new TeamPlayer();
         teamPlayer.setTeamId(teamId);
@@ -95,7 +95,7 @@ public class TeamPlayerResource extends AbstractResource {
     @POST
     @Path("{teamId}")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
-    @Description("1、球队队长拉人（多个）2、球赛中的球队拉人")
+    @Description("1、球队队长拉人（多个），2、球赛中的球队拉人，3、主动加入球队（球赛）")
     public ResultEntity insertMulti(@PathParam("teamId") Long teamId,
                                     @FormParam("playerIds") String playerIds,
                                     @CookieParam("rsessionid") String rsessionid) {
@@ -126,6 +126,20 @@ public class TeamPlayerResource extends AbstractResource {
 
         Long createPlayerId = super.getService(TeamService.class).get(teamId).getCreatePlayerId();
 
+        boolean isCaptain = authedId.equals(createPlayerId);//是否队长
+        boolean isMe = (playerId == 0) || (authedId.equals(playerId));//是否自己退出
+
+        if(isCaptain && isMe){//队长退出,并指定下任
+            service.deleteCreatePlayerId(teamId, playerId);
+        }else if(isCaptain || isMe){//队长踢人 或 主动退赛
+            if (service.delete(teamId, playerId) > 0) {
+                return new ResultEntity(HttpStatus.SC_OK, "删除成功");
+            }
+        }else{//非队长删除其他成员，禁止操作
+            return new ResultEntity(HttpStatus.SC_FORBIDDEN, "您不是当前球队队长，无权删除该球员");
+        }
+
+/*
         if (authedId.equals(playerId)) {
             if (authedId.equals(createPlayerId)) {//队长退出,删除并指定下任
                 service.deleteCreatePlayerId(teamId, playerId);
@@ -138,7 +152,7 @@ public class TeamPlayerResource extends AbstractResource {
 
         if (service.delete(teamId, playerId) > 0) {
             return new ResultEntity(HttpStatus.SC_OK, "删除成功");
-        }
+        }*/
         return new ResultEntity(HttpStatus.SC_NOT_FOUND, "未找到删除数据");
     }
 

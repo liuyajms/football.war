@@ -6,6 +6,7 @@
         SELECT
           M .*, dv. NAME AS rule_name,
           C .address,
+          C .detail_address,
           C .name as court_name,
           C .px,
           C .py
@@ -28,8 +29,9 @@
 
     <select id="getList" resultType="MatchVO" parameterType="map">
         SELECT
-          M .*, dv. NAME AS rule_name,
+          M .*, /*dv. NAME AS rule_name,*/
           C .address,
+          C .detail_address,
           C .name as court_name,
           C .px,
           C .py
@@ -38,11 +40,12 @@
         </if>
         FROM
           MATCH M
-        LEFT JOIN dictionary_value dv ON dv.dictionary_table_code = 'team'
+       <!-- LEFT JOIN dictionary_value dv ON dv.dictionary_table_code = 'team'
         AND dictionary_field_code = 'rule'
-        AND M . RULE = dv.code :: INTEGER
+        AND M . RULE = dv.code :: INTEGER-->
         LEFT JOIN court C ON C . ID = M .court_id
         <where>
+            and (open = false and accept_team_id is null )
             <if test="city !=null">
                 and c.address like '%'|| #{city}||'%'
             </if>
@@ -79,41 +82,55 @@
     </select>
 
 <!--我的球赛、球场球赛、球队球赛列表-->
-    <select id="getMatchList" resultType="MatchVO" parameterType="map">
+    <select id="getPlayerMatchList" resultType="MatchVO" parameterType="map">
         select m.*, c.name as court_name
-        from (
-            SELECT m.*, tp.player_id from match m
-              join team_player tp on tp.team_id=m.team_id
-            UNION ALL
-            SELECT m.*, tp.player_id from match m
-              join team_player tp on tp.team_id=m.accept_team_id
-        ) m
+        from match m
         left join court c on c.id=m.court_id
-        <where>
-            <if test="playerId !=null">
-                and m.player_id=#{playerId}
-            </if>
-            <if test="courtId !=null">
-                and m.court_id=#{courtId}
-            </if>
-            <if test="teamId !=null">
-                and m.team_id=#{teamId}
-            </if>
-            <if test="beginDate !=null">
-                and m.begin_time > #{beginDate}
-            </if>
-            <if test="endDate !=null">
-                <![CDATA[
+        left join team_player tp1 on tp1.team_id = m.team_id
+          left join team t1 on t1.id = m.team_id
+        left join team_player tp2 on tp2.team_id = m.accept_team_id
+          left join team t2 on t2.id = m.accept_team_id
+        where
+        (tp1.player_id=#{playerId} or tp2.player_id=#{playerId})
+
+        <if test="beginDate !=null">
+            and m.begin_time > #{beginDate}
+        </if>
+        <if test="endDate !=null">
+            <![CDATA[
                     and m.begin_time <= #{endDate}
                     ]]>
-            </if>
-            <if test="keyword !=null and keyword !=''">
-                and ( m.name like '%'|| #{keyword}||'%' or c.name like '%'|| #{keyword}||'%')
-            </if>
-            <if test="type !=null">
-                and m.type=#{type}
-            </if>
-        </where>
+        </if>
+        <if test="keyword !=null and keyword !=''">
+            and ( t1.name like '%'|| #{keyword}||'%' or t2.name like '%'|| #{keyword}||'%'
+            or c.name like '%'|| #{keyword}||'%')
+        </if>
+        <if test="type !=null">
+            and m.type=#{type}
+        </if>
+        order by m.begin_time desc
+        <if test="rows !=null and rows !=0">
+            limit #{rows} offset #{offset}
+        </if>
+    </select>
+
+    <!-- 球场球赛列表，如果需要根据球赛名称查询列表，则可根据left join team t1 left join team t2 on t2.id = accept_team_id 来查询 -->
+    <select id="getCourtMatchList" resultType="MatchVO" parameterType="map">
+        select m.*, c.name as court_name
+        from m
+        left join court c on c.id=m.court_id
+        where m.court_id = #{courtId}
+        order by m.begin_time desc
+        <if test="rows !=null and rows !=0">
+            limit #{rows} offset #{offset}
+        </if>
+    </select>
+
+    <select id="getTeamMatchList" resultType="MatchVO" parameterType="map">
+        select m.*, c.name as court_name
+        from m
+        left join court c on c.id=m.court_id
+        where m.team_id = #{teamId} or m.accept_team_id = #{teamId}
         order by m.begin_time desc
         <if test="rows !=null and rows !=0">
             limit #{rows} offset #{offset}

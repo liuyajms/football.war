@@ -1,13 +1,16 @@
 package cn.com.weixunyun.child.model.service;
 
+import cn.com.weixunyun.child.Autowired;
+import cn.com.weixunyun.child.model.bean.Favorite;
 import cn.com.weixunyun.child.model.bean.Team;
 import cn.com.weixunyun.child.model.bean.TeamPlayer;
-import cn.com.weixunyun.child.model.dao.FriendMapper;
 import cn.com.weixunyun.child.model.dao.TeamMapper;
 import cn.com.weixunyun.child.model.dao.TeamPlayerMapper;
 import cn.com.weixunyun.child.model.vo.TeamPlayerVO;
 import cn.com.weixunyun.child.module.easemob.EasemobHelper;
 
+import java.sql.Timestamp;
+import java.text.MessageFormat;
 import java.util.List;
 
 /**
@@ -20,7 +23,7 @@ public class TeamPlayerServiceImpl extends AbstractService implements TeamPlayer
 
         if (super.isHuanXinOpen()) {
             String groupId = super.getMapper(TeamMapper.class).select(teamId).getGroupId();
-            EasemobHelper.addUserToGroup(groupId, playerId);
+            EasemobHelper.deleteUserFromGroup(groupId, playerId);
         }
 
         return n;
@@ -30,8 +33,32 @@ public class TeamPlayerServiceImpl extends AbstractService implements TeamPlayer
     public void insert(TeamPlayer teamPlayer) {
         super.getMapper(TeamPlayerMapper.class).insert(teamPlayer);
 
+        TeamMapper teamMapper = super.getMapper(TeamMapper.class);
+
+        //给加入球队的球员，收藏球队的主场
+        FavoriteServiceImpl favoriteService = new FavoriteServiceImpl();
+        favoriteService.setSession(super.getSession());
+
+        //1.查询球场
+        Long courtId = teamMapper.select(teamPlayer.getTeamId()).getCourtId();
+
+        //2.加入该球员的收藏
+        if (courtId != null) {
+            Favorite favorite = new Favorite();
+            favorite.setCourtId(courtId);
+            favorite.setPlayerId(teamPlayer.getPlayerId());
+            favorite.setCreateTime(new Timestamp(System.currentTimeMillis()));
+
+            if (favoriteService.isFavorite(teamPlayer.getPlayerId(), courtId) == 0) {
+                favoriteService.insert(favorite);
+            } else {
+                System.out.println(MessageFormat.format("已加入该收藏，courtId：{0}，playerId：{1}",
+                        courtId, teamPlayer.getPlayerId()));
+            }
+        }
+
         if (super.isHuanXinOpen()) {
-            String groupId = super.getMapper(TeamMapper.class).select(teamPlayer.getTeamId()).getGroupId();
+            String groupId = teamMapper.select(teamPlayer.getTeamId()).getGroupId();
             EasemobHelper.addUserToGroup(groupId, teamPlayer.getPlayerId());
         }
     }
@@ -77,11 +104,12 @@ public class TeamPlayerServiceImpl extends AbstractService implements TeamPlayer
         TeamPlayer teamPlayer = new TeamPlayer();
         teamPlayer.setTeamId(teamId);
         teamPlayer.setAgreed(true);
+        teamPlayer.setCreateTime(new Timestamp(System.currentTimeMillis()));
 
         for (String playerId : playerIds) {
-            if (super.getMapper(FriendMapper.class).isFriend(userId, Long.valueOf(playerId)) == 0) {
-                throw new RuntimeException("请检查该球员是否为您的好友");
-            }
+//            if (super.getMapper(FriendMapper.class).isFriend(userId, Long.valueOf(playerId)) == 0) {
+//                throw new RuntimeException("请检查该球员是否为您的好友");
+//            }
 
             //检查是否已有该记录,注意：存在并发，可能导致数据不同步
             if (super.getMapper(TeamPlayerMapper.class).getCount(teamId, Long.valueOf(playerId)) > 0) {
