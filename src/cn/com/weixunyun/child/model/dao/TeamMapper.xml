@@ -112,7 +112,9 @@
         select t.*,
         (select count(*) from team_player tp where tp.team_id=t.id and agreed=true) as player_count
         from team t
+        left join team_player tp on tp.team_id = t.id and tp.agreed = true
         where t.tmp is false
+        and tp.player_id = #{playerId}
         <if test="rows !=null and rows !=0">
             limit #{rows} offset #{offset}
         </if>
