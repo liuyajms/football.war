@@ -342,8 +342,7 @@ public class MatchResource extends AbstractResource {
     private void checkMatch(Long id, Long teamId) {
         Match match = service.select(id);
         if (match == null ||
-                (teamId != null && !match.getTeamId().equals(teamId)
-                        && (match.getAcceptTeamId() == null || !match.getAcceptTeamId().equals(teamId)))) {
+                (!teamId.equals(match.getTeamId()) && !teamId.equals(match.getAcceptTeamId()))) {
             throw new WebApplicationException(new IllegalArgumentException("请求参数错误"), HttpStatus.SC_FORBIDDEN);
         } else if (match.getBeginTime() != null &&
                 match.getBeginTime().getTime() < System.currentTimeMillis()) {

@@ -44,28 +44,35 @@
         AND dictionary_field_code = 'rule'
         AND M . RULE = dv.code :: INTEGER-->
         LEFT JOIN court C ON C . ID = M .court_id
-        <where>
-            and (open = false and accept_team_id is null )
-            <if test="city !=null">
-                and c.address like '%'|| #{city}||'%'
-            </if>
-            <if test="rule !=null">
-                <![CDATA[
+
+        where (open = true or (open = false and accept_team_id is not null ))
+        <if test="city !=null">
+            and c.address like '%'|| #{city}||'%'
+        </if>
+        <if test="rule !=null">
+            <![CDATA[
                     and m.rule & #{rule} > 0
                     ]]>
-            </if>
-            <if test="beginDate !=null">
+        </if>
+
+        <choose>
+            <when test="beginDate == null and endDate == null">
+                <![CDATA[
+                        and end_time < now()
+                        ]]>
+            </when>
+            <when test="beginDate !=null">
                 and m.begin_time > #{beginDate}
-            </if>
-            <if test="endDate !=null">
+            </when>
+            <when test="endDate !=null">
                 <![CDATA[
                     and m.begin_time <= #{endDate}
                     ]]>
-            </if>
-            <if test="keyword !=null and keyword !=''">
-                and ( m.name like '%'|| #{keyword}||'%' or C .name like '%'|| #{keyword}||'%')
-            </if>
-        </where>
+            </when>
+        </choose>
+        <if test="keyword !=null and keyword !=''">
+            and ( m.name like '%'|| #{keyword}||'%' or C .name like '%'|| #{keyword}||'%')
+        </if>
 
         <choose>
             <when test="px !=null and py !=null">
@@ -117,7 +124,7 @@
     <!-- 球场球赛列表，如果需要根据球赛名称查询列表，则可根据left join team t1 left join team t2 on t2.id = accept_team_id 来查询 -->
     <select id="getCourtMatchList" resultType="MatchVO" parameterType="map">
         select m.*, c.name as court_name
-        from m
+        from match m
         left join court c on c.id=m.court_id
         where m.court_id = #{courtId}
         order by m.begin_time desc
@@ -128,7 +135,7 @@
 
     <select id="getTeamMatchList" resultType="MatchVO" parameterType="map">
         select m.*, c.name as court_name
-        from m
+        from match m
         left join court c on c.id=m.court_id
         where m.team_id = #{teamId} or m.accept_team_id = #{teamId}
         order by m.begin_time desc

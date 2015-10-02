@@ -132,8 +132,8 @@ public class TeamPlayerResource extends AbstractResource {
         if(isCaptain && isMe){//队长退出,并指定下任
             service.deleteCreatePlayerId(teamId, playerId);
         }else if(isCaptain || isMe){//队长踢人 或 主动退赛
-            if (service.delete(teamId, playerId) > 0) {
-                return new ResultEntity(HttpStatus.SC_OK, "删除成功");
+            if (service.delete(teamId, playerId) == 0) {
+                return new ResultEntity(HttpStatus.SC_NOT_FOUND, "未找到删除数据");
             }
         }else{//非队长删除其他成员，禁止操作
             return new ResultEntity(HttpStatus.SC_FORBIDDEN, "您不是当前球队队长，无权删除该球员");
@@ -153,7 +153,7 @@ public class TeamPlayerResource extends AbstractResource {
         if (service.delete(teamId, playerId) > 0) {
             return new ResultEntity(HttpStatus.SC_OK, "删除成功");
         }*/
-        return new ResultEntity(HttpStatus.SC_NOT_FOUND, "未找到删除数据");
+        return new ResultEntity(HttpStatus.SC_OK, "删除成功");
     }
 
 

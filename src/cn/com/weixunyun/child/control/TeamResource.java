@@ -72,8 +72,8 @@ public class TeamResource extends AbstractResource {
 
         Team team = super.buildBean(Team.class, map, null);
 
-        if(StringUtils.isBlank(team.getAddress()) || team.getRule() == null){
-            throw new WebApplicationException(new IllegalArgumentException("缺少address或rule参数"), HttpStatus.SC_FORBIDDEN);
+        if(StringUtils.isBlank(team.getAddress())){
+            throw new WebApplicationException(new IllegalArgumentException("缺少地址参数"), HttpStatus.SC_FORBIDDEN);
         }
 
         team.setRule(getParamValue(map, "rule"));

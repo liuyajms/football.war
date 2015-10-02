@@ -78,6 +78,11 @@ public class TeamPlayerServiceImpl extends AbstractService implements TeamPlayer
         return super.getMapper(TeamPlayerMapper.class).getCount(teamId, playerId);
     }
 
+    /**
+     * 最后一个退出的为队长，此时需要删除整个球队
+     * @param teamId
+     * @param playerId
+     */
     @Override
     public void deleteCreatePlayerId(Long teamId, Long playerId) {
         TeamPlayerMapper mapper = super.getMapper(TeamPlayerMapper.class);
@@ -86,8 +91,8 @@ public class TeamPlayerServiceImpl extends AbstractService implements TeamPlayer
 
         this.delete(teamId, playerId);
 
-        //获取playerId球队的所有球员
-        List<TeamPlayerVO> list = mapper.getList(teamId, playerId, null, null);
+        //获取teamId球队的所有球员
+        List<TeamPlayerVO> list = mapper.getList(teamId, null, null, null);
         if (list.size() > 0) {//appoint create_player_id
             Team team = new Team();
             team.setId(teamId);
