@@ -60,5 +60,5 @@ public interface MatchMapper {
                                    @Param("beginDate") Date beginDate, @Param("endDate") Date endDate,
                                    @Param("keyword") String keyword, @Param("rows") int rows, @Param("offset") int offset);
 
-    void setOpen(Long id, boolean open);
+    void setOpen(@Param("id") Long id, @Param("open") boolean open);
 }

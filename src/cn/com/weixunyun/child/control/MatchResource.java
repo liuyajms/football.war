@@ -254,6 +254,11 @@ public class MatchResource extends AbstractResource {
                                     @CookieParam("rsessionid") String rsessionid) throws IOException {
         Match match = checkMatch(id, null);
 
+        //如果已有应战球队，则删除该队(作用：创建球赛的时候，选择了空的迎战队)
+        if(match.getAcceptTeamId() !=null){
+            teamService.delete(match.getAcceptTeamId());
+        }
+
         //先创建临时球队
 //        Map<String, PartField> map = super.partMulti(request);
 //        Team team = super.buildBean(Team.class, map, null);

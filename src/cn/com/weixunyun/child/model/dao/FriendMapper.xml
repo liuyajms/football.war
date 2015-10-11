@@ -23,6 +23,7 @@
 
     <select id="getTeamPlayerList" resultType="FriendVO" parameterType="map">
         SELECT
+            T . group_id,
             T . ID AS team_id,
             T . NAME AS team_name,
             P . ID AS friend_id,
