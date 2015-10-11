@@ -32,7 +32,10 @@
           round(earth_distance(ll_to_earth(py, px), ll_to_earth(#{py}, #{px}))) AS distance
         from "match" t
           left join court c on c.id=t.court_id
-
+        where open = true
+        <![CDATA[
+                        and end_time < now()
+                        ]]>
         ) v
         <if test="city !=null">
             where address like '%'|| #{city}||'%'

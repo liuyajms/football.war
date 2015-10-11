@@ -45,7 +45,7 @@
         AND M . RULE = dv.code :: INTEGER-->
         LEFT JOIN court C ON C . ID = M .court_id
 
-        where (open = true or (open = false and accept_team_id is not null ))
+        where open = true
         <if test="city !=null">
             and c.address like '%'|| #{city}||'%'
         </if>
@@ -133,11 +133,17 @@
         </if>
     </select>
 
+<!--
+    此时的teamId参数，应该包含srcTeamId=teamId的球队ID
+-->
     <select id="getTeamMatchList" resultType="MatchVO" parameterType="map">
+        with v as (
+        SELECT id from team where src_team_id=#{teamId} and tmp is true
+        )
         select m.*, c.name as court_name
         from match m
         left join court c on c.id=m.court_id
-        where m.team_id = #{teamId} or m.accept_team_id = #{teamId}
+        where m.team_id in (SELECT id from v)  or m.accept_team_id in (SELECT id from v)
         order by m.begin_time desc
         <if test="rows !=null and rows !=0">
             limit #{rows} offset #{offset}
@@ -252,4 +258,7 @@
         where id = #{id,jdbcType=NUMERIC}
     </update>
 
+    <update id="setOpen" parameterType="map">
+        update match set open = #{open} where id = #{id}
+    </update>
 </mapper>

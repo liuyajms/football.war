@@ -59,4 +59,6 @@ public interface MatchMapper {
     List<MatchVO> getTeamMatchList(@Param("teamId") Long teamId, @Param("type") Integer type,
                                    @Param("beginDate") Date beginDate, @Param("endDate") Date endDate,
                                    @Param("keyword") String keyword, @Param("rows") int rows, @Param("offset") int offset);
+
+    void setOpen(Long id, boolean open);
 }

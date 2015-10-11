@@ -9,7 +9,7 @@ import cn.com.weixunyun.child.model.dao.MatchMapper;
  */
 public interface MatchService extends MatchMapper {
     //创建球赛
-    void insertMatch(Match match, Team team, String[] playerIds);
+    void insertMatch(Match match, Team team, Team acceptTeam, String[] playerIds);
 
     //接受挑战
     void acceptMatch(Match match, Team team, String[] playerIds);

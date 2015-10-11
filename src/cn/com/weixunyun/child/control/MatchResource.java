@@ -20,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -120,9 +121,13 @@ public class MatchResource extends AbstractResource {
     }
 
 
+    /**
+     * 创建球赛时，创建主场队或客场队（但客场队中无人）
+     * 由客户端控制open值
+     */
     @POST
-    @Consumes({MediaType.MULTIPART_FORM_DATA})
-    @Description("新建球赛，（新建友谊赛时包含srcTeamId字段，新建训练赛时不需要该字段）,可预先邀请队员，字段为playerIds")
+//    @Consumes({MediaType.MULTIPART_FORM_DATA})
+    @Description("新建球赛，（新建友谊赛或对抗赛时包含srcTeamId字段，新建训练赛时不需要该字段）,可预先邀请队员，字段为playerIds")
     public ResultEntity insert(@Context HttpServletRequest request, @CookieParam("rsessionid") String rsessionid)
             throws IOException {
         Map<String, PartField> map = super.partMulti(request);
@@ -139,7 +144,7 @@ public class MatchResource extends AbstractResource {
         match.setTeamId(teamId);
         match.setOpen(match.getOpen() == null ? true : match.getOpen());
 
-        //先创建临时球队
+        //先创建临时主场球队
         Team team = super.buildBean(Team.class, map, teamId);
 /*        Team team = new Team();
         team.setId(teamId);
@@ -151,6 +156,18 @@ public class MatchResource extends AbstractResource {
             team.setName(teamService.get(team.getSrcTeamId()).getName());
         }
 
+        //创建客场球队
+        Team team1 = new Team();
+        if(map.containsKey("acceptSrcTeamId") && StringUtils.isNotBlank(map.get("acceptSrcTeamId").getValue())){
+            team1.setId(super.getService(SequenceService.class).sequence());
+            team1.setSrcTeamId(Long.valueOf(map.get("acceptSrcTeamId").getValue()));
+            team1.setName(teamService.get(team1.getSrcTeamId()).getName());
+            team1.setCreateTime(new Timestamp(System.currentTimeMillis()));
+            team1.setTmp(true);
+            match.setAcceptTeamId(team1.getId());
+        }
+
+
         updateImage(map, team.getId(), "team");
 
         //判断是否有邀请的球员
@@ -160,7 +177,7 @@ public class MatchResource extends AbstractResource {
         }
 
 
-        service.insertMatch(match, team, playerIds);
+        service.insertMatch(match, team, team1, playerIds);
 
         return new ResultEntity(HttpStatus.SC_OK, "球赛创建成功", service.get(match.getId()));
 
@@ -227,7 +244,7 @@ public class MatchResource extends AbstractResource {
                                     @FormParam("srcTeamId") Long srcTeamId,
                                     @PathParam("id") Long id,
                                     @CookieParam("rsessionid") String rsessionid) throws IOException {
-        checkMatch(id, null);
+        Match match = checkMatch(id, null);
 
         //先创建临时球队
 //        Map<String, PartField> map = super.partMulti(request);
@@ -235,7 +252,7 @@ public class MatchResource extends AbstractResource {
         Long teamId = super.getService(SequenceService.class).sequence();
 
         //加入球赛应战方
-        Match match = service.get(id);
+//        Match match = service.get(id);
         match.setAcceptTeamId(teamId);
         if (match.getType() != Constants.MATCH_FRIEND) {
             return new ResultEntity(HttpStatus.SC_BAD_REQUEST, "错误请求");
@@ -260,11 +277,13 @@ public class MatchResource extends AbstractResource {
         if (StringUtils.isNotBlank(playerIdStr)) {
             playerIds = playerIdStr.split(",");
         }
-//        if (map.containsKey("playerIds") && StringUtils.isNotBlank(map.get("playerIds").toString())) {
-//            playerIds = map.get("playerIds").toString().split(",");
-//        }
 
         service.acceptMatch(match, team, playerIds);
+
+        //将open设为公开
+        if(!match.getOpen()){
+            service.setOpen(id, true);
+        }
 
         return new ResultEntity(HttpStatus.SC_OK, "成功接受挑战");
 
@@ -283,7 +302,7 @@ public class MatchResource extends AbstractResource {
                                  @PathParam("playerId") Long playerId,
                                  @CookieParam("rsessionid") String rsessionid) {
 
-        checkMatch(id, teamId);
+        Match match = checkMatch(id, teamId);
 
         TeamPlayer teamPlayer = new TeamPlayer();
         teamPlayer.setTeamId(teamId);
@@ -300,6 +319,11 @@ public class MatchResource extends AbstractResource {
         }
 
         teamPlayerService.insert(teamPlayer);
+
+        //将open设为公开
+        if(!match.getOpen()){
+            service.setOpen(id, true);
+        }
 
         return new ResultEntity(HttpStatus.SC_OK, "加入球赛成功");
 
@@ -339,14 +363,16 @@ public class MatchResource extends AbstractResource {
 
     }
 
-    private void checkMatch(Long id, Long teamId) {
+    private Match checkMatch(Long id, Long teamId) {
         Match match = service.select(id);
         if (match == null ||
-                (!teamId.equals(match.getTeamId()) && !teamId.equals(match.getAcceptTeamId()))) {
+                (teamId !=null && !teamId.equals(match.getTeamId()) && !teamId.equals(match.getAcceptTeamId()))) {
             throw new WebApplicationException(new IllegalArgumentException("请求参数错误"), HttpStatus.SC_FORBIDDEN);
         } else if (match.getBeginTime() != null &&
                 match.getBeginTime().getTime() < System.currentTimeMillis()) {
             throw new WebApplicationException(new IllegalArgumentException("球赛已过期"), HttpStatus.SC_FORBIDDEN);
         }
+
+        return match;
     }
 }

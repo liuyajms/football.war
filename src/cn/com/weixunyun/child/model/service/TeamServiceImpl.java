@@ -36,12 +36,15 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
         //创建球队，并将创建者加入该球队
         super.getMapper(TeamMapper.class).insert(record);
 
-        TeamPlayer teamPlayer = new TeamPlayer();
-        teamPlayer.setPlayerId(record.getCreatePlayerId());
-        teamPlayer.setTeamId(record.getId());
-        teamPlayer.setAgreed(true);
+        if(record.getCreatePlayerId() !=null){
+            TeamPlayer teamPlayer = new TeamPlayer();
+            teamPlayer.setPlayerId(record.getCreatePlayerId());
+            teamPlayer.setTeamId(record.getId());
+            teamPlayer.setAgreed(true);
 
-        super.getMapper(TeamPlayerMapper.class).insert(teamPlayer);
+            super.getMapper(TeamPlayerMapper.class).insert(teamPlayer);
+        }
+
     }
 
     @Override
@@ -130,19 +133,6 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
                 teamPlayerService.setSession(super.getSession());
 
                 teamPlayerService.insert(teamPlayer);
-
-
-                /*
-                注意：此处新开了一个事务,所以此时新建的球队记录并未保存至数据库，从而导致team_player表外键报错
-                解决：copy service中的方法至此处
-                 */
-//                teamPlayerService.insert(teamPlayer);
-//                super.getMapper(TeamPlayerMapper.class).insert(teamPlayer);
-//
-//                if (super.isHuanXinOpen()) {
-//                    String groupId = super.getMapper(TeamMapper.class).select(teamPlayer.getTeamId()).getGroupId();
-//                    EasemobHelper.addUserToGroup(groupId, teamPlayer.getPlayerId());
-//                }
 
             }
         }

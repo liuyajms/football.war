@@ -161,10 +161,18 @@ public class MatchServiceImpl extends AbstractService implements MatchService {
         return setTeamData(matchVOList);
     }
 
+    @Override
+    public void setOpen(Long id, boolean open) {
+        matchMapper.setOpen(id, open);
+    }
+
 
     @Override
-    public void insertMatch(Match match, Team team, String[] playerIds) {
+    public void insertMatch(Match match, Team team, Team acceptTeam, String[] playerIds) {
         getTeamService().insertPlayer(team, playerIds, true);//审核字段默认同意，由环信审核
+        if (acceptTeam.getId() != null) {//创建客场队
+            getTeamService().insertPlayer(acceptTeam, null, true);
+        }
         matchMapper.insert(match);
     }
 

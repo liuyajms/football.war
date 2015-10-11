@@ -25,7 +25,6 @@ public class NearServiceImpl extends AbstractService implements NearService {
 
             switch (near.getType()) {
                 case Constants.MATCH_TRAIN:
-                    break;
                 case Constants.MATCH_FRIEND: //球赛,设置球队信息，及球赛比赛结束时间等信息
 
 //                    MatchServiceImpl matchService = new MatchServiceImpl();
