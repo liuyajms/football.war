@@ -34,7 +34,7 @@
           left join court c on c.id=t.court_id
         where open = true
         <![CDATA[
-                        and end_time < now()
+                        and end_time > now()
                         ]]>
         ) v
         <if test="city !=null">

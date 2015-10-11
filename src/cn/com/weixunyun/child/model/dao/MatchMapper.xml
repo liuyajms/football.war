@@ -58,7 +58,7 @@
         <choose>
             <when test="beginDate == null and endDate == null">
                 <![CDATA[
-                        and end_time < now()
+                        and end_time > now()
                         ]]>
             </when>
             <when test="beginDate !=null">

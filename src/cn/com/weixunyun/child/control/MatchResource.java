@@ -40,6 +40,10 @@ public class MatchResource extends AbstractResource {
     private TeamPlayerService teamPlayerService;
 
 
+    /**
+     * 球赛参数为空时，默认只显示当前还未结束的比赛（根据end_time>now()来判定）
+     * beginTime或endTime非空时，可以查询到具体的某场时间段内的比赛
+     */
     @GET
     @Description("列表")
     public List<MatchVO> getList(@CookieParam("rsessionid") String rsessionid,
@@ -144,7 +148,7 @@ public class MatchResource extends AbstractResource {
         match.setTeamId(teamId);
         match.setOpen(match.getOpen() == null ? true : match.getOpen());
 
-        //先创建临时主场球队
+        //先创建临时主场球队，name设置为球赛的名称
         Team team = super.buildBean(Team.class, map, teamId);
 /*        Team team = new Team();
         team.setId(teamId);
@@ -152,8 +156,12 @@ public class MatchResource extends AbstractResource {
         team.setCourtId(Long.valueOf(map.get("courtId").getValue()));*/
         team.setCreatePlayerId(super.getAuthedId(rsessionid));
         team.setTmp(true);
-        if (match.getType() == Constants.MATCH_FRIEND) {
-            team.setName(teamService.get(team.getSrcTeamId()).getName());
+        if (match.getType() == Constants.MATCH_FRIEND) {//友谊赛群组名设置为球队的名称，训练赛设置为球赛的名称（参数传递过来）
+            team.setName(teamService.select(team.getSrcTeamId()).getName());
+        }else{//可有可无，buildBean中已设置
+            if(StringUtils.isBlank(team.getName())){
+                return new ResultEntity(HttpStatus.SC_BAD_REQUEST, "球赛名称字段为空");
+            }
         }
 
         //创建客场球队
@@ -161,7 +169,7 @@ public class MatchResource extends AbstractResource {
         if(map.containsKey("acceptSrcTeamId") && StringUtils.isNotBlank(map.get("acceptSrcTeamId").getValue())){
             team1.setId(super.getService(SequenceService.class).sequence());
             team1.setSrcTeamId(Long.valueOf(map.get("acceptSrcTeamId").getValue()));
-            team1.setName(teamService.get(team1.getSrcTeamId()).getName());
+            team1.setName(teamService.select(team1.getSrcTeamId()).getName());
             team1.setCreateTime(new Timestamp(System.currentTimeMillis()));
             team1.setTmp(true);
             match.setAcceptTeamId(team1.getId());
