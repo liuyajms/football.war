@@ -1,7 +1,5 @@
 package cn.com.weixunyun.child.model.service;
 
-import cn.com.weixunyun.child.Autowired;
-import cn.com.weixunyun.child.model.bean.Favorite;
 import cn.com.weixunyun.child.model.bean.Team;
 import cn.com.weixunyun.child.model.bean.TeamPlayer;
 import cn.com.weixunyun.child.model.dao.TeamMapper;
@@ -10,7 +8,6 @@ import cn.com.weixunyun.child.model.vo.TeamPlayerVO;
 import cn.com.weixunyun.child.module.easemob.EasemobHelper;
 
 import java.sql.Timestamp;
-import java.text.MessageFormat;
 import java.util.List;
 
 /**
@@ -35,33 +32,21 @@ public class TeamPlayerServiceImpl extends AbstractService implements TeamPlayer
 
         TeamMapper teamMapper = super.getMapper(TeamMapper.class);
 
-        //给加入球队的球员，收藏球队的主场
-        FavoriteServiceImpl favoriteService = new FavoriteServiceImpl();
-        favoriteService.setSession(super.getSession());
-
         //1.查询球场
         Long courtId = teamMapper.select(teamPlayer.getTeamId()).getCourtId();
 
         //2.加入该球员的收藏
-        if (courtId != null) {
-            Favorite favorite = new Favorite();
-            favorite.setCourtId(courtId);
-            favorite.setPlayerId(teamPlayer.getPlayerId());
-            favorite.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        FavoriteServiceImpl favoriteService = new FavoriteServiceImpl();
+        favoriteService.setSession(super.getSession());
 
-            if (favoriteService.isFavorite(teamPlayer.getPlayerId(), courtId) == 0) {
-                favoriteService.insert(favorite);
-            } else {
-                System.out.println(MessageFormat.format("已加入该收藏，courtId：{0}，playerId：{1}",
-                        courtId, teamPlayer.getPlayerId()));
-            }
-        }
+        favoriteService.addFavorite(new Long[]{teamPlayer.getPlayerId()}, courtId);
 
         if (super.isHuanXinOpen()) {
             String groupId = teamMapper.select(teamPlayer.getTeamId()).getGroupId();
             EasemobHelper.addUserToGroup(groupId, teamPlayer.getPlayerId());
         }
     }
+
 
     @Override
     public List<TeamPlayerVO> getList(Long teamId, Long playerId, Boolean tmp, String keyword) {
@@ -80,6 +65,7 @@ public class TeamPlayerServiceImpl extends AbstractService implements TeamPlayer
 
     /**
      * 最后一个退出的为队长，此时需要删除整个球队
+     *
      * @param teamId
      * @param playerId
      */

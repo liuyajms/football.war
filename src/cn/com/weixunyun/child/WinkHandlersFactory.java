@@ -2,7 +2,6 @@ package cn.com.weixunyun.child;
 
 import cn.com.weixunyun.child.util.ThrowableUtils;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.JSONLibDataFormatSerializer;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.serializer.SimpleDateFormatSerializer;
@@ -36,17 +35,17 @@ public class WinkHandlersFactory extends HandlersFactory {
 
                 try {
                     chain.doChain(context);
+                    context.setAttribute(Integer.class, HttpStatus.SC_OK);
 
                 } catch (WebApplicationException e) {
 
-                    context.setResponseEntity(new ResultEntity(e.getResponse().getStatus(),
-                            ThrowableUtils.getRootCause(e).getMessage()));
+                    context.setAttribute(Integer.class, e.getResponse().getStatus());
+                    context.setResponseEntity(ThrowableUtils.getRootCause(e).getMessage());
 
                 } catch (Exception e) {
 
-                    Throwable throwable = ThrowableUtils.getRootCause(e);
-                    context.setResponseEntity(new ResultEntity(HttpStatus.SC_INTERNAL_SERVER_ERROR,
-                            throwable.getMessage()));
+                    context.setAttribute(Integer.class, HttpStatus.SC_INTERNAL_SERVER_ERROR);
+                    context.setResponseEntity(ThrowableUtils.getRootCause(e).getMessage());
 
                 }
 
@@ -85,7 +84,11 @@ public class WinkHandlersFactory extends HandlersFactory {
                             Response.Status.fromStatusCode(code).getReasonPhrase(),
                             context.getResponseEntity());
 
-//                    String str = JSON.toJSONString(resultEntity, SerializerFeature.WriteMapNullValue);
+                    int resultCode = context.getAttribute(Integer.class);
+                    if (HttpStatus.SC_OK != resultCode) {
+                        resultEntity = new ResultEntity(resultCode, context.getResponseEntity().toString(), null);
+                    }
+
                     SerializeConfig config = new SerializeConfig();
                     config.put(java.sql.Date.class, new SimpleDateFormatSerializer("yyyy-MM-dd"));
 

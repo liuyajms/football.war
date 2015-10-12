@@ -80,10 +80,10 @@ public class PlayerResource extends AbstractResource {
             return new ResultEntity(HttpStatus.SC_EXPECTATION_FAILED, "密码为空");
         }
 
-//        String verifyCode = map.getFirst("verifyCode");
-//        if (!VerifyResource.verify(player.getMobile(), verifyCode)) {
-//            return new ResultEntity(HttpStatus.SC_BAD_REQUEST, "验证码错误");
-//        }
+        String verifyCode = map.getFirst("verifyCode");
+        if (!VerifyResource.verify(player.getMobile(), verifyCode)) {
+            return new ResultEntity(HttpStatus.SC_BAD_REQUEST, "验证码错误");
+        }
 
         if (StringUtils.isBlank(player.getName())) {
             player.setName(player.getMobile());
@@ -100,7 +100,9 @@ public class PlayerResource extends AbstractResource {
 
         service.insert(player);
 
-        return new ResultEntity(HttpStatus.SC_OK, "注册成功!");
+        Map<String, Object> data = new AuthResource().insert(null, player.getMobile(), map.getFirst("password"));
+
+        return new ResultEntity(HttpStatus.SC_OK, "注册成功!", data);
     }
 
     @Deprecated

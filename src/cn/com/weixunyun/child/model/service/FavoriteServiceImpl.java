@@ -4,8 +4,9 @@ package cn.com.weixunyun.child.model.service;
 import cn.com.weixunyun.child.model.bean.Favorite;
 import cn.com.weixunyun.child.model.dao.FavoriteMapper;
 import cn.com.weixunyun.child.model.vo.CourtVO;
-import org.apache.ibatis.annotations.Param;
 
+import java.sql.Timestamp;
+import java.text.MessageFormat;
 import java.util.List;
 
 public class FavoriteServiceImpl extends AbstractService implements FavoriteService {
@@ -20,8 +21,7 @@ public class FavoriteServiceImpl extends AbstractService implements FavoriteServ
     }
 
     @Override
-    public List<CourtVO> getList(@Param("playerId") Long playerId, @Param("keyword") String keyword,
-                                 @Param("rows") long rows, @Param("offset") long offset) {
+    public List<CourtVO> getList(Long playerId, String keyword, long rows, long offset) {
         List<CourtVO> list = super.getMapper(FavoriteMapper.class).getList(playerId, keyword, rows, offset);
 
         for (CourtVO courtVO : list) {
@@ -32,7 +32,28 @@ public class FavoriteServiceImpl extends AbstractService implements FavoriteServ
     }
 
     @Override
-    public int isFavorite(@Param("playerId") Long playerId, @Param("favoriteId") Long favoriteId) {
+    public int isFavorite(Long playerId, Long favoriteId) {
         return super.getMapper(FavoriteMapper.class).isFavorite(playerId, favoriteId);
+    }
+
+    @Override
+    public void addFavorite(Long[] playerIds, Long courtId) {
+
+        for (Long playerId : playerIds) {
+
+            if (courtId != null) {
+                Favorite favorite = new Favorite();
+                favorite.setCourtId(courtId);
+                favorite.setPlayerId(playerId);
+                favorite.setCreateTime(new Timestamp(System.currentTimeMillis()));
+
+                if (this.isFavorite(playerId, courtId) == 0) {
+                    this.insert(favorite);
+                } else {
+                    System.out.println(MessageFormat.format("已加入该收藏，courtId：{0}，playerId：{1}",
+                            courtId, playerId));
+                }
+            }
+        }
     }
 }

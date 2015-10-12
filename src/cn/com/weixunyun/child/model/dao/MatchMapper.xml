@@ -61,14 +61,16 @@
                         and end_time > now()
                         ]]>
             </when>
-            <when test="beginDate !=null">
-                and m.begin_time > #{beginDate}
-            </when>
-            <when test="endDate !=null">
-                <![CDATA[
-                    and m.begin_time <= #{endDate}
+            <otherwise>
+                <if test="beginDate !=null">
+                    and m.begin_time::date >= #{beginDate}
+                </if>
+                <if test="endDate !=null">
+                    <![CDATA[
+                    and m.begin_time::date <= #{endDate}
                     ]]>
-            </when>
+                </if>
+            </otherwise>
         </choose>
         <if test="keyword !=null and keyword !=''">
             and ( m.name like '%'|| #{keyword}||'%' or C .name like '%'|| #{keyword}||'%')

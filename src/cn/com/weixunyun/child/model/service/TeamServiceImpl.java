@@ -12,6 +12,7 @@ import cn.com.weixunyun.child.module.easemob.EasemobHelper;
 import cn.com.weixunyun.child.util.DateUtil;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -30,14 +31,15 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
 
     @Override
     public void insert(Team record) {
-        //没有队长时，不创建群组
-        if (super.isHuanXinOpen() && record.getCreatePlayerId() !=null) {
+        //1.没有队长时，不创建群组
+        if (super.isHuanXinOpen() && record.getCreatePlayerId() != null) {
             record.setGroupId(EasemobHelper.createGroup(record.getName(), new Long[]{record.getCreatePlayerId()}));
         }
-        //创建球队，并将创建者加入该球队
+        //2.创建球队
         super.getMapper(TeamMapper.class).insert(record);
 
-        if(record.getCreatePlayerId() !=null){
+        //3.将创建者加入该球队
+        if (record.getCreatePlayerId() != null) {
             TeamPlayer teamPlayer = new TeamPlayer();
             teamPlayer.setPlayerId(record.getCreatePlayerId());
             teamPlayer.setTeamId(record.getId());
@@ -45,6 +47,11 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
 
             super.getMapper(TeamPlayerMapper.class).insert(teamPlayer);
         }
+
+        //4.将队长加入球场收藏
+        FavoriteServiceImpl favoriteService = new FavoriteServiceImpl();
+        favoriteService.setSession(super.getSession());
+        favoriteService.addFavorite(new Long[]{record.getCreatePlayerId()}, record.getCourtId());
 
     }
 
@@ -95,14 +102,33 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
 
     @Override
     public void update(Team record) {
+        Team team = super.getMapper(TeamMapper.class).get(record.getId());
         if (super.isHuanXinOpen() && record.getName() != null) {
-            Team team = super.getMapper(TeamMapper.class).get(record.getId());
             if (team.getName().equals(record.getName())) {
                 EasemobHelper.updateGroup(team.getGroupId(), record.getName());
             }
         }
 
+        //1.修改球队信息
         super.getMapper(TeamMapper.class).update(record);
+
+        //2. 修改球队所有球员的球场收藏
+        if (team.getCourtId() != null && !team.getCourtId().equals(record.getCourtId())) {
+            FavoriteServiceImpl favoriteService = new FavoriteServiceImpl();
+            favoriteService.setSession(super.getSession());
+
+            List<TeamPlayerVO> playerVOList = super.getMapper(TeamPlayerMapper.class).getList(team.getId(), null, false, null);
+
+            if (playerVOList.size() > 0) {
+                ArrayList<Long> playerIdList = new ArrayList<>();
+                for (TeamPlayerVO playerVO : playerVOList) {
+                    playerIdList.add(playerVO.getPlayerId());
+                }
+
+                favoriteService.addFavorite(playerIdList.toArray(new Long[playerIdList.size()]), record.getCourtId());
+            }
+
+        }
     }
 
     @Override
@@ -121,10 +147,13 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
 
     @Override
     public void insertPlayer(Team team, String[] playerIds, boolean agreed) {
-        super.getMapper(TeamMapper.class).insert(team);
+        this.insert(team);//已将队长插入该球队,插入playerIds中其他队友时,需要过滤该队长
 
         if (playerIds != null) {
             for (String playerId : playerIds) {
+                if (team.getCreatePlayerId().equals(playerId)) {
+                    continue;
+                }
                 TeamPlayer teamPlayer = new TeamPlayer();
                 teamPlayer.setPlayerId(Long.parseLong(playerId));
                 teamPlayer.setTeamId(team.getId());

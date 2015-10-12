@@ -35,7 +35,7 @@ public class EasemobResource extends AbstractResource {
     @POST
     @Path("message")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
-    @Description("添加成员")
+    @Description("发送系统消息")
     public ResultEntity sendSystemMsg(@CookieParam("rsessionid") String rsessionid,
                                       @FormParam("targetType") String targetType,
                                       @FormParam("targetIds") String targetIds,

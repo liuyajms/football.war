@@ -53,7 +53,7 @@
         <if test="city !=null">
             and t.address like '%'|| #{city}||'%'
         </if>
-        <if test="beginAge !=null">
+<!--        <if test="beginAge !=null">
             <![CDATA[
                 and birthday <=
             ]]>
@@ -61,7 +61,25 @@
         </if>
         <if test="endAge !=null">
             and birthday >= (current_date - (#{endAge} || ' year')::interval)
+        </if>-->
+
+        <if test="beginAge !=null">
+           and
+           (
+            SELECT
+                EXTRACT (
+                    YEAR
+                    FROM
+                        AVG (age(now(), birthday))
+                )
+            FROM
+                player P
+            JOIN team_player tp ON P . ID = tp.player_id
+            WHERE
+                tp.team_id = T . ID
+           ) between #{beginAge} and #{endAge}
         </if>
+
         <if test="rule !=null">
             <![CDATA[
                 and t.rule & #{rule} > 0

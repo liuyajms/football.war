@@ -6,8 +6,10 @@ import cn.com.weixunyun.child.model.bean.RolePopedom;
 import cn.com.weixunyun.child.model.bean.User;
 import cn.com.weixunyun.child.model.pojo.Global;
 import cn.com.weixunyun.child.model.pojo.Menu;
-import cn.com.weixunyun.child.model.pojo.School;
-import cn.com.weixunyun.child.model.service.*;
+import cn.com.weixunyun.child.model.service.GlobalService;
+import cn.com.weixunyun.child.model.service.PlayerService;
+import cn.com.weixunyun.child.model.service.RoleService;
+import cn.com.weixunyun.child.model.service.UserService;
 import cn.com.weixunyun.child.model.vo.PlayerVO;
 import cn.com.weixunyun.child.util.ValidateImageUtil;
 import com.sun.image.codec.jpeg.JPEGCodec;
@@ -68,12 +70,10 @@ public class AuthResource extends AbstractResource {
     @Description("登录")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     public Map<String, Object> insert(@CookieParam("rsessionid") String rsessionid,
-                                      @Context HttpServletRequest request) {
+                                      @FormParam("username") String username,
+                                      @FormParam("password") String password) {
 
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-
-        if(StringUtils.isBlank(username) || StringUtils.isBlank(password)){
+        if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
             return null;
         }
 
@@ -81,7 +81,8 @@ public class AuthResource extends AbstractResource {
                 .login(username, DigestUtils.md5Hex(password));
 
         if (playerVO == null || playerVO.getId() == null) {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+            throw new WebApplicationException(new RuntimeException("用户名或密码错误"), Response.Status.UNAUTHORIZED);
+//            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         } else {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("player", playerVO);
