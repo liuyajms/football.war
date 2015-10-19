@@ -61,7 +61,10 @@
 			}, null, function(data) {
 				if (data == null || data == "") {
 					alert("登录失败！");
-				} else {
+				} else{
+                if(data.code == 401) {
+                    return alert('password error');
+                }
 					$.cookie("rsessionid", data.rsessionid);
                     alert(1)
 //					location.href = "index.jsp";

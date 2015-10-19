@@ -151,7 +151,8 @@ public class TeamServiceImpl extends AbstractService implements TeamService {
 
         if (playerIds != null) {
             for (String playerId : playerIds) {
-                if (team.getCreatePlayerId().equals(playerId)) {
+                if (team.getCreatePlayerId() != null &&
+                        team.getCreatePlayerId().toString().equals(playerId)) {
                     continue;
                 }
                 TeamPlayer teamPlayer = new TeamPlayer();
