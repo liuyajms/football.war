@@ -79,6 +79,7 @@ public class AuthFilter extends AbstractResource implements Filter {
 		noFilterSet.add("/contact");
 		noFilterSet.add("/global");
         noFilterSet.add("/player/register");
+        noFilterSet.add("/player/findPassword");
         noFilterSet.add("/verify");
 	}
 

@@ -14,6 +14,7 @@ import org.apache.http.HttpStatus;
 import org.apache.wink.common.annotations.Workspace;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -69,7 +70,7 @@ public class PlayerResource extends AbstractResource {
     @Path("register")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     @Description("注册添加用户")
-    public ResultEntity register(MultivaluedMap<String, String> map) throws Exception {
+    public ResultEntity register(@Context HttpServletResponse response, MultivaluedMap<String, String> map) throws Exception {
 
         Player player = super.buildBean(Player.class, map, null);
 
@@ -100,7 +101,7 @@ public class PlayerResource extends AbstractResource {
 
         service.insert(player);
 
-        Map<String, Object> data = new AuthResource().insert(null, player.getMobile(), map.getFirst("password"));
+        Map<String, Object> data = new AuthResource().insert(null, player.getMobile(), map.getFirst("password"), response);
 
         return new ResultEntity(HttpStatus.SC_OK, "注册成功!", data);
     }
