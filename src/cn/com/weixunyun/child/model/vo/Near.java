@@ -17,6 +17,8 @@ public class Near implements Serializable {
 
     private String address;
 
+    private Timestamp updateTime;
+
     //player
     private String name;
 
@@ -55,6 +57,14 @@ public class Near implements Serializable {
     private Integer teamNum;
 
     private String courtName;
+
+    public Timestamp getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Timestamp updateTime) {
+        this.updateTime = updateTime;
+    }
 
     public String getDetailAddress() {
         return detailAddress;

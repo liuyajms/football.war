@@ -34,7 +34,6 @@ import java.util.*;
 public abstract class AbstractResource {
 
     protected AbstractResource() {
-        System.out.println("===>>Call AbstractResource Constructor: " + this.getClass().getSimpleName());
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);

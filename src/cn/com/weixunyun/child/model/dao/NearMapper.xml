@@ -6,20 +6,20 @@
         select * from
         (
         select
-          5 as type, c.id,  c.address, c.name, c.detail_address,
+          5 as type, c.id,  c.address, c.name, c.detail_address, update_time,
           null as sex, null as age, c.rule as dic, c.description,
           round(earth_distance(ll_to_earth(py, px), ll_to_earth(#{py}, #{px}))) AS distance
         from court c
         where c.tmp is not true
         union all
         select
-          4 as type, id,  address, "name", null as detail_address,
+          4 as type, id,  address, "name", null as detail_address, update_time,
           sex, EXTRACT(year from age(current_date , birthday)) as age, role as dic, description,
           round(earth_distance(ll_to_earth(py, px), ll_to_earth(#{py}, #{px}))) AS distance
         from player
         union all
         select
-          3 as type, t.id,  t.address, t."name", null as detail_address,
+          3 as type, t.id,  t.address, t."name", null as detail_address, t.update_time,
           null as sex, null as age, t.rule as dic, t.description,
           round(earth_distance(ll_to_earth(py, px), ll_to_earth(#{py}, #{px}))) AS distance
         from team t
@@ -27,7 +27,7 @@
         where t.tmp is not true
         union all
         select
-          "type", t.id,  c.address, t."name", null as detail_address,
+          "type", t.id,  c.address, t."name", null as detail_address, t.update_time,
           null as sex, null as age, t.rule as dic, null as description,
           round(earth_distance(ll_to_earth(py, px), ll_to_earth(#{py}, #{px}))) AS distance
         from "match" t

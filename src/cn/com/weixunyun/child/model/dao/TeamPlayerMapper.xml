@@ -21,7 +21,7 @@
     <select id="getList" resultType="TeamPlayerVO" parameterType="map">
         SELECT
         tp.*, P . NAME AS player_name,
-        T . NAME AS team_name
+        T . NAME AS team_name, P.update_time
         FROM
         team_player tp
         LEFT JOIN player P ON P . ID = tp.player_id
