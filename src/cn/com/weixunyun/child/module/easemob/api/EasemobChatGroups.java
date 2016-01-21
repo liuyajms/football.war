@@ -434,4 +434,32 @@ public class EasemobChatGroups {
         return objectNode;
     }
 
+
+    /**
+     * 群组转让
+     修改群组Owner为同一App下的存在用户
+     */
+    public static ObjectNode changeGroupOwner(String chatgroupid, String userId) {
+        ObjectNode objectNode = factory.objectNode();
+        // check appKey format
+        if (!HTTPClientUtils.match("^(?!-)[0-9a-zA-Z\\-]+#[0-9a-zA-Z]+", APPKEY)) {
+            LOGGER.error("Bad format of Appkey: " + APPKEY);
+            objectNode.put("message", "Bad format of Appkey");
+            return objectNode;
+        }
+
+        try {
+            URL allMemberssByGroupIdUrl = HTTPClientUtils.getURL(Constants.APPKEY.replace("#", "/") + "/chatgroups/"
+                    + chatgroupid);
+            ObjectNode dataobjectNode = factory.objectNode();
+            dataobjectNode.put("newowner", userId);
+            objectNode = HTTPClientUtils.sendHTTPRequest(allMemberssByGroupIdUrl, credential, dataobjectNode,
+                    HTTPMethod.METHOD_PUT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return objectNode;
+    }
+
 }

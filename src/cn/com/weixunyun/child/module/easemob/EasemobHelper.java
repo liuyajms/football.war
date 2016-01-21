@@ -133,7 +133,7 @@ public class EasemobHelper {
     }
 
     public static void deleteGroup(String groupId, int n) {
-        if(groupId == null){
+        if (groupId == null) {
             return;
         }
         try {
@@ -158,7 +158,7 @@ public class EasemobHelper {
     }
 
     public static void updateGroup(String groupId, String groupName, int n) {
-        if(groupId == null){
+        if (groupId == null) {
             return;
         }
         try {
@@ -187,7 +187,7 @@ public class EasemobHelper {
 
 
     public static void addUserToGroup(String groupId, Long playerId, int n) {
-        if(groupId == null){
+        if (groupId == null) {
             return;
         }
         try {
@@ -210,14 +210,14 @@ public class EasemobHelper {
      * @param playerId
      */
     public static void deleteUserFromGroup(String groupId, Long playerId) {
-        if(groupId !=null){
+        if (groupId != null) {
             ObjectNode deleteUserFromGroupNode = EasemobChatGroups.deleteUserFromGroup(groupId, playerId.toString());
             handlerResult(deleteUserFromGroupNode);
         }
     }
 
     public static void deleteUserFromGroup(String groupId, Long playerId, int n) {
-        if(groupId !=null){
+        if (groupId != null) {
             try {
                 ObjectNode deleteUserFromGroupNode = EasemobChatGroups.deleteUserFromGroup(groupId, playerId.toString());
                 handlerResult(deleteUserFromGroupNode);
@@ -229,5 +229,24 @@ public class EasemobHelper {
                 }
             }
         }
+    }
+
+    public static void changeGroupOwner(String groupId, Long createPlayerId, int n) {
+        if (groupId != null) {
+            try {
+                ObjectNode node = EasemobChatGroups.changeGroupOwner(groupId, createPlayerId.toString());
+                handlerResult(node);
+            } catch (Exception e) {
+                if (n > 0) {
+                    changeGroupOwner(groupId, createPlayerId, --n);
+                } else {
+                    throw new RuntimeException("改变群组拥有者失败:" + e.getMessage());
+                }
+            }
+        }
+    }
+
+    public static void changeGroupOwner(String groupId, Long createPlayerId) {
+        changeGroupOwner(groupId, createPlayerId, TRY_COUNT);
     }
 }
