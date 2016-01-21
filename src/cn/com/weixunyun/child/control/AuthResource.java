@@ -18,9 +18,10 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.wink.common.annotations.Workspace;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import javax.ws.rs.core.Cookie;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -71,7 +72,8 @@ public class AuthResource extends AbstractResource {
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     public Map<String, Object> insert(@CookieParam("rsessionid") String rsessionid,
                                       @FormParam("username") String username,
-                                      @FormParam("password") String password) {
+                                      @FormParam("password") String password,
+                                      @Context HttpServletResponse response) {
 
         if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
             return null;
@@ -103,6 +105,10 @@ public class AuthResource extends AbstractResource {
             HashMap<String, Integer> popedomMap = null;
 
             Session.getInstance(rsessionid).set("authed", true).set("player", playerVO).set("popedom", popedomMap);
+
+            javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie("rsessionid",rsessionid);
+            cookie.setMaxAge(60*60*24*7);//保留7天
+            response.addCookie(cookie);
 
             return map;
         }
