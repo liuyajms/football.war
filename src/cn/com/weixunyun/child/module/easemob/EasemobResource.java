@@ -64,8 +64,8 @@ public class EasemobResource extends AbstractResource {
     public Map<String, List<Player>> initPlayer(@CookieParam("rsessionid") String rsessionid)
             throws Exception {
 
-        List<PlayerVO> playerList = super.getService(PlayerService.class)
-                .getList(null, null, null, null, null, null, null, 0, 0);
+        List<Player> playerList = super.getService(PlayerService.class)
+                .getPlayerList(0, 0);
 
         Map<String, List<Player>> map = new HashMap<>();
         List<Player> successList = new ArrayList<>();

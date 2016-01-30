@@ -26,29 +26,29 @@
         on dv.dictionary_table_code = 'player'
         and dictionary_field_code = 'leg'
         and dv.code=p.leg
-        <where>
-            <if test="city !=null">
-                and p.address like '%'|| #{city}||'%'
-            </if>
-            <if test="beginAge !=null">
-                <![CDATA[
-                and birthday <=
-                ]]>
-                (current_date - (#{beginAge} || ' year')::interval)
-            </if>
-            <if test="endAge !=null">
-                and birthday >= (current_date - (#{endAge} || ' year')::interval)
-            </if>
-            <if test="role !=null">
-                <![CDATA[
-                and p.role & #{role} > 0
-                ]]>
-            </if>
-            <if test="keyword !=null and keyword !=''">
-                and ( p.name like '%'|| #{keyword}||'%'
-                or p.mobile =  #{keyword})
-            </if>
-        </where>
+        where p.id != #{loginId}
+        <if test="city !=null">
+            and p.address like '%'|| #{city}||'%'
+        </if>
+        <if test="beginAge !=null">
+            <![CDATA[
+            and birthday <=
+            ]]>
+            (current_date - (#{beginAge} || ' year')::interval)
+        </if>
+        <if test="endAge !=null">
+            and birthday >= (current_date - (#{endAge} || ' year')::interval)
+        </if>
+        <if test="role !=null">
+            <![CDATA[
+            and p.role & #{role} > 0
+            ]]>
+        </if>
+        <if test="keyword !=null and keyword !=''">
+            and ( p.name like '%'|| #{keyword}||'%'
+            or p.mobile =  #{keyword})
+        </if>
+
         <choose>
             <when test="px !=null and py !=null">
                 order by distance
@@ -58,6 +58,13 @@
             </otherwise>
         </choose>
         <if test="rows !=null and rows !=0">
+            limit #{rows} offset #{offset}
+        </if>
+    </select>
+
+    <select id="getPlayerList" resultType="Player" parameterType="map">
+        select * from player
+        <if test="rows !=0 and offset !=0">
             limit #{rows} offset #{offset}
         </if>
     </select>

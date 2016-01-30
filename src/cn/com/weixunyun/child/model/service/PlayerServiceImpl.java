@@ -7,6 +7,7 @@ import cn.com.weixunyun.child.model.vo.PlayerVO;
 import cn.com.weixunyun.child.module.calendar.CalendarMapper;
 import cn.com.weixunyun.child.module.easemob.EasemobHelper;
 import cn.com.weixunyun.child.util.DateUtil;
+import org.apache.ibatis.annotations.Param;
 
 import java.sql.Date;
 import java.util.List;
@@ -48,10 +49,15 @@ public class PlayerServiceImpl extends AbstractService implements PlayerService 
     }
 
     @Override
-    public List<PlayerVO> getList(String city, Integer role, Integer beginAge, Integer endAge,
+    public List<Player> getPlayerList(int rows, int offset) {
+        return super.getMapper(PlayerMapper.class).getPlayerList(rows, offset);
+    }
+
+    @Override
+    public List<PlayerVO> getList(Long loginId, String city, Integer role, Integer beginAge, Integer endAge,
                                   String keyword, Double px, Double py, long rows, long offset) {
         List<PlayerVO> playerVOList = super.getMapper(PlayerMapper.class)
-                .getList(city, role, beginAge, endAge, keyword, px, py, rows, offset);
+                .getList(loginId, city, role, beginAge, endAge, keyword, px, py, rows, offset);
 
         for (PlayerVO playerVO : playerVOList) {
             playerVO.setRoleList(super.getDicValueList("player", "role", playerVO.getRole()));

@@ -13,7 +13,9 @@ public interface PlayerMapper {
 
     PlayerVO get(Long id);
 
-    List<PlayerVO> getList(@Param("city") String city, @Param("role") Integer role,
+    List<Player> getPlayerList(@Param("rows") int rows, @Param("offset") int offset);
+
+    List<PlayerVO> getList(@Param("loginId") Long loginId, @Param("city") String city, @Param("role") Integer role,
                            @Param("beginAge") Integer beginAge, @Param("endAge") Integer endAge,
                            @Param("keyword") String keyword,
                            @Param("px") Double px, @Param("py") Double py,

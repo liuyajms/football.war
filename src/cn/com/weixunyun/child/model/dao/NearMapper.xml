@@ -21,10 +21,19 @@
         select
           3 as type, t.id,  t.address, t."name", null as detail_address, t.update_time,
           null as sex, null as age, t.rule as dic, t.description,
-          round(earth_distance(ll_to_earth(py, px), ll_to_earth(#{py}, #{px}))) AS distance
+        case when t.court_id is NOT NULL then
+        round(earth_distance(ll_to_earth(c.py, c.px), ll_to_earth(#{py}, #{px})))
+        ELSE
+        round(earth_distance(ll_to_earth(p.py, p.px), ll_to_earth(#{py}, #{px})))
+        END AS distance
+
         from team t
           left join player p on p.id=t.create_player_id
+          left join court c on c.id= t.court_id
         where t.tmp is not true
+
+        and (t.court_id is not null or p.px is not null)
+
         union all
         select
           "type", t.id,  c.address, t."name", null as detail_address, t.update_time,

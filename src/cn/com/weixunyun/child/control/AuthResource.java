@@ -96,9 +96,7 @@ public class AuthResource extends AbstractResource {
             Map<String, Object> globalMap = new HashMap<String, Object>();
             globalMap.put("asset.version", assetVersion);
 
-            if (rsessionid == null) {
-                rsessionid = UUID.randomUUID().toString();
-            }
+            rsessionid = UUID.randomUUID().toString();
             map.put("rsessionid", rsessionid);
             map.put("global", globalMap);
 

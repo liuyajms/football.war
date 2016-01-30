@@ -42,7 +42,8 @@ public class PlayerResource extends AbstractResource {
                                   @QueryParam("px") Double px, @QueryParam("py") Double py,
                                   @QueryParam("page") long page, @QueryParam("rows") long rows) {
         return super.getService(PlayerService.class)
-                .getList(city, role, beginAge, endAge, keyword, px, py, rows, page * rows);
+                .getList(super.getAuthedId(rsessionid), city, role, beginAge, endAge, keyword, px, py, rows, page *
+                        rows);
     }
 
     @GET
