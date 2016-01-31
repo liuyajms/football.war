@@ -400,8 +400,22 @@ public class MatchResource extends AbstractResource {
 //        teamPlayerService.delete(teamId, super.getAuthedId(rsessionid));
 
 //        return new ResultEntity(HttpStatus.SC_OK, "操作成功");
-        return new TeamPlayerResource().delete(teamId, playerId, rsessionid);
+        ResultEntity rs = new TeamPlayerResource().delete(teamId, playerId, rsessionid);
 
+        /*
+        如果是球赛创建者退出球赛，需要修改主队的后继球员为当前球赛的创建者，同时需要指定为主队的队长,
+        细化：为简化操作，指定的球赛创建者查询球队的队长
+         */
+        Team team = teamService.get(teamId);
+        if(team !=null){
+            Match match = new Match();
+            match.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+            match.setId(id);
+            match.setCreatePlayerId(team.getCreatePlayerId());
+            service.update(match);
+        }
+
+        return rs;
     }
 
     private MatchVO checkMatch(Long id, Long teamId) {

@@ -50,7 +50,7 @@
 
 	$(document).ready(function() {
 
-		$.cookie("rsessionid","<%=UUID.randomUUID().toString()%>");
+		<%--$.cookie("rsessionid","<%=UUID.randomUUID().toString()%>");--%>
 //        $.cookie("code", "eb45324a84d32182e74ac80c71d6f1dc");
 
 		var login = function(username, password) {
