@@ -2,6 +2,7 @@ package cn.com.weixunyun.child.control;
 
 import cn.com.weixunyun.child.Description;
 import cn.com.weixunyun.child.Session;
+import cn.com.weixunyun.child.util.DateUtil;
 import com.cloopen.rest.sdk.CCPRestSDK;
 import net.rubyeye.xmemcached.exception.MemcachedException;
 import org.apache.wink.common.annotations.Workspace;
@@ -144,8 +145,9 @@ public class VerifyResource extends AbstractResource {
     }
 
     private boolean send(String templateId, String mobile) throws TimeoutException, InterruptedException, MemcachedException {
-        Double d = Math.random() * 10000;
-        String str = String.valueOf(d.intValue());
+//        Double d = Math.random() * 10000;
+//        String str = String.valueOf(d.intValue());
+        String str = DateUtil.getRandomStr(4);
         //发送验证码
         if (smsVerify(templateId, mobile, str)) {
             //存储验证码
