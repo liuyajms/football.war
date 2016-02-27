@@ -63,7 +63,7 @@ public class WinkHandlersFactory extends HandlersFactory {
             @Override
             public void handleResponse(MessageContext context, HandlersChain chain) throws Throwable {
 
-                System.out.println("********** ResponseHandlers *********");
+//                System.out.println("********** ResponseHandlers *********");
                 context.setResponseMediaType(MediaType.APPLICATION_JSON_TYPE);
 
                 if (isWeb(context)) {
@@ -92,8 +92,13 @@ public class WinkHandlersFactory extends HandlersFactory {
                     SerializeConfig config = new SerializeConfig();
                     config.put(java.sql.Date.class, new SimpleDateFormatSerializer("yyyy-MM-dd"));
 
+                    /**
+                     * DisableCircularReferenceDetect来禁止循环引用检测：
+                     * 当进行toJSONString的时候，默认如果重用对象的话，会使用引用的方式进行引用对象。
+                     */
                     String str = JSON.toJSONString(resultEntity, config,
-                            SerializerFeature.WriteMapNullValue, SerializerFeature.SortField);
+                            SerializerFeature.WriteMapNullValue, SerializerFeature.SortField,
+                            SerializerFeature.DisableCircularReferenceDetect);
 
                     context.setResponseEntity(str);
                 }
