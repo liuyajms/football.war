@@ -1,7 +1,6 @@
 package cn.com.weixunyun.child.control;
 
 import cn.com.weixunyun.child.Description;
-import cn.com.weixunyun.child.PropertiesListener;
 import cn.com.weixunyun.child.Session;
 import cn.com.weixunyun.child.util.DateUtil;
 import com.cloopen.rest.sdk.CCPRestSDK;
@@ -22,20 +21,17 @@ public class VerifyResource extends AbstractResource {
     private static final String SERVER_IP = "app.cloopen.com";//sandboxapp.cloopen.com
     private static final String SERVER_PORT = "8883";
 
-    private static final String ACCOUNT_SID = PropertiesListener.getProperty
-            ("SMS_ACCOUNT_ID", "aaf98f894fd44d15014fdb5bc19c08db");
-    private static final String AUTH_TOKEN = PropertiesListener.getProperty
-            ("SMS_AUTH_TOKEN", "05bbb39a02bf45f7b35edee0d8284393");
+    private static final String ACCOUNT_SID = "aaf98f894fd44d15014fdb5bc19c08db";
+    private static final String AUTH_TOKEN = "05bbb39a02bf45f7b35edee0d8284393";
 
-    private static final String APP_ID = PropertiesListener.getProperty("SMS_APP_ID",
-            "8a48b55152f73add015306a98b551adf");
+    private static final String APP_ID = "8a48b5514fd49643014fdb6026271608";
 
     private static final String VOICE_TIME = "2";
 
-    private static final String VALID_TIME = PropertiesListener.getProperty("SMS_VALID_TIME", "5");
+    private static final String VALID_TIME = "5";
 
-    private static final String REGISTER_TEMPLATE_Id = PropertiesListener.getProperty("SMS_TEMPLATE_ID", "37914");
-    private static final String FINDPASSWORD_TEMPLATE_Id = PropertiesListener.getProperty("SMS_FINDPASSID", "37933");
+    private static final String REGISTER_TEMPLATE_Id = "37914";
+    private static final String FINDPASSWORD_TEMPLATE_Id = "37933";
 
 
     public static boolean smsVerify(String templateId, String phone, String num) {
