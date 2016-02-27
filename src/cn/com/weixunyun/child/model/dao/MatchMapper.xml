@@ -92,16 +92,12 @@
 
 <!--我的球赛、球场球赛、球队球赛列表-->
     <select id="getPlayerMatchList" resultType="MatchVO" parameterType="map">
-        select m.*, c.name as court_name
-        from match m
-        left join court c on c.id=m.court_id
-        left join team_player tp1 on tp1.team_id = m.team_id
-          left join team t1 on t1.id = m.team_id
-        left join team_player tp2 on tp2.team_id = m.accept_team_id
-          left join team t2 on t2.id = m.accept_team_id
-        where
-        (tp1.player_id=#{playerId} or tp2.player_id=#{playerId})
-
+        SELECT m.*, c.name as court_name FROM match m
+        LEFT JOIN team t1 ON t1.id = m.team_id
+        LEFT JOIN team t2 ON t2.id = m.accept_team_id
+        LEFT JOIN court c on c.id = m.court_id
+        WHERE team_id in (select team_id from team_player where player_id=#{playerId})
+        OR accept_team_id in (select team_id from team_player where player_id=#{playerId})
         <if test="beginDate !=null">
             and m.begin_time > #{beginDate}
         </if>
